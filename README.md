@@ -1,2 +1,2 @@
 # mvk-projekt
-Repository for Mjukvarukonstruktion (Mvk) / Software Construction
+Repository for KTH course DD1393 Mjukvarukonstruktion (MVK) / Software Construction
