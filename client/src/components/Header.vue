@@ -4,7 +4,7 @@
       <img src="charpstar.png" id="logo" />
       <p>Charpstar 3D model platform thing™</p>
     </div>
-    <div v-if="user.isLoggedIn">
+    <div v-if="loggedIn">
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
           <v-btn text id="menuButton" v-on="on"><p>{{user.name}}</p><i class="material-icons" id="acountIcon">account_circle</i></v-btn>
@@ -23,7 +23,8 @@
 export default {
   name: "header2",
   props: {
-    user: { type: Object, required: true }
+    user: { type: Object, required: true },
+    loggedIn: { type: Boolean, required: true}
   },
   data: () => ({
     items: []

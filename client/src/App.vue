@@ -1,17 +1,23 @@
 <template>
   <div id="app" data-app>
-    <header2 :user="user" v-on:logout="user.isLoggedIn = false"/>
+    <header2 :user="user" :loggedIn="view != 'login'" v-on:logout="view = 'login'"/>
     <div id="center">
       <v-card id="card">
-        <v-expand-transition>
-          <login v-if="!user.isLoggedIn" v-on:login="login"/>
-        </v-expand-transition>
-        <v-expand-transition>
-          <itemsView v-if="user.isLoggedIn && !viewItem" :items="items" v-on:view="viewItem = $event" />
-        </v-expand-transition>
-        <v-expand-transition>
-          <itemView v-if="user.isLoggedIn && viewItem" :item="viewItem" v-on:close="viewItem = false"/>
-        </v-expand-transition>
+        <transitionExpandHeight>
+          <login v-if="view == 'login'" v-on:login="login"/>
+        </transitionExpandHeight>
+
+        <transitionExpandHeight>
+          <itemsView v-if="view == 'items'" :items="items" v-on:viewI="viewItem" :selectClient="user.type != 'client'" v-on:backToClients="view = 'clients'"/>
+        </transitionExpandHeight>
+
+        <transitionExpandHeight>
+          <clientView v-if="view == 'clients'" :clients="clients" v-on:clientSelect="getItems" />
+        </transitionExpandHeight>
+
+        <transitionExpandHeight>
+          <itemView v-if="view == 'item'" :item="item" v-on:close="view = 'items'" :user="user"/>
+        </transitionExpandHeight>
       </v-card>
     </div>
   </div>
@@ -22,6 +28,11 @@ import header2 from "./components/Header";
 import login from "./components/Login";
 import itemsView from "./components/Items";
 import itemView from './components/Item'
+import clientView from "./components/ClientView"
+
+import transitionExpandHeight from "./components/TransitionExpandHeight"
+
+import backend from "./backend"
 
 export default {
   name: "App",
@@ -30,67 +41,51 @@ export default {
     header2,
     login,
     itemsView,
-    itemView
+    itemView,
+    transitionExpandHeight,
+    clientView
   },
 
   data: () => ({
+    view: "login",
     user: {
-      name: "DemoClientAccount",
-      isLoggedIn: false
+      name: "",
+      type: ""
     },
-    viewItem: false,
-    items: []
+    item: false,
+    items: [],
+    clients: []
   }),
   methods: {
-    login() {
+    login(data) {
       var vm = this
-      vm.user.isLoggedIn = true
-      vm.viewItem = false
+      vm.item = false
+      vm.user.name = data.name
+      vm.user.type = data.type
+      if(data.type == "client") {
+        vm.getItems({id: 1})
+      } else {
+        backend.getClients().then((clients) => {
+          vm.clients = clients
+          vm.view = "clients"
+        })
+      }
+    },
+    getItems(obj){
+      var vm = this
+      backend.getItems(obj.id).then((items) => {
+        vm.items = items
+        vm.view = "items"
+      })
+    },
+    viewItem(i) {
+      var vm = this
+      vm.item = i
+      vm.view = "item"
     },
   },
   mounted() {
-    var vm = this;
-    vm.items.push({
-      icon: "a_chair.jpg",
-      name: "A Chair",
-      status: "Complete",
-      statusIcon: "check",
-      modelLink: "./Astronaut.glb",
-      comments: [
-        {
-          name: "DemoClientAccount",
-          type: "client",
-          message: "link to item: http://DemoClient.com/a_chair"
-        },
-        {
-          name: "QA",
-          type: "qa",
-          message: "all done here!"
-        }
-      ]
-    });
-    vm.items.push({
-      icon: "a_table.jpg",
-      name: "A Table",
-      status: "More info required",
-      statusIcon: "warning",
-      comments: [
-        {
-          name: "QA",
-          type: "qa",
-          message: "We need more info on the materials"
-        }
-      ]
-    });
-    for (let i = 0; i < 20; i++) {
-      vm.items.push({
-        icon: "a_sofa.jpg",
-        name: "A Sofa",
-        status: "In Development",
-        statusIcon: "",
-        comments: []
-      })
-    }
+    backend.init()
   }
 };
 </script>
