@@ -2,7 +2,7 @@
   <div id="header">
     <div class="row">
       <img src="charpstar.png" id="logo" />
-      <p>Charpstar 3D model platform thing™</p>
+      <p>3D asset management system</p>
     </div>
     <div v-if="loggedIn">
       <v-menu offset-y>
