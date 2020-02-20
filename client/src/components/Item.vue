@@ -1,12 +1,14 @@
 <template>
-    <div>
+    <div id="item">
         <div class="row" id="topRow">
             <v-btn icon class="hidden-xs-only">
               <v-icon @click="$emit('close')">mdi-arrow-left</v-icon>
             </v-btn>
         </div>
         <div class="row" id="itemsrow">
-            <model-viewer :src="item.modelLink" auto-rotate camera-controls id="modelView"></model-viewer>
+            <model-viewer :src="item.modelLink" auto-rotate camera-controls id="modelView">
+                
+            </model-viewer>
             <div class="column">
                 <h1>{{item.name}}</h1>
                 <table id="itemTable">
@@ -19,8 +21,21 @@
                     <tr v-if="item.status == 'Complete'">
                         <td>iOS link</td><td><v-btn>Copy</v-btn></td>
                     </tr>
+                    <tr v-if="user.type != 'client'">
+                        <td><itemupload /></td>
+                    </tr>
                 </table>
                 <h2 id="commentsLabel">Comments</h2>
+                <div class="row" id="addCommentRow">
+                    <v-textarea id="addComment" v-model="addComment"
+                        name="comment"
+                        placeholder="Add comment"
+                        :full-width='true'
+                        :rounder='true'
+                        :hide-details='true'
+                        ></v-textarea>
+                    <v-icon v-on:click="sendComment">send</v-icon>
+                </div>
                 <table>
                     <tr class="comment" v-for="comment in item.comments" :key="comment.message">
                         <td>
@@ -32,29 +47,24 @@
                         <td>
                             <p>{{comment.message}}</p>
                         </td>
-                        
-                       
                     </tr>
                 </table>
-            <div class="row" id="addCommentRow">
-                <v-textarea id="addComment" v-model="addComment"
-                    name="comment"
-                    placeholder="Add comment"
-                    :full-width='true'
-                    :rounder='true'
-                    :hide-details='true'
-                    ></v-textarea>
-                <v-icon v-on:click="sendComment">send</v-icon>
-            </div>
-                
+
             </div>
         </div>
     </div>
 </template>
 <script>
+import itemupload from './ItemUpload'
+import backend from './../backend'
+
 export default {
     props: {
-        item: {type: Object, required: true}
+        item: {type: Object, required: true},
+        user: {type: Object, required: true}
+    },
+    components: {
+        itemupload
     },
     data() {return{
         addComment: ""
@@ -63,22 +73,27 @@ export default {
         sendComment(){
             var vm = this
             vm.item.comments.push({
-                name: "DemoClientAccount",
-                type: "client",
+                name: vm.user.name,
+                type: vm.user.type,
                 message: vm.addComment
             })
             vm.addComment = ""
+            backend.sendComment(vm.item.id, vm.item.comments)
         }
     }
 }
 </script>
 
 <style lang="scss">
+#item {
+    width: 80vw;
+}
 #itemTable {
-    font-size: 30px;
+    font-size: 26px;
     color:grey;
     td {
         padding-right: 20px;
+        padding: 5px;
     }
 }
 #modelView {
@@ -116,6 +131,9 @@ export default {
         padding-top: 5px;
     }
 }
+#maybeFix {
+    float: left;
+}
 h2 {
     font-weight: normal;
     color: grey;
@@ -131,18 +149,28 @@ h2 {
     flex-direction: column;
     align-items: flex-start;
     > * {
-        margin-bottom: 10px;
+        margin-bottom: 20px;
     }
 }
 #addComment{
-    width: 50vw;
+    width: 40vw;
 }
+
+.v-input {
+    margin: 0px !important;
+    padding: 0px !important;
+}
+
 #addCommentRow{
     align-items: flex-end;
     .material-icons {
         color: grey;
         margin-left: 10px;
     }
+    margin-left: 5px;
 
+}
+#default-progress-bar {
+    display: none !important;
 }
 </style>
