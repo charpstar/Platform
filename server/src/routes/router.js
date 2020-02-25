@@ -1,5 +1,5 @@
 import express from 'express';
-import { listNames, getId } from '../controllers/testController';
+import { login, createuser, logout } from '../controllers/userController';
 
 const router = express.Router();
 
@@ -7,8 +7,10 @@ router.get('/', (req, res) => {
   res.send('Application running');
 });
 
-router.get('/names', listNames);
+router.post('/login', login);
 
-router.post('/id', getId);
+router.post('/admin/createuser', createuser);
+
+router.get('/logout', logout);
 
 export default router;
