@@ -22,7 +22,7 @@
                         <td>iOS link</td><td><v-btn>Copy</v-btn></td>
                     </tr>
                     <tr v-if="user.type != 'client'">
-                        <td><itemupload /></td>
+                        <td><itemupload :id="item.id" @upload="uploaded"/></td>
                     </tr>
                 </table>
                 <h2 id="commentsLabel">Comments</h2>
@@ -70,6 +70,10 @@ export default {
         addComment: ""
     }},
     methods: {
+        uploaded(values) {
+            this.item.modelLink = values[0]
+            this.item.icon = values[2]
+        },
         sendComment(){
             var vm = this
             vm.item.comments.push({

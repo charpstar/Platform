@@ -4,7 +4,7 @@
         <h1>Welcome!</h1>
         
         <v-text-field label="email" v-model="email"/>
-        <v-text-field label="password" v-model="password"/>
+        <v-text-field label="password" v-model="password" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" :type="showPassword ? 'text' : 'password'" @click:append="showPassword = !showPassword"/>
         <v-btn @click="login">Login</v-btn>
     </div>
 </div>
@@ -17,7 +17,8 @@ import backend from ".././backend"
 export default {
     data() {return {
         email: "",
-        password: ""
+        password: "",
+        showPassword: false
     }},
     name: 'login',
     methods: {

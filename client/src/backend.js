@@ -43,5 +43,33 @@ export default {
                 resolve(data.val())
             })
         })
+    },
+
+    uploadModels(id, android, ios, thumbnail) {
+        var androidTask = new Promise((resolve) => {
+            firebase.storage().ref('models/android/' + id + '.glb').putString(android, 'data_url')
+            .then(snapshot => snapshot.ref.getDownloadURL()).then((androidurl) => {
+                database.ref("items/1/" + id + "/modelLink").set(androidurl).then(
+                    resolve(androidurl)
+                )
+            })
+        })
+        var iosTask = new Promise((resolve) => {
+            firebase.storage().ref('models/ios/' + id + '.usdz').putString(ios, 'data_url')
+            .then(snapshot => snapshot.ref.getDownloadURL()).then((iosurl) => {
+                database.ref("items/1/" + id + "/iosLink").set(iosurl).then(
+                    resolve(iosurl)
+                )
+            })
+        })
+        var thumbTask = new Promise((resolve) => {
+            firebase.storage().ref('thumbnails/' + id + '.png').putString(thumbnail, 'data_url')
+            .then(snapshot => snapshot.ref.getDownloadURL()).then((thumburl) => {
+                database.ref("items/1/" + id + "/icon").set(thumburl).then(
+                    resolve(thumburl)
+                )
+            })
+        })
+        return Promise.all([androidTask, iosTask, thumbTask])
     }
 }

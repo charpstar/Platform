@@ -4,6 +4,7 @@ import vuetify from './plugins/vuetify';
 
 import firebase from "firebase/app"
 import 'firebase/database';
+import 'firebase/storage'
 
 var config = {
   apiKey: "AIzaSyCsL0073emSNV-4drHv0Z9m7kD5htx7Xig",
