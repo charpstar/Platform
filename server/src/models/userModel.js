@@ -18,8 +18,22 @@ const knexPool = knex({
   pool: { min: 0, max: 10 },
 });
 
-export async function getNames() {
-  return knexPool.select('name').from('test');
+export async function checkEmail(email) {
+  return knexPool('users').where('email', email);
+}
+
+export async function createUser(userdata) {
+  return knexPool('users').insert({
+    usertype: userdata.usertype,
+    name: userdata.name,
+    email: userdata.email,
+    hash: userdata.hash,
+    active: userdata.active,
+  });
+}
+
+export async function getUser(id) {
+  return knexPool('users').where('userid', id);
 }
 
 export async function getNameUsingId(id) {
