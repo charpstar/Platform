@@ -1,7 +1,7 @@
 <template>
   <div>
     
-    <div class="row">
+    <div class="flexrow">
       <model-viewer
         :src="value.model"
         interaction-prompt="none"
@@ -11,25 +11,24 @@
         @model-visibility="onModelLoad"
       ></model-viewer>
     </div>
-    <v-file-input chips :label="value.label" @change="onFileChange"></v-file-input>
+    <fileInput :label="value.label" @file="onFileChange"/>
   </div>
 </template>
 
 <script>
+import fileInput from './FileInput'
 export default {
   props: {
     value: { type: Object, required: true }
+  },
+  components: {
+    fileInput
   },
   methods: {
     onFileChange(file) {
       var vm = this;
       if (file) {
-        vm.value.metadata = { contentType: file.type };
-        var reader = new FileReader();
-        reader.onload = e => {
-          vm.value.model = e.target.result;
-        };
-        reader.readAsDataURL(file);
+        vm.value.model = file
       } else {
         vm.value.model = "";
         vm.value.image = "";

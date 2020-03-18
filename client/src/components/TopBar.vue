@@ -1,7 +1,6 @@
 <template>
   <div id="header">
     <div class="row">
-      <img src="charpstar.png" id="logo" />
       <p>3D asset management system</p>
     </div>
     <div v-if="loggedIn">
@@ -46,7 +45,7 @@ export default {
 </script>
 
 
-<style lang="scss">
+<style lang="scss" scoped>
 #header {
   display: flex;
   flex-direction: row;
@@ -57,24 +56,20 @@ export default {
     flex-grow: 0;
   }
   p {
-    font-size: 32px;
+    font-size: 24px;
     padding: 0;
-    margin: 0;
-    margin-top: auto;
-    margin-bottom: auto;
+    margin-left: 10px;
     color: grey;
   }
-}
-
-#logo {
-  max-width: 70px;
+  > * {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
 }
 
 #acountIcon {
   color: grey;
-  font-size: 60px;
+  font-size: 24px;
 }
-#menuButton {
-  height: 70px;
-}
+
 </style>

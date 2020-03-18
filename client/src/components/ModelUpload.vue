@@ -8,8 +8,8 @@
       <v-card>
         <v-card-title class="headline grey lighten-2" primary-title>Upload Model</v-card-title>
         <div id="fileInput">
-          <fileupload v-model="android"/>
-          <fileupload v-model="ios"/>
+          <fileinputmodel v-model="android"/>
+          <fileinputmodel v-model="ios"/>
           <v-btn @click="upload" :loading="loading">Upload</v-btn>
         </div>
         <v-divider></v-divider>
@@ -24,28 +24,26 @@
 </template>
 
 <script>
-import fileupload from "./FileUpload";
+import fileinputmodel from "./FileInputModel";
 import backend from "../backend"
 
 
 export default {
   components: {
-    fileupload
+    fileinputmodel
   },
-  props: {id: {type: Number, required: true}},
+  props: {model: {type: Object, required: true}},
   data() {
     return {
       dialog: false,
       loading: false,
       android: {
         model: "",
-        metadata: "",
         image: "",
         label: "Select Android Model"
       },
       ios: {
         model: "",
-        metadata: "",
         image: "",
         label: "Select IOS Model"
       }
@@ -55,7 +53,7 @@ export default {
     upload() {
       var vm = this
       vm.loading = true
-      backend.uploadModels(vm.id, vm.android.model, vm.ios.model, vm.android.image).then(values => {
+      backend.uploadModels(vm.model, vm.android.model, vm.ios.model, vm.android.image).then(values => {
         vm.loading = false
         vm.dialog = false
         vm.android.model = ""
@@ -64,7 +62,6 @@ export default {
       })
     }
   },
-  name: "itemupload"
 };
 </script>
 

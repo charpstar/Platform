@@ -1,36 +1,62 @@
 <template>
   <div id="app" data-app>
-    <header2 :user="user" :loggedIn="view != 'login'" v-on:logout="view = 'login'"/>
+    <topBar :user="user" :loggedIn="view != 'login'" @logout="view = 'login'"/>
     <div id="center">
-      <v-card id="card">
+      <v-card class="card">
         <transitionExpandHeight>
-          <login v-if="view == 'login'" v-on:login="login"/>
+          <loginView v-if="view == 'login'" v-on:login="login"/>
         </transitionExpandHeight>
 
         <transitionExpandHeight>
-          <itemsView v-if="view == 'items'" :items="items" v-on:viewI="viewItem" :selectClient="user.type != 'client'" v-on:backToClients="view = 'clients'"/>
+          <orderListView 
+          v-if="view == 'orderList'" 
+          :orders="orders" 
+          :user="user" 
+          @back="view = 'overview'"
+          @select="order = $event; view = 'order'"/>
         </transitionExpandHeight>
 
         <transitionExpandHeight>
-          <clientView v-if="view == 'clients'" :clients="clients" v-on:clientSelect="getItems" />
+          <orderView 
+          v-if="view == 'order'" 
+          :order="order" 
+          :user="user" 
+          @back="view = 'orderList'"
+          @view-models="view = 'modelList'"/>
         </transitionExpandHeight>
 
         <transitionExpandHeight>
-          <itemView v-if="view == 'item'" :item="item" v-on:close="view = 'items'" :user="user"/>
+          <modelListView 
+          v-if="view == 'modelList'"
+          :order="order" 
+          :user="user"
+          @back="view = 'order'"
+          @select="model = $event; view = 'model'"/>
         </transitionExpandHeight>
+
+        <transitionExpandHeight>
+          <modelView 
+          v-if="view == 'model'"
+          :order="order" 
+          :user="user"
+          :model="model"
+          @back="view = 'modelList'"/>
+        </transitionExpandHeight>
+
       </v-card>
     </div>
   </div>
 </template>
 
 <script>
-import header2 from "./components/Header";
-import login from "./components/Login";
-import itemsView from "./components/Items";
-import itemView from './components/Item'
-import clientView from "./components/ClientView"
-
 import transitionExpandHeight from "./components/TransitionExpandHeight"
+import topBar from "./components/TopBar";
+import loginView from "./components/LoginView";
+import orderListView from "./components/OrderListView"
+import orderView from './components/OrderView'
+import modelListView from './components/ModelListView'
+import modelView from './components/ModelView'
+
 
 import backend from "./backend"
 
@@ -38,12 +64,13 @@ export default {
   name: "App",
 
   components: {
-    header2,
-    login,
-    itemsView,
-    itemView,
     transitionExpandHeight,
-    clientView
+    topBar,
+    loginView,
+    orderListView,
+    orderView,
+    modelListView,
+    modelView
   },
 
   data: () => ({
@@ -52,24 +79,19 @@ export default {
       name: "",
       type: ""
     },
-    item: false,
-    items: [],
-    clients: []
+    orders: [],
+    order: {},
+    models: [],
+    model: {}
   }),
   methods: {
-    login(data) {
+    login(user) {
       var vm = this
-      vm.item = false
-      vm.user.name = data.name
-      vm.user.type = data.type
-      if(data.type == "client") {
-        vm.getItems({id: 1})
-      } else {
-        backend.getClients().then((clients) => {
-          vm.clients = clients
-          vm.view = "clients"
-        })
-      }
+      vm.user = user
+      backend.getOrders(user.id).then(orders => {
+        vm.orders = orders
+        vm.view = "orderList"
+      })
     },
     getItems(obj){
       var vm = this
@@ -77,11 +99,6 @@ export default {
         vm.items = items
         vm.view = "items"
       })
-    },
-    viewItem(i) {
-      var vm = this
-      vm.item = i
-      vm.view = "item"
     },
   },
   mounted() {
@@ -99,10 +116,22 @@ body {
   font-family: "Roboto";
 }
 
+.view{
+  width: 80vw;
+}
+
 p,
 a,
 h1 {
   color: grey;
+}
+
+h2 {
+    font-weight: normal;
+    color: grey;
+    margin: 0;
+    padding: 0;
+    font-size: 30px;
 }
 
 #app {
@@ -120,23 +149,31 @@ h1 {
   align-items: center;
 }
 
-#card {
+.card {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  padding: 40px;
+  padding: 20px;
+  background-color: white;
 }
 
-.row {
+.flexrow {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
 }
 
-.col {
+.flexcol {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0;
+}
+
+.v-data-footer {
+    display: none !important;
+}
+
+th {
+    text-align: start;
 }
 </style>
