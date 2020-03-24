@@ -28,7 +28,7 @@ import backend from "../backend";
 export default {
     props: {
         comments: { type: Array, required: true },
-        user: { type: Object, required: true }
+        account: { type: Object, required: true }
     },
     data() {
         return {
@@ -39,8 +39,8 @@ export default {
         sendComment() {
             var vm = this;
             var comment = {
-                name: vm.user.name,
-                type: vm.user.type,
+                name: vm.account.name,
+                type: vm.account.type,
                 message: vm.addComment,
                 id: backend.randomid(32)
             };

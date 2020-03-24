@@ -13,10 +13,10 @@
             </v-btn>
             <h2>Models</h2>
         </div>
-        <v-btn id="buttonNew" @click="dialog = true">New Model<v-icon right>mdi-file-plus</v-icon></v-btn>
+        <v-btn id="buttonNew" @click="dialog = true" v-if="!emptyObj(order)">New Model<v-icon right>mdi-file-plus</v-icon></v-btn>
     </div>
     <div id="itemsView">
-        <v-data-table id="table" :headers="headers" :items="order.models" :items-per-page="-1" @click:row="handleClick">
+        <v-data-table id="table" :headers="headers" :items="Object.values(models)" :items-per-page="-1" @click:row="handleClick">
             <template v-slot:item.thumbnail="{value}">
             <img :src="value" class="thumbnail" />
             </template>
@@ -32,8 +32,8 @@
 import backend from '../backend'
 export default {
   props: {
-    order: {required: true, type: Object},
-    user: { required: true, type: Object}
+    order: {type: Object},
+    models: {required: true, typ: Object}
   },
   data() {
     return {
@@ -55,13 +55,16 @@ export default {
       newModel() {
           var vm = this
           vm.loading = true;
-          backend.addNewModel(vm.order, vm.name).then(model => {
+          backend.newModel(vm.order.orderid, vm.order.clientid, vm.name).then(model => {
               vm.loading = false,
               vm.dialog = false,
               vm.name = ''
-              vm.order.models.push(model)
+              vm.models[model.modelid] = model
           })
-      }
+      },
+      emptyObj(obj) {
+          return Object.keys(obj).length === 0
+      },
   }
 };
 </script>

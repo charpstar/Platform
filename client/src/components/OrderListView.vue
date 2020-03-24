@@ -8,18 +8,18 @@
         </v-dialog>
         <div class="flexrow" id="topRow" >
             <div class="flexrow">
-                <v-btn icon class="hidden-xs-only" v-if="user.type != 'client' && false /*Disabled for now*/"> 
+                <v-btn icon class="hidden-xs-only" v-if="account.type != 'client' "> 
                     <v-icon @click="$emit('back')">mdi-arrow-left</v-icon>
                 </v-btn>
                 <h2>Orders</h2>
             </div>
-            <v-btn id="buttonNew" @click="dialog = true">New Order<v-icon right>mdi-file-plus</v-icon></v-btn>
+            <v-btn id="buttonNew" @click="dialog = true" v-if="!emptyObj(user)">New Order<v-icon right>mdi-file-plus</v-icon></v-btn>
         </div>
         <div id="itemsView">
             <v-data-table
                 id="table"
                 :headers="headers"
-                :items="orders"
+                :items="Object.values(orders)"
                 :items-per-page="-1"
                 @click:row="handleClick"
             >
@@ -37,8 +37,9 @@ export default {
         fileinput
     },
     props: {
-        orders: { required: true, type: Array },
-        user: { required: true, type: Object }
+        orders: { required: true, type: Object },
+        user: { required: true, type: Object },
+        account: { required: true, type: Object },
     },
     data() {
         return {
@@ -46,11 +47,12 @@ export default {
                 { text: "Date", value: "time", align: "left" },
                 { text: "Models", value: "amount", align: "left"},
                 { text: "Status", value: "status", align: "left" },
-                { text: "Client", value: "clientname", align: "left" }
+                { text: "Client", value: "clientname", align: "left" },
+                { text: "Assigned QA", value: "assignedqa.name", align: "left" },
             ],
             dialog: false,
             loading: false,
-            file: false
+            file: false,
         };
     },
     methods: {
@@ -64,14 +66,17 @@ export default {
             var vm = this
             if(vm.file) {
                 vm.loading = true
-                backend.newOrder(vm.user.id, vm.file).then(val => {
+                backend.newOrder(vm.user, vm.file).then(order => {
                     vm.loading = false
                     vm.dialog = false
-                    vm.orders.push(val)
+                    vm.orders[order.orderid] = order
                 })
             }
-        }
-    }
+        },
+            emptyObj(obj) {
+        return Object.keys(obj).length === 0
+    },
+    },
 };
 </script>
 

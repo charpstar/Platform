@@ -1,6 +1,6 @@
 <template>
   <div id="app" data-app>
-    <topBar :user="user" :loggedIn="view != 'login'" @logout="view = 'login'"/>
+    <topBar :account="account" :loggedIn="view != 'login'" @logout="view = 'login'"/>
     <div id="center">
       <v-card class="card">
         <transitionExpandHeight>
@@ -8,11 +8,37 @@
         </transitionExpandHeight>
 
         <transitionExpandHeight>
+          <adminView 
+          v-if="view == 'adminView'"
+          @users="users = $event; view = 'userList'"
+          @orders="user = {}; orders = $event; view='orderList'"
+          @models="order = {}; models = $event; view='modelList'"/>
+        </transitionExpandHeight>
+
+        <transitionExpandHeight>
+          <userListView
+          v-if="view == 'userList'" 
+          :users="users"
+          @back="view = 'adminView'"
+          @select="user = $event; view = 'user'"/>
+        </transitionExpandHeight>
+
+        <transitionExpandHeight>
+          <userView 
+          v-if="view == 'user'" 
+          :user="user" 
+          @back="view = 'userList'"
+          @delete="deletedUser"
+          @orders="orders = $event; view = 'orderList'"/>
+        </transitionExpandHeight>
+
+        <transitionExpandHeight>
           <orderListView 
           v-if="view == 'orderList'" 
           :orders="orders" 
-          :user="user" 
-          @back="view = 'overview'"
+          :account="account"
+          :user="user"
+          @back="orderListBack"
           @select="order = $event; view = 'order'"/>
         </transitionExpandHeight>
 
@@ -20,17 +46,17 @@
           <orderView 
           v-if="view == 'order'" 
           :order="order" 
-          :user="user" 
+          :account="account" 
           @back="view = 'orderList'"
-          @view-models="view = 'modelList'"/>
+          @view-models="getModels"/>
         </transitionExpandHeight>
 
         <transitionExpandHeight>
           <modelListView 
           v-if="view == 'modelList'"
           :order="order" 
-          :user="user"
-          @back="view = 'order'"
+          :models="models"
+          @back="modelListBack"
           @select="model = $event; view = 'model'"/>
         </transitionExpandHeight>
 
@@ -38,7 +64,7 @@
           <modelView 
           v-if="view == 'model'"
           :order="order" 
-          :user="user"
+          :account="account"
           :model="model"
           @back="view = 'modelList'"/>
         </transitionExpandHeight>
@@ -50,13 +76,15 @@
 
 <script>
 import transitionExpandHeight from "./components/TransitionExpandHeight"
-import topBar from "./components/TopBar";
-import loginView from "./components/LoginView";
+import topBar from "./components/TopBar"
+import loginView from "./components/LoginView"
+import adminView from "./components/AdminView"
 import orderListView from "./components/OrderListView"
 import orderView from './components/OrderView'
 import modelListView from './components/ModelListView'
 import modelView from './components/ModelView'
-
+import userListView from './components/UserListView'
+import userView from './components/UserView'
 
 import backend from "./backend"
 
@@ -67,38 +95,68 @@ export default {
     transitionExpandHeight,
     topBar,
     loginView,
+    adminView,
     orderListView,
     orderView,
     modelListView,
-    modelView
+    modelView,
+    userListView,
+    userView
   },
 
   data: () => ({
     view: "login",
-    user: {
-      name: "",
-      type: ""
-    },
-    orders: [],
+    users: {},
+    user: {},
+    orders: {},
     order: {},
-    models: [],
-    model: {}
+    models: {},
+    model: {},
+    account: {}
   }),
   methods: {
     login(user) {
       var vm = this
-      vm.user = user
-      backend.getOrders(user.id).then(orders => {
-        vm.orders = orders
-        vm.view = "orderList"
+      vm.account = user
+      if(user.type == 'client') {
+        backend.getOrders(user.id).then(orders => {
+          vm.user = user
+          vm.orders = orders
+          vm.view = "orderList"
+        })
+        
+      } else {
+        vm.view = 'adminView'
+      }
+
+    },
+    deletedUser(userid) {
+      var vm = this
+      vm.$delete(vm.users, userid)
+      vm.view = 'userList'
+    },
+    getModels() {
+      var vm = this
+      backend.getModels(vm.order.orderid).then(models => {
+        vm.models = models
+        vm.view = 'modelList'
       })
     },
-    getItems(obj){
+    orderListBack() {
       var vm = this
-      backend.getItems(obj.id).then((items) => {
-        vm.items = items
-        vm.view = "items"
-      })
+      if(!backend.emptyObj(vm.user)) {
+        vm.view = 'user'
+      } else {
+        vm.view = 'adminView'
+      }
+    },
+    modelListBack() {
+      var vm = this
+      if(!backend.emptyObj(vm.order)) {
+        vm.view = 'order'
+      } else {
+        vm.view = 'adminView'
+      }
     },
   },
   mounted() {
@@ -175,5 +233,13 @@ h2 {
 
 th {
     text-align: start;
+}
+
+.v-btn {
+  background-color: #2196F3 !important;
+}
+
+.v-btn--icon {
+  background-color: white !important;
 }
 </style>

@@ -3,7 +3,6 @@
         <div class="flexrow">
             <img src="charpstar.png" id="logo" />
         </div>
-
         <v-text-field label="email" v-model="email" />
         <v-text-field
             label="password"
@@ -13,7 +12,8 @@
             @click:append="showPassword = !showPassword"
             @keydown="buttonPress"
         />
-        <v-btn @click="login" :loading="loading">Login</v-btn>
+        <v-btn @click="login" :loading="loading" >Login</v-btn>
+
     </div>
 </template>
 

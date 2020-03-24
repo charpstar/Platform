@@ -1,5 +1,18 @@
 <template>
     <div id="item">
+        <v-dialog v-model="assignDialog">
+            <div class="card">
+                <v-select :items="modelers" label="Modeler" v-model="modeler">
+                    <template v-slot:item="{item}">
+                    <span>{{item.name}}</span>
+                    </template>
+                    <template v-slot:selection="{item}">
+                    <span>{{item.name}}</span>
+                    </template>
+                </v-select>
+                <v-btn :loading="loading" @click="assignModeler">Assign</v-btn>
+            </div>
+        </v-dialog>
         <div class="row" id="topRow">
             <v-btn icon class="hidden-xs-only">
               <v-icon @click="$emit('back')">mdi-arrow-left</v-icon>
@@ -21,12 +34,18 @@
                     <tr v-if="model.status == 'Complete'">
                         <td>iOS link</td><td><v-btn>Copy</v-btn></td>
                     </tr>
-                    <tr v-if="user.type != 'client'">
+                    <tr v-if="account.type != 'client'">
+                        <td>Assigned modeler</td><td v-if="model.assignedmodeler">{{model.assignedmodeler.name}}</td>
+                    </tr>
+                    <tr v-if="account.type != 'client' && account.type != 'modeler'" >
+                        <td><v-btn @click="assignDialog = true">Assign Modeler</v-btn></td>
+                    </tr>
+                    <tr v-if="account.type != 'client'">
                         <td><modelupload :model="model" @upload="uploaded"/></td>
                     </tr>
                 </table>
                 <h2 id="commentsLabel">Comments</h2>
-                <comments :user="user" :comments="model.comments" @comment="sendComment" />
+                <comments :account="account" :comments="model.comments" @comment="sendComment" />
 
             </div>
         </div>
@@ -41,14 +60,18 @@ export default {
     props: {
         order: {type: Object, required: true},
         model: {type: Object, required: true},
-        user: {type: Object, required: true}
+        account: {type: Object, required: true}
     },
     components: {
         modelupload,
         comments
     },
     data() {return{
-        addComment: ""
+        addComment: "",
+        assignDialog : false,
+        modelers : [],
+        modeler: false,
+        loading: false
     }},
     methods: {
         uploaded(values) {
@@ -58,7 +81,22 @@ export default {
         sendComment() {
             var vm = this;
             backend.updateModelComments(vm.model);
+        },
+        assignModeler() {
+            var vm = this
+            vm.loading = true
+            backend.assignModeler(vm.model.modelid, vm.modeler).then(data => {
+                vm.loading = false
+                vm.assignDialog = false
+                vm.model.assignedmodeler = data
+            })
         }
+    },
+    mounted() {
+        var vm = this
+        backend.getModelers().then(modelers => {
+            vm.modelers = Object.values(modelers)
+        })
     }
 }
 </script>

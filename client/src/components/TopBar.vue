@@ -6,7 +6,7 @@
     <div v-if="loggedIn">
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
-          <v-btn text id="menuButton" v-on="on"><p>{{user.name}}</p><i class="material-icons" id="acountIcon">account_circle</i></v-btn>
+          <v-btn text id="menuButton" v-on="on"><p>{{account.name}}</p><i class="material-icons" id="acountIcon">account_circle</i></v-btn>
         </template>
         <v-list>
           <v-list-item v-for="(item, index) in items" :key="index" @click="item.click">
@@ -22,11 +22,11 @@
 export default {
   name: "header2",
   props: {
-    user: { type: Object, required: true },
-    loggedIn: { type: Boolean, required: true}
+    loggedIn: { type: Boolean, required: true},
+    account: { type: Object, required: true},
   },
   data: () => ({
-    items: []
+    items: [],
   }),
   methods: {
     logout() {
@@ -46,6 +46,9 @@ export default {
 
 
 <style lang="scss" scoped>
+#menuButton {
+  background-color: white !important;
+}
 #header {
   display: flex;
   flex-direction: row;
