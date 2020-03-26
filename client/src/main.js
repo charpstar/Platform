@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import vuetify from './plugins/vuetify';
+import VueClipboard from 'vue-clipboard2'
 
 import firebase from "firebase/app"
 import 'firebase/database';
@@ -19,7 +20,8 @@ var config = {
 firebase.initializeApp(config)
 
 Vue.config.productionTip = false
-
+VueClipboard.config.autoSetContainer = true
+Vue.use(VueClipboard)
 new Vue({
   vuetify,
   render: h => h(App)

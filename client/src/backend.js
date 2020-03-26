@@ -295,5 +295,11 @@ export default {
                 res()
             })
         })
+    },
+
+    resetPassword() {
+        return new Promise(res => {
+            res(this.randomid(10))
+        })
     }
 }

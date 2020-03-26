@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="row" id="addCommentRow">
+        <div class="flexrow" id="addCommentRow">
             <v-textarea
                 id="addComment"
                 v-model="addComment"
@@ -9,17 +9,32 @@
                 :full-width="true"
                 :hide-details="true"
             ></v-textarea>
-            <v-icon v-on:click="sendComment">send</v-icon>
+            <div class="flexcol" id="sendButtons">
+                <v-btn v-if="review" block @click="() => sendComment(1)" class="approve">Approve<v-icon right>mdi-check</v-icon></v-btn>
+                <v-btn v-if="review" block @click="() => sendComment(2)" class="reject">Reject<v-icon right class="rejectIcon">mdi-refresh</v-icon></v-btn>
+                <v-btn block @click="() => sendComment(0)">Send<v-icon right>mdi-send</v-icon></v-btn>
+            </div>
+            
         </div>
+        <div id="comments">
         <table>
             <tr class="comment" v-for="comment in comments" :key="comment.id">
                 <td>
                     <i :class="'material-icons accountType ' + comment.type">account_circle</i>
                 </td>
-                <td>{{comment.name}}:</td>
+                <td>
+                    <v-icon v-if="comment.commenttype==1" class="approve">mdi-check</v-icon>
+                    <v-icon v-if="comment.commenttype==2" class="reject rejectIcon">mdi-refresh</v-icon>
+                </td>
+                <td class="name">{{comment.name}}:</td>
                 <td>{{comment.message}}</td>
             </tr>
         </table>
+        </div>
+        <v-snackbar v-model="snackbar" :timeout="3000">
+            No empty comment
+        </v-snackbar>
+
     </div>
 </template>
 
@@ -28,25 +43,34 @@ import backend from "../backend";
 export default {
     props: {
         comments: { type: Array, required: true },
-        account: { type: Object, required: true }
+        account: { type: Object, required: true },
+        review: {type: Boolean, default: false}
     },
     data() {
         return {
-            addComment: ""
+            addComment: "",
+            snackbar : false
         };
     },
     methods: {
-        sendComment() {
+        sendComment(type) {
+            
             var vm = this;
-            var comment = {
-                name: vm.account.name,
-                type: vm.account.type,
-                message: vm.addComment,
-                id: backend.randomid(32)
-            };
-            vm.comments.push(comment);
-            vm.addComment = "";
-            vm.$emit("comment", comment);
+            if(vm.addComment === "") {
+                vm.snackbar = true
+            } else {
+                var comment = {
+                    name: vm.account.name,
+                    type: vm.account.type,
+                    message: vm.addComment,
+                    id: backend.randomid(32),
+                    commenttype: type
+                };
+                vm.comments.push(comment);
+                vm.addComment = "";
+                vm.$emit("comment", comment);
+            }
+
         }
     }
 };
@@ -67,6 +91,10 @@ export default {
     .material-icons {
         padding-top: 5px;
     }
+    .name {
+        color:grey;
+        padding-right: 5px;
+    }
 }
 
 .column {
@@ -83,6 +111,11 @@ export default {
     padding: 0px !important;
 }
 
+#comments {
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
 #addCommentRow {
     width: 40vw;
     align-items: flex-end;
@@ -91,5 +124,37 @@ export default {
         margin-left: 10px;
     }
     margin-left: 5px;
+}
+
+#sendButtons {
+    justify-content: flex-end;
+    align-items: flex-start;
+    .v-btn {
+        margin-top: 10px;
+        display: block;
+        margin-left: 10px;
+    }
+}
+
+.approve {
+    &.v-btn {
+        background-color: green !important;
+    }
+    &.v-icon {
+        color: green !important;
+    }
+}
+
+.reject {
+    &.v-btn {
+        background-color: #e08300 !important;
+    }
+    &.v-icon {
+        color: #e08300 !important;
+    }
+}
+
+.rejectIcon {
+    transform: scale(-1, 1);
 }
 </style>
