@@ -8,7 +8,14 @@ import pg from 'pg';
 import connectPgSimple from 'connect-pg-simple';
 import port from './config/config';
 import router from './routes/router';
-import { adminAuth, clientAuth } from './middleware/auth';
+import {
+  adminAuth,
+  qaAuth,
+  modellerAuth,
+  clientAuth,
+  genericAuth,
+} from './middleware/auth';
+import { initUserCreationService } from './services/userService.js';
 
 const envFetch = dotenv.config();
 
@@ -24,6 +31,7 @@ app.use(express.urlencoded({
 app.use(morgan('combined'));
 app.use(helmet());
 app.use(cors());
+app.use(express.static('./public/'));
 
 const pgSession = connectPgSimple(session);
 const pgPool = new pg.Pool({
@@ -44,15 +52,42 @@ app.use(session({
   cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 },
 }));
 
-app.use('/admin', adminAuth);
-app.use('/client', clientAuth);
+// If no user exists, create root user
+initUserCreationService();
 
-app.use('/', router);
-app.use('/names', router);
-app.post('/id', router);
-app.post('/login', router);
-app.post('/admin/createUser', router);
+// Basic authentication paths
+app.use('/gen', genericAuth); // Signed into any account
+app.use('/admin', adminAuth); // Signed into Admin account
+app.use('/qa', qaAuth); // Signed into QA or Admin account
+app.use('/modellerAuth', modellerAuth); // Signed into Modeler, Admin, or QA account
+app.use('/client', clientAuth); // Signed into client account
+
+// General routes
+app.get('/', router);
 app.get('/logout', router);
+app.post('/login', router);
+
+// Generic routes
+app.post('/gen/comment', router);
+
+// Admin routes
+app.get('/admin/getusers', router);
+app.post('/admin/createUser', router);
+app.post('/admin/edituser');
+app.post('/admin/deleteuser', router);
+
+// QA routes
+app.get('/qa/getorders', router);
+app.get('/qa/getmodelers', router);
+app.post('/qa/getmodels', router);
+app.post('/qa/claimorder', router);
+app.post('/qa/assignmodeler', router);
+app.post('/uploadModel', router);
+
+// Modeler routes
+
+// Client routes
+app.post('/client/createorder', router);
 
 export default app.listen(port, () => {
   // eslint-disable-next-line no-console

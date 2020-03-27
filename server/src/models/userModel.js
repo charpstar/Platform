@@ -46,3 +46,58 @@ export async function getNameUsingId(id) {
     return e;
   }
 }
+
+export async function getUserAmount() {
+  return knexPool.from('users').count('active');
+}
+
+export async function getUsers() {
+  return knexPool.from('users').select('userid', 'name', 'email', 'usertype', 'active');
+}
+
+export async function editUser(edit) {
+  try {
+    const [tempRes] = await knexPool.from('users').where('userid', edit.userid);
+    if (typeof tempRes === 'undefined' || tempRes === null) {
+      return { error: 'No such user' };
+    }
+
+    if (typeof edit.name !== 'undefined') {
+      tempRes.name = edit.name;
+    }
+
+    if (typeof edit.email !== 'undefined') {
+      tempRes.email = edit.email;
+    }
+
+    if (typeof edit.hash !== 'undefined') {
+      tempRes.hash = edit.hash;
+    }
+
+    if (typeof edit.usertype !== 'undefined') {
+      tempRes.usertype = edit.usertype;
+    }
+
+    if (typeof edit.active !== 'undefined') {
+      tempRes.active = edit.active;
+    }
+
+    const updateResult = knexPool('users').where('userid', tempRes.userid).update(tempRes);
+
+    return updateResult;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return e;
+  }
+}
+
+export async function deleteUser(user) {
+  try {
+    return knexPool('users').where('userid', user.userid).del();
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return 'something went wrong';
+  }
+}

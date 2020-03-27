@@ -1,5 +1,12 @@
 import bcrypt from 'bcrypt';
-import { checkEmail, createUser } from '../models/userModel';
+import {
+  getUsers,
+  getUserAmount,
+  checkEmail,
+  createUser,
+  editUser,
+  deleteUser,
+} from '../models/userModel';
 
 const saltRounds = 10;
 const pepper = '55';
@@ -58,4 +65,63 @@ export async function logoutService(session) {
 
   session.destroy();
   return { status: 'Logged out successully' };
+}
+
+export async function initUserCreationService() {
+  const users = await getUserAmount();
+
+  if (users[0].count > 0) {
+    return 'No need to create root user';
+  }
+
+  const rootUser = {
+    name: 'root',
+    email: 'root@charpstar.com',
+    usertype: 'Admin',
+    hash: '',
+    active: 'true',
+  };
+
+  const rootPw = 'root';
+
+  rootUser.hash = await bcrypt.hash(rootPw + pepper, saltRounds);
+
+  const insertResult = await createUser(rootUser);
+
+  // eslint-disable-next-line no-console
+  console.log('Root user created');
+
+  return insertResult;
+}
+
+export async function getUsersService() {
+  const users = await getUsers();
+
+  return users;
+}
+
+export async function editUserService(userModification) {
+  const userUpdate = userModification;
+
+  if (typeof userModification.password !== 'undefined') {
+    userUpdate.hash = await bcrypt.hash(userModification.password + pepper, saltRounds);
+  }
+
+  const result = await editUser(userUpdate);
+
+  if (result !== 1) {
+    return { error: 'something went wrong' };
+  }
+
+  return { status: 'Edit successfull' };
+}
+
+export async function deleteUserService(user) {
+  const result = await deleteUser(user);
+
+  if (result !== 1) {
+    return { error: 'something went wrong' };
+  }
+
+  return { status: 'deletion successful' };
 }
