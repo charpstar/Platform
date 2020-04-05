@@ -18,14 +18,9 @@ const knexPool = knex({
   pool: { min: 0, max: 10 },
 });
 
-export async function comment(data, userid) {
+export async function comment(data) {
   return knexPool('comments')
-    .insert({
-      commenttype: data.commenttype,
-      modelid: data.referenceid,
-      userid,
-      comment: data.comment,
-    })
+    .insert(data)
     .returning(['comment', 'userid', 'time'])
     .catch((error) => {
       // eslint-disable-next-line no-console
@@ -34,6 +29,10 @@ export async function comment(data, userid) {
     });
 }
 
-export async function temp() {
-  return { temp: 'temp' };
+export async function getComments(data) {
+  return knexPool('comments')
+    .where(data)
+    .innerJoin('users', 'comments.userid', 'users.userid')
+    .select('time', 'comment', 'usertype', 'name')
+    .orderBy('time');
 }

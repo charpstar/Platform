@@ -1,9 +1,11 @@
-import { comment } from '../models/genericModel';
+import { comment, getComments } from '../models/genericModel';
 
 export async function commentService(data, userid) {
-  return comment(data, userid);
+  const tempData = data;
+  tempData.userid = userid;
+  return comment(tempData);
 }
 
-export async function tempService() {
-  return { temp: 'temp' };
+export async function getCommentsService(data) {
+  return getComments(data);
 }

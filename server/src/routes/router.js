@@ -15,7 +15,7 @@ import {
   getmodels,
 } from '../controllers/modelController';
 import { createorder, getorders, claimorder } from '../controllers/orderController';
-import { comment } from '../controllers/genericController';
+import { comment, getComments } from '../controllers/genericController';
 
 const upload = multer({ dest: './private/' });
 
@@ -28,6 +28,7 @@ router.get('/', (req, res) => {
 
 // Generic/Multi-use
 router.post('/gen/comment', comment);
+router.post('/gen/getComments', getComments);
 
 // User related
 router.get('/logout', logout);

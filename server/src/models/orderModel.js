@@ -29,7 +29,6 @@ export async function createOrder(orderData) {
         .returning('orderid');
       modelNames.forEach((x, i) => {
         modelNames[i] = {
-          clientid: orderData.clientid,
           orderid: orderId,
           name: x,
         };
@@ -49,6 +48,13 @@ export async function createOrder(orderData) {
       });
       await trx('products')
         .insert(products);
+      await trx('orderstates')
+        .insert({
+          orderid: orderId,
+          userid: orderData.clientid,
+          statebefore: 'OrderInit',
+          stateafter: 'OrderReceived',
+        });
     });
     return { status: 'Order Made' };
   } catch (e) {
@@ -76,10 +82,26 @@ export async function getOrders() {
     .groupBy(['orders.orderid', 'users.name', 'users2.name', 'orders.qaowner', 'orders.clientid']);
 }
 
-export async function claimOrder(orderid, userid) {
-  return knexPool('orders')
-    .where('orderid', '=', orderid.id)
-    .update({
-      qaowner: userid,
+export async function claimOrder(orderId, userId) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      await trx('orders')
+        .where('orderid', orderId.id)
+        .update({
+          qaowner: userId,
+        });
+      await trx('orderstates')
+        .insert({
+          orderid: orderId.id,
+          userid: userId,
+          statebefore: 'OrderReceived',
+          stateafter: 'OrderReview',
+        });
     });
+    return { status: 'Claim successful' };
+  } catch (e) {
+    // eslint-disable-next-line
+    console.log(e);
+    return { status: 'Claim failed' };
+  }
 }

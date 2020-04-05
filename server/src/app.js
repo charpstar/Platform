@@ -62,18 +62,19 @@ app.use('/qa', qaAuth); // Signed into QA or Admin account
 app.use('/modellerAuth', modellerAuth); // Signed into Modeler, Admin, or QA account
 app.use('/client', clientAuth); // Signed into client account
 
-// General routes
+// General routes (no login required)
 app.get('/', router);
 app.get('/logout', router);
 app.post('/login', router);
 
-// Generic routes
+// Generic routes (requires being logged in)
 app.post('/gen/comment', router);
+app.post('/gen/getComments', router);
 
 // Admin routes
 app.get('/admin/getusers', router);
 app.post('/admin/createUser', router);
-app.post('/admin/edituser');
+app.post('/admin/edituser', router);
 app.post('/admin/deleteuser', router);
 
 // QA routes
@@ -84,7 +85,7 @@ app.post('/qa/claimorder', router);
 app.post('/qa/assignmodeler', router);
 app.post('/uploadModel', router);
 
-// Modeler routes
+// Modeller routes
 
 // Client routes
 app.post('/client/createorder', router);
