@@ -1,7 +1,8 @@
 import firebase from "firebase/app"
-
+import Axios from 'axios'
 var database = null
-
+Axios.defaults.withCredentials = true
+Axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded'
 function pad(n) {
     return n<10 ? '0'+n : n;
 }
@@ -49,7 +50,13 @@ export default {
         database = firebase.database()
     },
 
-    login(email) {
+    login(email, password) {
+        var email2 = 'root@charpstar.com'
+        password = 'root'
+        Axios.post('http://46.101.115.253:8081/login', {email:email2, password:password}).then((e) => {
+            //eslint-disable-next-line no-console
+            console.log(e)
+        })
         return new Promise((resolve, reject) => {
             databaseGet("users").then((users) => {
                 if (users == null) {
@@ -68,6 +75,10 @@ export default {
     },
 
     getUsers() {
+        Axios.get('http://46.101.115.253:8081/admin/getusers').then((e) => {
+            //eslint-disable-next-line no-console
+            console.log(e)
+        })
         return new Promise((resolve) => {
             databaseGet("users").then(data => {
                 resolve(data)

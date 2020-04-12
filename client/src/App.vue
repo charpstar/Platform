@@ -1,6 +1,6 @@
 <template>
   <div id="app" data-app>
-    <topBar :account="account" :loggedIn="view != 'login'" @logout="view = 'login'"/>
+    <topBar :account="account" :loggedIn="view != 'login'" @logout="view = 'login'" :notifications="notifications"/>
     <div id="center">
       <v-card class="card">
         <transitionExpandHeight>
@@ -112,7 +112,10 @@ export default {
     order: {},
     models: {},
     model: {},
-    account: {}
+    account: {},
+    notifications: {
+      1: {message: 'There are 2 new orders'}
+    }
   }),
   methods: {
     login(user) {
