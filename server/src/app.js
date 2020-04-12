@@ -31,7 +31,7 @@ app.use(express.urlencoded({
 app.use(morgan('combined'));
 app.use(helmet());
 app.use(cors({
-  origin:['http://localhost:8080'],
+  origin:['http://46.101.115.253:8080'],
   methods:['GET', 'POST'],
   credentials: true,
 }));
@@ -58,12 +58,6 @@ app.use(session({
 
 // If no user exists, create root user
 initUserCreationService();
-
-app.all('/', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With');
-  next();
-});
 
 // Basic authentication paths
 app.use('/gen', genericAuth); // Signed into any account
