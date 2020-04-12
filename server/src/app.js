@@ -30,7 +30,11 @@ app.use(express.urlencoded({
 }));
 app.use(morgan('combined'));
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin:['http://localhost:8080'],
+  methods:['GET', 'POST'],
+  credentials: true,
+}));
 app.use(express.static('./public/'));
 
 const pgSession = connectPgSimple(session);
@@ -59,7 +63,7 @@ initUserCreationService();
 app.use('/gen', genericAuth); // Signed into any account
 app.use('/admin', adminAuth); // Signed into Admin account
 app.use('/qa', qaAuth); // Signed into QA or Admin account
-app.use('/modellerAuth', modellerAuth); // Signed into Modeler, Admin, or QA account
+app.use('/modeller', modellerAuth); // Signed into Modeler, Admin, or QA account
 app.use('/client', clientAuth); // Signed into client account
 
 // General routes (no login required)
@@ -83,9 +87,9 @@ app.get('/qa/getmodelers', router);
 app.post('/qa/getmodels', router);
 app.post('/qa/claimorder', router);
 app.post('/qa/assignmodeler', router);
-app.post('/uploadModel', router);
 
 // Modeller routes
+app.post('/modeller/uploadModel', router);
 
 // Client routes
 app.post('/client/createorder', router);

@@ -45,7 +45,7 @@ router.post('/qa/claimorder', claimorder);
 
 // Model related
 router.get('/qa/getmodelers', getmodelers);
-router.post('/uploadmodel', uploadmodel);
+router.post('/modeller/uploadmodel', uploadmodel);
 router.post('/qa/assignmodeler', assignmodeler);
 router.post('/qa/getmodels', getmodels);
 export default router;
