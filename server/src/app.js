@@ -30,7 +30,7 @@ app.use(express.urlencoded({
 }));
 app.use(morgan('combined'));
 app.use(helmet());
-app.use(cors({
+app.options('*', cors({
   origin:['http://localhost:8080'],
   methods:['GET', 'POST'],
   credentials: true,
