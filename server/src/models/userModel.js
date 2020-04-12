@@ -29,7 +29,7 @@ export async function createUser(userdata) {
     email: userdata.email,
     hash: userdata.hash,
     active: userdata.active,
-  });
+  }).returning(['name', 'usertype', 'active', 'email']);
 }
 
 export async function getUser(id) {
@@ -82,7 +82,10 @@ export async function editUser(edit) {
       tempRes.active = edit.active;
     }
 
-    const updateResult = knexPool('users').where('userid', tempRes.userid).update(tempRes);
+    const updateResult = knexPool('users')
+      .where('userid', tempRes.userid)
+      .update(tempRes)
+      .returning(['userid', 'name', 'email', 'active', 'usertype']);
 
     return updateResult;
   } catch (e) {

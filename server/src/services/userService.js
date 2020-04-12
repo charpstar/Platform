@@ -12,30 +12,51 @@ const saltRounds = 10;
 const pepper = '55';
 
 export async function loginService(credentials) {
+  const responsObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   const userInfo = await checkEmail(credentials.email);
 
   if (typeof userInfo[0] === 'undefined') {
-    return { error: 'No account with this email' };
+    responsObject.error = 'No account with this email';
+    return responsObject;
   }
 
   if (!userInfo[0].active) {
-    return { error: 'Account is disabled' };
+    responsObject.error = 'Account is disabled';
+    return responsObject;
   }
 
   const correctPassword = await bcrypt.compare(credentials.password + pepper, userInfo[0].hash);
 
   if (!correctPassword) {
-    return { error: 'Incorrect password' };
+    responsObject.error = 'Incorrect password';
+    return responsObject;
   }
 
-  return userInfo[0];
+  [responsObject.data] = userInfo;
+  delete responsObject.data.hash;
+  delete responsObject.data.active;
+  responsObject.status = 'Login successful';
+
+  return responsObject;
 }
 
 export async function userCreationService(userData) {
+  const responsObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   const checkData = await checkEmail(userData.email);
 
   if (typeof checkData[0] !== 'undefined' && checkData[0] !== null) {
-    return { error: 'Email already registered' };
+    responsObject.error = 'Email already registered';
+    return responsObject;
   }
 
   const data = {
@@ -50,21 +71,33 @@ export async function userCreationService(userData) {
 
   const insertResult = await createUser(data);
 
-  if (!insertResult.rowCount) {
-    return 'Something went wrong';
+  if (typeof insertResult[0] === 'undefined') {
+    responsObject.error = 'Something went wrong';
+    return responsObject;
   }
 
-  return { status: 'User created' };
+  responsObject.status = 'User created';
+  [responsObject.data] = insertResult;
+
+  return responsObject;
 }
 
 export async function logoutService(session) {
+  const responsObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   if (typeof session.userid === 'undefined') {
     session.destroy();
-    return { error: 'Not logged in' };
+    responsObject.error = 'Not logged in';
+    return responsObject;
   }
 
   session.destroy();
-  return { status: 'Logged out successully' };
+  responsObject.status = 'Logged out successfully';
+  return responsObject;
 }
 
 export async function initUserCreationService() {
@@ -95,12 +128,30 @@ export async function initUserCreationService() {
 }
 
 export async function getUsersService() {
+  const responsObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   const users = await getUsers();
 
-  return users;
+  users.forEach((user) => {
+    responsObject.data[user.userid] = user;
+  });
+
+  responsObject.status = 'Users fetched';
+
+  return responsObject;
 }
 
 export async function editUserService(userModification) {
+  const responsObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   const userUpdate = userModification;
 
   if (typeof userModification.password !== 'undefined') {
@@ -109,19 +160,37 @@ export async function editUserService(userModification) {
 
   const result = await editUser(userUpdate);
 
-  if (result !== 1) {
-    return { error: 'something went wrong' };
+  if (typeof result.error !== 'undefined' && result.error !== null) {
+    responsObject.error = result.error;
+    return responsObject;
   }
 
-  return { status: 'Edit successfull' };
+  if (typeof result[0] === 'undefined') {
+    responsObject.error = 'something went wrong';
+    return responsObject;
+  }
+
+  responsObject.status = 'Edit successfull';
+  [responsObject.data] = result;
+
+  return responsObject;
 }
 
 export async function deleteUserService(user) {
+  const responsObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   const result = await deleteUser(user);
 
   if (result !== 1) {
-    return { error: 'something went wrong' };
+    responsObject.error = 'something went wrong';
+    return responsObject;
   }
 
-  return { status: 'deletion successful' };
+  responsObject.status = 'Deletion successul';
+
+  return responsObject;
 }

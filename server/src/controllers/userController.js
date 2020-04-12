@@ -75,13 +75,13 @@ export async function login(req, res) {
       return res.send(error);
     }
     return loginService(value).then((result) => {
-      if (typeof result.error === 'undefined') {
-        req.session.userid = result.userid;
-        req.session.usertype = result.usertype;
-        res.send('Signed in!');
-      } else {
-        res.send(result);
+      const temp = result;
+      if (result.error === '') {
+        req.session.userid = result.data.userid;
+        delete temp.data.userid;
+        req.session.usertype = result.data.usertype;
       }
+      res.send(temp);
     });
   } catch (e) {
     // eslint-disable-next-line no-console
