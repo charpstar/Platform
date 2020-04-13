@@ -1,14 +1,17 @@
 <template>
     <div>
-        <usernewmodal :open="newUserDialog" @newuser="newUser" @close="newUserDialog = false"/>
-        <div class="flexrow" id="topRow" >
+        <usernewmodal :open="newUserDialog" @newuser="newUser" @close="newUserDialog = false" />
+        <div class="flexrow" id="topRow">
             <div class="flexrow">
-                <v-btn icon class="hidden-xs-only" > 
+                <v-btn icon class="hidden-xs-only">
                     <v-icon @click="$emit('back')">mdi-arrow-left</v-icon>
                 </v-btn>
                 <h2>Users</h2>
             </div>
-            <v-btn id="buttonNew" @click="newUserDialog = true">New User<v-icon right>mdi-account-plus</v-icon></v-btn>
+            <v-btn id="buttonNew" @click="newUserDialog = true">
+                New User
+                <v-icon right>mdi-account-plus</v-icon>
+            </v-btn>
         </div>
         <div id="itemsView">
             <v-data-table
@@ -27,35 +30,35 @@
 </template>
 
 <script>
-import usernewmodal from './UserNewModal'
+import usernewmodal from "./UserNewModal";
 
 export default {
     components: {
-        usernewmodal,
+        usernewmodal
     },
     props: {
-        users: {required: true, type: Object}
+        users: { required: true, type: Object }
     },
     data() {
         return {
             headers: [
                 { text: "Name", value: "name", align: "left" },
-                { text: "Email", value: "email", align: "left"},
+                { text: "Email", value: "email", align: "left" },
                 { text: "Type", value: "usertype", align: "left" },
                 { text: "ID", value: "userid", align: "left" },
                 { text: "Active", value: "active", align: "left" }
             ],
-            newUserDialog: false,
+            newUserDialog: false
         };
     },
     methods: {
         handleClick(value) {
-            this.$emit('select', value)
+            this.$emit("select", value);
         },
         newUser(user) {
-            var vm = this
-            vm.newUserDialog = false
-            vm.users[user.userid] = user
+            var vm = this;
+            vm.newUserDialog = false;
+            vm.users[user.userid] = user;
         }
     }
 };
@@ -71,7 +74,4 @@ export default {
     overflow: auto;
     width: 80vw;
 }
-
-
-
 </style>

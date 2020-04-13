@@ -14,59 +14,54 @@
 </template>
 
 <script>
-import backend from '../backend'
+import backend from "../backend";
 
 export default {
     props: {
-        open: {type: Boolean, required: true}
+        open: { type: Boolean, required: true }
     },
     data() {
         return {
-            accountTypes: [
-                'Client', 'Modeller', 'QA', 'Admin' 
-            ],
-            nameRules: [
-                v => !!v || 'Name is required',
-            ],
+            accountTypes: ["Client", "Modeller", "QA", "Admin"],
+            nameRules: [v => !!v || "Name is required"],
             emailRules: [
-                v => !!v || 'E-mail is required',
-                v => /.+@.+/.test(v) || 'E-mail must be valid',
+                v => !!v || "E-mail is required",
+                v => /.+@.+/.test(v) || "E-mail must be valid"
             ],
             loading: false,
             name: "",
             email: "",
-            usertype: 'Client',
+            usertype: "Client",
             valid: false,
-            error: ''
+            error: ""
         };
     },
     methods: {
         newUser() {
-            var vm = this
-            vm.loading = true
+            var vm = this;
+            vm.loading = true;
             var userObj = {
                 name: vm.name,
                 email: vm.email,
                 usertype: vm.usertype
-            }
+            };
             backend.newUser(userObj).then(newUser => {
                 backend.postIdFix(newUser.email).then(id => {
-                    newUser.userid = id
-                    vm.loading = false
-                    vm.name = ""
-                    vm.email = ""
-                    vm.usertype = 'Client'
-                    vm.$emit('newuser', newUser)
-                })
-                
-            })
+                    newUser.userid = id;
+                    vm.loading = false;
+                    vm.name = "";
+                    vm.email = "";
+                    vm.usertype = "Client";
+                    vm.$emit("newuser", newUser);
+                });
+            });
         },
         close() {
-            var vm = this
-            vm.name = ""
-            vm.email = ""
-            vm.usertype = 'Client'
-            vm.$emit('close')
+            var vm = this;
+            vm.name = "";
+            vm.email = "";
+            vm.usertype = "Client";
+            vm.$emit("close");
         }
     }
 };

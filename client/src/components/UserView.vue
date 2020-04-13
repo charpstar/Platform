@@ -2,9 +2,9 @@
     <div class="view">
         <v-dialog v-model="deleteConfirm" width="250px">
             <div class="card flexcol">
-            <h2>Confirm Delete</h2>
-            <v-btn @click="deleteUser">Confirm</v-btn>
-            <v-btn @click="deleteConfirm = false">Cancel</v-btn>
+                <h2>Confirm Delete</h2>
+                <v-btn @click="deleteUser">Confirm</v-btn>
+                <v-btn @click="deleteConfirm = false">Cancel</v-btn>
             </div>
         </v-dialog>
         <v-dialog v-model="resetConfirm" width="250px">
@@ -23,50 +23,57 @@
             </div>
         </div>
         <div class="flexrow" id="user">
-                <table id="data">
-                    <tr>
-                        <td>Name</td><td>{{user.name}}</td>
-                    </tr>
-                    <tr>
-                        <td>Email</td><td>{{user.email}}</td>
-                    </tr>
-                    <tr>
-                        <td>Type</td><td>{{user.usertype}}</td>
-                    </tr>
-                    <tr>
-                        <td>ID</td><td>{{user.userid}}</td>
-                    </tr>
-                    <tr>
-                        <td>Active</td><td><i class="material-icons">{{user.active ? 'check' : 'close'}}</i></td>
-                    </tr>
-                </table>
-                <div class="flexcol" id="buttons">
-                <div class="flexrow" >
+            <table id="data">
+                <tr>
+                    <td>Name</td>
+                    <td>{{user.name}}</td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td>{{user.email}}</td>
+                </tr>
+                <tr>
+                    <td>Type</td>
+                    <td>{{user.usertype}}</td>
+                </tr>
+                <tr>
+                    <td>ID</td>
+                    <td>{{user.userid}}</td>
+                </tr>
+                <tr>
+                    <td>Active</td>
+                    <td>
+                        <i class="material-icons">{{user.active ? 'check' : 'close'}}</i>
+                    </td>
+                </tr>
+            </table>
+            <div class="flexcol" id="buttons">
+                <div class="flexrow">
                     <v-btn :loading="resetLoading" @click="resetConfirm = true">Reset Password</v-btn>
-                    <v-text-field outlined readonly dense 
-                        v-if="newPassword != ''" 
+                    <v-text-field
+                        outlined
+                        readonly
+                        dense
+                        v-if="newPassword != ''"
                         v-model="newPassword"
                         append-icon="mdi-clipboard-text-outline"
                         @click:append="toClipboard"
-                        ></v-text-field>
-                    </div>
+                    ></v-text-field>
+                </div>
                 <v-btn :loading="viewLoading" @click="viewOrders">View Orders</v-btn>
                 <v-btn :loading="deleteLoading" @click="deleteConfirm = true">Delete</v-btn>
-                </div>
+            </div>
         </div>
-                    <v-snackbar v-model="snackbar" :timeout="3000">
-            Password copied to clipboard
-        </v-snackbar>
+        <v-snackbar v-model="snackbar" :timeout="3000">Password copied to clipboard</v-snackbar>
     </div>
-
 </template>
 
 <script>
-import backend from '../backend'
+import backend from "../backend";
 
 export default {
     props: {
-        user: {type: Object, required: true}
+        user: { type: Object, required: true }
     },
     data() {
         return {
@@ -76,51 +83,52 @@ export default {
             viewLoading: false,
             deleteLoading: false,
             deleteConfirm: false,
-            snackbar: false,
+            snackbar: false
         };
     },
     methods: {
         viewOrders() {
-            var vm = this
-            vm.viewLoading = true
+            var vm = this;
+            vm.viewLoading = true;
             backend.getOrders(vm.user.userid).then(orders => {
-                vm.viewLoading = false,
-                vm.$emit('orders', orders)
-            })
+                (vm.viewLoading = false), vm.$emit("orders", orders);
+            });
         },
         resetUser() {
-            var vm = this
-            vm.resetLoading = true
-            vm.resetConfirm = false
-            var password = backend.randomid(10)
+            var vm = this;
+            vm.resetLoading = true;
+            vm.resetConfirm = false;
+            var password = backend.randomid(10);
             backend.resetPassword(vm.user.userid, password).then(() => {
-                vm.resetLoading = false
-                vm.newPassword = password
-            })
+                vm.resetLoading = false;
+                vm.newPassword = password;
+            });
         },
         deleteUser() {
-            var vm = this
-            vm.deleteLoading = true
-            vm.deleteConfirm = false
+            var vm = this;
+            vm.deleteLoading = true;
+            vm.deleteConfirm = false;
             backend.deleteUser(vm.user.userid).then(() => {
-                vm.deleteLoading = false
-                vm.$emit('delete', vm.user.userid)
-            })
+                vm.deleteLoading = false;
+                vm.$emit("delete", vm.user.userid);
+            });
         },
         toClipboard() {
-            var vm = this
-            vm.$copyText(vm.newPassword).then(() => {
-                vm.snackbar = true;
-                }, () => {
-                alert('Could not copy')
-            })
+            var vm = this;
+            vm.$copyText(vm.newPassword).then(
+                () => {
+                    vm.snackbar = true;
+                },
+                () => {
+                    alert("Could not copy");
+                }
+            );
         }
     }
 };
 </script>
 
 <style lang="scss" scoped>
-
 .v-btn {
     margin-top: 10px;
 }
@@ -133,7 +141,7 @@ export default {
 }
 #data {
     font-size: 16px;
-    color:grey;
+    color: grey;
     td {
         padding: 5px;
     }
@@ -146,13 +154,10 @@ export default {
 #topRow {
     justify-content: flex-start;
 }
-
-
 </style>
 
 <style lang="scss">
 .v-text-field__details {
     display: none !important;
 }
-
 </style>

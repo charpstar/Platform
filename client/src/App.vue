@@ -1,190 +1,205 @@
 <template>
-  <div id="app" data-app>
-    <topBar :account="account" :loggedIn="view != 'login'" @logout="view = 'login'" :notifications="notifications"/>
-    <div id="center">
-      <v-card class="card">
-        <transitionExpandHeight>
-          <loginView v-if="view == 'login'" v-on:login="login"/>
-        </transitionExpandHeight>
+    <div id="app" data-app>
+        <topBar
+            :account="account"
+            :loggedIn="view != 'login'"
+            @logout="view = 'login'"
+            :notifications="notifications"
+        />
+        <div id="center">
+            <v-card class="card">
+                <transitionExpandHeight>
+                    <loginView v-if="view == 'login'" v-on:login="login" />
+                </transitionExpandHeight>
 
-        <transitionExpandHeight>
-          <adminView 
-          v-if="view == 'adminView'"
-          @users="users = $event; view = 'userList'"
-          @orders="user = {}; orders = $event; view='orderList'"
-          @models="order = {}; models = $event; view='modelList'"/>
-        </transitionExpandHeight>
+                <transitionExpandHeight>
+                    <adminView
+                        v-if="view == 'adminView'"
+                        @users="users = $event; view = 'userList'"
+                        @orders="user = {}; orders = $event; view='orderList'"
+                        @models="order = {}; models = $event; view='modelList'"
+                    />
+                </transitionExpandHeight>
 
-        <transitionExpandHeight>
-          <userListView
-          v-if="view == 'userList'" 
-          :users="users"
-          @back="view = 'adminView'"
-          @select="user = $event; view = 'user'"/>
-        </transitionExpandHeight>
+                <transitionExpandHeight>
+                    <userListView
+                        v-if="view == 'userList'"
+                        :users="users"
+                        @back="view = 'adminView'"
+                        @select="user = $event; view = 'user'"
+                    />
+                </transitionExpandHeight>
 
-        <transitionExpandHeight>
-          <userView 
-          v-if="view == 'user'" 
-          :user="user" 
-          @back="view = 'userList'"
-          @delete="deletedUser"
-          @orders="orders = $event; view = 'orderList'"/>
-        </transitionExpandHeight>
+                <transitionExpandHeight>
+                    <userView
+                        v-if="view == 'user'"
+                        :user="user"
+                        @back="view = 'userList'"
+                        @delete="deletedUser"
+                        @orders="orders = $event; view = 'orderList'"
+                    />
+                </transitionExpandHeight>
 
-        <transitionExpandHeight>
-          <orderListView 
-          v-if="view == 'orderList'" 
-          :orders="orders" 
-          :account="account"
-          :user="user"
-          @back="orderListBack"
-          @select="order = $event; view = 'order'"/>
-        </transitionExpandHeight>
+                <transitionExpandHeight>
+                    <orderListView
+                        v-if="view == 'orderList'"
+                        :orders="orders"
+                        :account="account"
+                        :user="user"
+                        @back="orderListBack"
+                        @select="order = $event; view = 'order'"
+                    />
+                </transitionExpandHeight>
 
-        <transitionExpandHeight>
-          <orderView 
-          v-if="view == 'order'" 
-          :order="order" 
-          :account="account" 
-          @back="view = 'orderList'"
-          @view-models="getModels"/>
-        </transitionExpandHeight>
+                <transitionExpandHeight>
+                    <orderView
+                        v-if="view == 'order'"
+                        :order="order"
+                        :account="account"
+                        @back="view = 'orderList'"
+                        @view-models="getModels"
+                    />
+                </transitionExpandHeight>
 
-        <transitionExpandHeight>
-          <modelListView 
-          v-if="view == 'modelList'"
-          :order="order" 
-          :models="models"
-          @back="modelListBack"
-          @select="model = $event; view = 'model'"/>
-        </transitionExpandHeight>
+                <transitionExpandHeight>
+                    <modelListView
+                        v-if="view == 'modelList'"
+                        :order="order"
+                        :models="models"
+                        @back="modelListBack"
+                        @select="model = $event; view = 'model'"
+                    />
+                </transitionExpandHeight>
 
-        <transitionExpandHeight>
-          <modelView 
-          v-if="view == 'model'"
-          :order="order" 
-          :account="account"
-          :model="model"
-          @back="view = 'modelList'"/>
-        </transitionExpandHeight>
-
-      </v-card>
+                <transitionExpandHeight>
+                    <modelView
+                        v-if="view == 'model'"
+                        :order="order"
+                        :account="account"
+                        :model="model"
+                        @back="view = 'modelList'"
+                    />
+                </transitionExpandHeight>
+            </v-card>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
-import transitionExpandHeight from "./components/TransitionExpandHeight"
-import topBar from "./components/TopBar"
-import loginView from "./components/LoginView"
-import adminView from "./components/AdminView"
-import orderListView from "./components/OrderListView"
-import orderView from './components/OrderView'
-import modelListView from './components/ModelListView'
-import modelView from './components/ModelView'
-import userListView from './components/UserListView'
-import userView from './components/UserView'
+import transitionExpandHeight from "./components/TransitionExpandHeight";
+import topBar from "./components/TopBar";
+import loginView from "./components/LoginView";
+import adminView from "./components/AdminView";
+import orderListView from "./components/OrderListView";
+import orderView from "./components/OrderView";
+import modelListView from "./components/ModelListView";
+import modelView from "./components/ModelView";
+import userListView from "./components/UserListView";
+import userView from "./components/UserView";
 
-import backend from "./backend"
+import backend from "./backend";
 
 export default {
-  name: "App",
+    name: "App",
 
-  components: {
-    transitionExpandHeight,
-    topBar,
-    loginView,
-    adminView,
-    orderListView,
-    orderView,
-    modelListView,
-    modelView,
-    userListView,
-    userView
-  },
+    components: {
+        transitionExpandHeight,
+        topBar,
+        loginView,
+        adminView,
+        orderListView,
+        orderView,
+        modelListView,
+        modelView,
+        userListView,
+        userView
+    },
 
-  data: () => ({
-    view: "login",
-    users: {},
-    user: {},
-    orders: {},
-    order: {},
-    models: {},
-    model: {},
-    account: {},
-    notifications: {
-      1: {message: 'There are 2 new orders'}
+    data: () => ({
+        view: "login",
+        users: {},
+        user: {},
+        orders: {},
+        order: {},
+        models: {},
+        model: {},
+        account: {},
+        notifications: {}
+    }),
+    methods: {
+        login(user) {
+            var vm = this;
+            vm.account = user;
+            if (user.usertype == "Client") {
+                backend.getOrders(user.userid).then(orders => {
+                    vm.user = user;
+                    vm.orders = orders;
+                    vm.view = "orderList";
+                });
+            } else {
+                vm.view = "adminView";
+            }
+        },
+        deletedUser(userid) {
+            var vm = this;
+            vm.$delete(vm.users, userid);
+            vm.view = "userList";
+        },
+        getModels() {
+            var vm = this;
+            backend.getModels(vm.order.orderid).then(models => {
+                vm.models = models;
+                vm.view = "modelList";
+            });
+        },
+        orderListBack() {
+            var vm = this;
+            if (!backend.emptyObj(vm.user)) {
+                vm.view = "user";
+            } else {
+                vm.view = "adminView";
+            }
+        },
+        modelListBack() {
+            var vm = this;
+            if (!backend.emptyObj(vm.order)) {
+                vm.view = "order";
+            } else {
+                vm.view = "adminView";
+            }
+        },
+        viewAllOrders() {
+            var vm = this;
+            backend.getAllOrders().then(orders => {
+                vm.orders = orders;
+                vm.view = "orderList";
+            });
+        }
+    },
+    mounted() {
+        backend.init();
+        this.notifications[1] = { message: "There are 2 new orders", click: this.viewAllOrders }
     }
-  }),
-  methods: {
-    login(user) {
-      var vm = this
-      vm.account = user
-      if(user.usertype == 'Client') {
-        backend.getOrders(user.userid).then(orders => {
-          vm.user = user
-          vm.orders = orders
-          vm.view = "orderList"
-        })
-        
-      } else {
-        vm.view = 'adminView'
-      }
-
-    },
-    deletedUser(userid) {
-      var vm = this
-      vm.$delete(vm.users, userid)
-      vm.view = 'userList'
-    },
-    getModels() {
-      var vm = this
-      backend.getModels(vm.order.orderid).then(models => {
-        vm.models = models
-        vm.view = 'modelList'
-      })
-    },
-    orderListBack() {
-      var vm = this
-      if(!backend.emptyObj(vm.user)) {
-        vm.view = 'user'
-      } else {
-        vm.view = 'adminView'
-      }
-    },
-    modelListBack() {
-      var vm = this
-      if(!backend.emptyObj(vm.order)) {
-        vm.view = 'order'
-      } else {
-        vm.view = 'adminView'
-      }
-    },
-  },
-  mounted() {
-    backend.init()
-  }
 };
 </script>
 
 <style lang="scss">
 body {
-  margin: 0;
-  padding: 0;
-  background-color: grey;
-  height: 100vh;
-  font-family: "Roboto";
+    margin: 0;
+    padding: 0;
+    background-color: grey;
+    height: 100vh;
+    font-family: "Roboto";
 }
 
-.view{
-  width: 80vw;
+.view {
+    width: 80vw;
 }
 
 p,
 a,
 h1 {
-  color: grey;
+    color: grey;
 }
 
 h2 {
@@ -196,38 +211,38 @@ h2 {
 }
 
 #app {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: grey;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: grey;
 }
 
 #center {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .card {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  padding: 20px;
-  background-color: white;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    padding: 20px;
+    background-color: white;
 }
 
 .flexrow {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .flexcol {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .v-data-footer {
@@ -239,10 +254,10 @@ th {
 }
 
 .v-btn {
-  background-color: #2196F3 !important;
+    background-color: #2196f3 !important;
 }
 
 .v-btn--icon {
-  background-color: white !important;
+    background-color: white !important;
 }
 </style>

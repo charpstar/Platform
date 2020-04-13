@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import transitionExpandWidth from "./TransitionExpandWidth"
-import transitionExpandHeight from "./TransitionExpandHeight"
+import transitionExpandWidth from "./TransitionExpandWidth";
+import transitionExpandHeight from "./TransitionExpandHeight";
 
 export default {
     name: "transitionExpand",
@@ -16,5 +16,5 @@ export default {
         transitionExpandWidth,
         transitionExpandHeight
     }
-}
+};
 </script>

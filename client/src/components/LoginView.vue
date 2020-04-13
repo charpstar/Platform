@@ -21,9 +21,12 @@
 
 <script>
 import backend from ".././backend";
-import transitionexpandheight from './TransitionExpandHeight'
+import transitionexpandheight from "./TransitionExpandHeight";
 
 export default {
+    components: {
+        transitionexpandheight
+    },
     data() {
         return {
             email: "",
@@ -33,9 +36,7 @@ export default {
             error: ""
         };
     },
-    components: {
-        transitionexpandheight
-    },
+
     methods: {
         login() {
             var vm = this;
@@ -44,10 +45,10 @@ export default {
                 .login(vm.email, vm.password)
                 .then(userData => {
                     backend.getIdFix(userData.email).then(id => {
-                        userData.userid = id
+                        userData.userid = id;
                         vm.$emit("login", userData);
                         vm.loading = false;
-                    })
+                    });
                 })
                 .catch(error => {
                     vm.error = error;

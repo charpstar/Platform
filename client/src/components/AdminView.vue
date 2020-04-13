@@ -1,42 +1,41 @@
 <template>
-<div>
-    <div id="adminview" class="flexcol">
-        <v-btn @click="users" :color="'#e3e030'">View Users</v-btn>
-        <v-btn @click="orders" :color="'#e3e030'">View All Orders</v-btn>
-        <v-btn @click="models" :color="'#e3e030'">View All Models</v-btn>
-    </div>
+    <div>
+        <div id="adminview" class="flexcol">
+            <v-btn @click="users">View Users</v-btn>
+            <v-btn @click="orders">View All Orders</v-btn>
+            <v-btn @click="models">View All Models</v-btn>
+        </div>
     </div>
 </template>
 
 <script>
-import backend from '../backend'
+import backend from "../backend";
 export default {
-    name: "adminview",
     methods: {
         users() {
-            var vm = this
+            var vm = this;
             backend.getUsers().then(users => {
-                vm.$emit('users', users)
-            })
+                vm.$emit("users", users);
+            });
         },
         orders() {
-            var vm = this
+            var vm = this;
             backend.getAllOrders().then(orders => {
-                vm.$emit('orders', orders)
-            })
+                vm.$emit("orders", orders);
+            });
         },
         models() {
-            var vm = this
+            var vm = this;
             backend.getAllModels().then(models => {
-                vm.$emit('models', models)
-            })
+                vm.$emit("models", models);
+            });
         }
     }
 };
 </script>
 
 <style lang="scss" scoped>
-    .v-btn {
-        margin-bottom: 10px;
-    }
+.v-btn:not(:last-child) {
+    margin-bottom: 10px;
+}
 </style>

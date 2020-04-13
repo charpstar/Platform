@@ -10,31 +10,38 @@
                 :hide-details="true"
             ></v-textarea>
             <div class="flexcol" id="sendButtons">
-                <v-btn v-if="review" block @click="() => sendComment(1)" class="approve">Approve<v-icon right>mdi-check</v-icon></v-btn>
-                <v-btn v-if="review" block @click="() => sendComment(2)" class="reject">Reject<v-icon right class="rejectIcon">mdi-refresh</v-icon></v-btn>
-                <v-btn block @click="() => sendComment(0)">Send<v-icon right>mdi-send</v-icon></v-btn>
+                <v-btn v-if="review" block @click="() => sendComment(1)" class="approve">
+                    Approve
+                    <v-icon right>mdi-check</v-icon>
+                </v-btn>
+                <v-btn v-if="review" block @click="() => sendComment(2)" class="reject">
+                    Reject
+                    <v-icon right class="rejectIcon">mdi-refresh</v-icon>
+                </v-btn>
+                <v-btn block @click="() => sendComment(0)">
+                    Send
+                    <v-icon right>mdi-send</v-icon>
+                </v-btn>
             </div>
-            
         </div>
         <div id="comments">
-        <table>
-            <tr class="comment" v-for="comment in comments" :key="comment.userid">
-                <td>
-                    <i :class="'material-icons accountType ' + comment.usertype.toLowerCase()">account_circle</i>
-                </td>
-                <td>
-                    <v-icon v-if="comment.commenttype==1" class="approve">mdi-check</v-icon>
-                    <v-icon v-if="comment.commenttype==2" class="reject rejectIcon">mdi-refresh</v-icon>
-                </td>
-                <td class="name">{{comment.name}}:</td>
-                <td>{{comment.message}}</td>
-            </tr>
-        </table>
+            <table>
+                <tr class="comment" v-for="comment in comments" :key="comment.userid">
+                    <td>
+                        <i
+                            :class="'material-icons accountType ' + comment.usertype.toLowerCase()"
+                        >account_circle</i>
+                    </td>
+                    <td>
+                        <v-icon v-if="comment.commenttype==1" class="approve">mdi-check</v-icon>
+                        <v-icon v-if="comment.commenttype==2" class="reject rejectIcon">mdi-refresh</v-icon>
+                    </td>
+                    <td class="name">{{comment.name}}:</td>
+                    <td>{{comment.message}}</td>
+                </tr>
+            </table>
         </div>
-        <v-snackbar v-model="snackbar" :timeout="3000">
-            No empty comment
-        </v-snackbar>
-
+        <v-snackbar v-model="snackbar" :timeout="3000">No empty comment</v-snackbar>
     </div>
 </template>
 
@@ -44,20 +51,19 @@ export default {
     props: {
         comments: { type: Array, required: true },
         account: { type: Object, required: true },
-        review: {type: Boolean, default: false}
+        review: { type: Boolean, default: false }
     },
     data() {
         return {
             addComment: "",
-            snackbar : false
+            snackbar: false
         };
     },
     methods: {
         sendComment(type) {
-            
             var vm = this;
-            if(vm.addComment === "") {
-                vm.snackbar = true
+            if (vm.addComment === "") {
+                vm.snackbar = true;
             } else {
                 var comment = {
                     name: vm.account.name,
@@ -70,7 +76,6 @@ export default {
                 vm.addComment = "";
                 vm.$emit("comment", comment);
             }
-
         }
     }
 };
@@ -92,7 +97,7 @@ export default {
         padding-top: 5px;
     }
     .name {
-        color:grey;
+        color: grey;
         padding-right: 5px;
     }
 }

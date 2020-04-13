@@ -34,8 +34,15 @@
                 </table>
                 <div class="flexcol" id="buttons">
                     <v-btn @click="viewModels">View Models</v-btn>
-                    <v-btn >Export Models <v-icon right>mdi-microsoft-excel</v-icon></v-btn>
-                    <v-btn @click="assignQA" :loading="assignLoading" v-if="account.usertype == 'QA' || account.usertype == 'Admin'">Assign self</v-btn>
+                    <v-btn>
+                        Export Models
+                        <v-icon right>mdi-microsoft-excel</v-icon>
+                    </v-btn>
+                    <v-btn
+                        @click="assignQA"
+                        :loading="assignLoading"
+                        v-if="account.usertype == 'QA' || account.usertype == 'Admin'"
+                    >Assign self</v-btn>
                 </div>
             </div>
             <div>
@@ -63,20 +70,20 @@ export default {
         };
     },
     methods: {
-        viewModels () {
-            this.$emit('view-models')
+        viewModels() {
+            this.$emit("view-models");
         },
         sendComment() {
-            var vm = this
+            var vm = this;
             backend.updateOrderComments(vm.order);
         },
         assignQA() {
-            var vm = this
-            vm.assignLoading = true
+            var vm = this;
+            vm.assignLoading = true;
             backend.assignQA(vm.order.orderid, vm.account).then(data => {
-                vm.assignLoading = false
-                vm.order.assignedqa = data
-            })
+                vm.assignLoading = false;
+                vm.order.assignedqa = data;
+            });
         }
     }
 };
