@@ -18,6 +18,9 @@
                 :items-per-page="-1"
                 @click:row="handleClick"
             >
+                <template v-slot:item.active="{value}">
+                    <i class="material-icons">{{value ? 'check' : ''}}</i>
+                </template>
             </v-data-table>
         </div>
     </div>
@@ -38,8 +41,9 @@ export default {
             headers: [
                 { text: "Name", value: "name", align: "left" },
                 { text: "Email", value: "email", align: "left"},
-                { text: "Type", value: "type", align: "left" },
-                { text: "ID", value: "id", align: "left" },
+                { text: "Type", value: "usertype", align: "left" },
+                { text: "ID", value: "userid", align: "left" },
+                { text: "Active", value: "active", align: "left" }
             ],
             newUserDialog: false,
         };
@@ -51,7 +55,7 @@ export default {
         newUser(user) {
             var vm = this
             vm.newUserDialog = false
-            vm.users[user.id] = user
+            vm.users[user.userid] = user
         }
     }
 };

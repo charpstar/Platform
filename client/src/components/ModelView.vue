@@ -42,16 +42,16 @@
                             <v-btn @click="snackbar = true">Copy</v-btn>
                         </td>
                     </tr>
-                    <tr v-if="account.type != 'client'">
+                    <tr v-if="account.usertype != 'Client'">
                         <td>Assigned modeler</td>
                         <td v-if="model.assignedmodeler">{{model.assignedmodeler.name}}</td>
                     </tr>
-                    <tr v-if="account.type != 'client' && account.type != 'modeler'">
+                    <tr v-if="account.usertype != 'Client' && account.usertype != 'Modeller'">
                         <td>
                             <v-btn @click="assignDialog = true">Assign Modeler</v-btn>
                         </td>
                     </tr>
-                    <tr v-if="account.type != 'client'">
+                    <tr v-if="account.usertype != 'Client'">
                         <td>
                             <modelupload :model="model" @upload="uploaded" />
                         </td>

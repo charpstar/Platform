@@ -4,7 +4,7 @@
       <p>3D asset management system</p>
     </div>
     <div v-if="loggedIn">
-      <v-menu offset-y v-model="menuOpen" :close-on-content-click="false">
+      <v-menu id="menu" offset-y v-model="menuOpen" :close-on-content-click="false">
         <template v-slot:activator="{ on }">
           <v-btn text id="menuButton" v-on="on"><p class="notification-badge" v-if="Object.values(notifications).length > 0">{{Object.values(notifications).length}}<p>{{account.name}}</p><i class="material-icons" id="acountIcon">account_circle</i></v-btn>
         </template>
@@ -12,7 +12,7 @@
           <v-list-item v-for="(item, index) in items" :key="index" @click="item.click">
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
-          <v-divider />
+          <v-divider v-if="Object.values(notifications).length > 0" />
           <v-list-item v-for="(item, id) in notifications" :key='"notification" + id' @click="1">
             <p class="notification-small"></p><v-list-item-title>{{ item.message }}</v-list-item-title>
             <v-btn icon @click="closeNotification(id)"><v-icon>mdi-close</v-icon></v-btn>
@@ -25,6 +25,7 @@
 
 <script>
 import Vue from 'vue'
+import backend from '../backend'
 export default {
 
   name: "header2",
@@ -39,6 +40,8 @@ export default {
   }),
   methods: {
     logout() {
+      this.menuOpen = false
+      backend.logout()
       this.$emit('logout')
     },
     closeNotification(id) {
@@ -48,7 +51,7 @@ export default {
   mounted() {
     var vm = this
     vm.items = [
-      { title: "Log out",  click: () => {vm.logout(); vm.menuOpen = false} },
+      { title: "Log out",  click: vm.logout},
       { title: "Support",  click: () => {window.location.href = "https://www.charpstar.se/"; vm.menuOpen = false} }
     ]
   }
@@ -59,6 +62,9 @@ export default {
 <style lang="scss" scoped>
 #menuButton {
   background-color: white !important;
+}
+.v-menu__content{
+  min-width: 300px !important;
 }
 #header {
   display: flex;

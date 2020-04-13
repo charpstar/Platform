@@ -12,13 +12,16 @@
             @click:append="showPassword = !showPassword"
             @keydown="buttonPress"
         />
-        <v-btn @click="login" :loading="loading" >Login</v-btn>
-
+        <transitionexpandheight>
+            <p class="error" v-if="error != ''">{{error}}</p>
+        </transitionexpandheight>
+        <v-btn @click="login" :loading="loading">Login</v-btn>
     </div>
 </template>
 
 <script>
 import backend from ".././backend";
+import transitionexpandheight from './TransitionExpandHeight'
 
 export default {
     data() {
@@ -26,22 +29,34 @@ export default {
             email: "",
             password: "",
             showPassword: false,
-            loading: false
+            loading: false,
+            error: ""
         };
     },
-    name: "login",
+    components: {
+        transitionexpandheight
+    },
     methods: {
         login() {
             var vm = this;
             vm.loading = true;
-            backend.login(vm.email, vm.password).then(data => {
-                vm.$emit("login", data);
-                vm.loading = false
-            });
+            backend
+                .login(vm.email, vm.password)
+                .then(userData => {
+                    backend.getIdFix(userData.email).then(id => {
+                        userData.userid = id
+                        vm.$emit("login", userData);
+                        vm.loading = false;
+                    })
+                })
+                .catch(error => {
+                    vm.error = error;
+                    vm.loading = false;
+                });
         },
         buttonPress(button) {
             if (button.key == "Enter") {
-                this.login()
+                this.login();
             }
         }
     }
@@ -64,5 +79,11 @@ h1 {
     font-size: 60px;
     font-weight: normal;
     text-align: center;
+}
+
+.error {
+    color: #d12300 !important;
+    margin-bottom: 5px;
+    max-width: 200px;
 }
 </style>

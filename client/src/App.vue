@@ -121,8 +121,8 @@ export default {
     login(user) {
       var vm = this
       vm.account = user
-      if(user.type == 'client') {
-        backend.getOrders(user.id).then(orders => {
+      if(user.usertype == 'Client') {
+        backend.getOrders(user.userid).then(orders => {
           vm.user = user
           vm.orders = orders
           vm.view = "orderList"

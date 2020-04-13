@@ -18,9 +18,9 @@
         </div>
         <div id="comments">
         <table>
-            <tr class="comment" v-for="comment in comments" :key="comment.id">
+            <tr class="comment" v-for="comment in comments" :key="comment.userid">
                 <td>
-                    <i :class="'material-icons accountType ' + comment.type">account_circle</i>
+                    <i :class="'material-icons accountType ' + comment.usertype.toLowerCase()">account_circle</i>
                 </td>
                 <td>
                     <v-icon v-if="comment.commenttype==1" class="approve">mdi-check</v-icon>
@@ -61,7 +61,7 @@ export default {
             } else {
                 var comment = {
                     name: vm.account.name,
-                    type: vm.account.type,
+                    usertype: vm.account.usertype,
                     message: vm.addComment,
                     id: backend.randomid(32),
                     commenttype: type

@@ -5,7 +5,8 @@
             <v-form v-model="valid">
                 <v-text-field v-model="name" label="Name" :rules="nameRules"></v-text-field>
                 <v-text-field v-model="email" label="Email" :rules="emailRules"></v-text-field>
-                <v-select :items="accountTypes" label="Type" v-model="type"></v-select>
+                <v-select :items="accountTypes" label="Type" v-model="usertype"></v-select>
+                <p class="error" v-if="error != ''">{{error}}</p>
                 <v-btn :loading="loading" :disabled="!valid" @click="newUser">Create</v-btn>
             </v-form>
         </div>
@@ -22,7 +23,7 @@ export default {
     data() {
         return {
             accountTypes: [
-                'Client', 'Modeler', 'QA', 'Admin' 
+                'Client', 'Modeller', 'QA', 'Admin' 
             ],
             nameRules: [
                 v => !!v || 'Name is required',
@@ -34,29 +35,46 @@ export default {
             loading: false,
             name: "",
             email: "",
-            type: 'Client',
+            usertype: 'Client',
             valid: false,
+            error: ''
         };
     },
     methods: {
         newUser() {
             var vm = this
             vm.loading = true
-            backend.newUser(vm.name, vm.email, vm.type).then(val => {
-                vm.loading = false
-                vm.name = ""
-                vm.email = ""
-                vm.type = 'Client'
-                vm.$emit('newuser', val)
+            var userObj = {
+                name: vm.name,
+                email: vm.email,
+                usertype: vm.usertype
+            }
+            backend.newUser(userObj).then(newUser => {
+                backend.postIdFix(newUser.email).then(id => {
+                    newUser.userid = id
+                    vm.loading = false
+                    vm.name = ""
+                    vm.email = ""
+                    vm.usertype = 'Client'
+                    vm.$emit('newuser', newUser)
+                })
+                
             })
         },
         close() {
             var vm = this
             vm.name = ""
             vm.email = ""
-            vm.type = 'Client'
+            vm.usertype = 'Client'
             vm.$emit('close')
         }
     }
 };
 </script>
+
+<style lang="scss" scoped>
+.error {
+    color: #d12300;
+    margin-bottom: 5px;
+}
+</style>

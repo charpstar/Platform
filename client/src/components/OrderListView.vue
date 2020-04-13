@@ -2,13 +2,14 @@
     <div>
         <v-dialog v-model="dialog" width="500">
             <div class="card">
-            <fileinput :label="'Select Excel Docuemnt'" @file="onFileChange"/>
+            <v-file-input :label="'Select Excel Docuemnt'" @change="onFileChange"></v-file-input>
+            <p v-if="error != ''">{{error}}</p>
             <v-btn :loading="loading" @click="newOrder">Upload</v-btn>
             </div>
         </v-dialog>
         <div class="flexrow" id="topRow" >
             <div class="flexrow">
-                <v-btn icon class="hidden-xs-only" v-if="account.type != 'client' "> 
+                <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Client' "> 
                     <v-icon @click="$emit('back')">mdi-arrow-left</v-icon>
                 </v-btn>
                 <h2>Orders</h2>
@@ -29,13 +30,9 @@
 </template>
 
 <script>
-import fileinput from './FileInput'
 import backend from '../backend'
 
 export default {
-    components: {
-        fileinput
-    },
     props: {
         orders: { required: true, type: Object },
         user: { required: true, type: Object },
@@ -53,6 +50,7 @@ export default {
             dialog: false,
             loading: false,
             file: false,
+            error: ''
         };
     },
     methods: {
@@ -60,12 +58,22 @@ export default {
             this.$emit("select", value);
         },
         onFileChange(file) {
+            //eslint-disable-next-line
+            console.log(file)
             this.file = file
         },
         newOrder() {
             var vm = this
             if(vm.file) {
                 vm.loading = true
+                backend.createOrder(vm.file).then(order => {
+                    vm.loading = false
+                    vm.dialog = false
+                    vm.orders[order.orderid] = order
+                }).catch(error => {
+                    vm.error = error
+                    vm.loading = false
+                })
                 backend.newOrder(vm.user, vm.file).then(order => {
                     vm.loading = false
                     vm.dialog = false
@@ -92,5 +100,8 @@ export default {
 }
 
 
-
+.error {
+    color: #d12300;
+    margin-bottom: 5px;
+}
 </style>

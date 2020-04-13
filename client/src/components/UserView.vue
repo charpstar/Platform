@@ -23,20 +23,23 @@
             </div>
         </div>
         <div class="flexrow" id="user">
-                        <table id="data">
-                <tr>
-                    <td>Name</td><td>{{user.name}}</td>
-                </tr>
-                <tr>
-                    <td>Email</td><td>{{user.email}}</td>
-                </tr>
-                <tr>
-                    <td>Type</td><td>{{user.type}}</td>
-                </tr>
-                <tr>
-                    <td>ID</td><td>{{user.id}}</td>
-                </tr>
-                        </table>
+                <table id="data">
+                    <tr>
+                        <td>Name</td><td>{{user.name}}</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td><td>{{user.email}}</td>
+                    </tr>
+                    <tr>
+                        <td>Type</td><td>{{user.usertype}}</td>
+                    </tr>
+                    <tr>
+                        <td>ID</td><td>{{user.userid}}</td>
+                    </tr>
+                    <tr>
+                        <td>Active</td><td><i class="material-icons">{{user.active ? 'check' : 'close'}}</i></td>
+                    </tr>
+                </table>
                 <div class="flexcol" id="buttons">
                 <div class="flexrow" >
                     <v-btn :loading="resetLoading" @click="resetConfirm = true">Reset Password</v-btn>
@@ -80,7 +83,7 @@ export default {
         viewOrders() {
             var vm = this
             vm.viewLoading = true
-            backend.getOrders(vm.user.id).then(orders => {
+            backend.getOrders(vm.user.userid).then(orders => {
                 vm.viewLoading = false,
                 vm.$emit('orders', orders)
             })
@@ -89,7 +92,8 @@ export default {
             var vm = this
             vm.resetLoading = true
             vm.resetConfirm = false
-            backend.resetPassword(vm.user.id).then((password) => {
+            var password = backend.randomid(10)
+            backend.resetPassword(vm.user.userid, password).then(() => {
                 vm.resetLoading = false
                 vm.newPassword = password
             })
@@ -98,9 +102,9 @@ export default {
             var vm = this
             vm.deleteLoading = true
             vm.deleteConfirm = false
-            backend.deleteUser(vm.user.id).then(() => {
+            backend.deleteUser(vm.user.userid).then(() => {
                 vm.deleteLoading = false
-                vm.$emit('delete', vm.user.id)
+                vm.$emit('delete', vm.user.userid)
             })
         },
         toClipboard() {

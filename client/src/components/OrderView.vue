@@ -35,7 +35,7 @@
                 <div class="flexcol" id="buttons">
                     <v-btn @click="viewModels">View Models</v-btn>
                     <v-btn >Export Models <v-icon right>mdi-microsoft-excel</v-icon></v-btn>
-                    <v-btn @click="assignQA" :loading="assignLoading" v-if="account.type == 'qa' || account.type == 'admin'">Assign self</v-btn>
+                    <v-btn @click="assignQA" :loading="assignLoading" v-if="account.usertype == 'QA' || account.usertype == 'Admin'">Assign self</v-btn>
                 </div>
             </div>
             <div>

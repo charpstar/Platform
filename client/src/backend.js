@@ -1,8 +1,51 @@
 import firebase from "firebase/app"
 import Axios from 'axios'
-var database = null
 Axios.defaults.withCredentials = true
-Axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded'
+
+const backend = 'http://46.101.115.253:8081'
+var database = null
+
+function dbPost(url, data) {
+    var p = new Promise((resolve, reject) => {
+        Axios.post(backend + url, data).then((res) => {
+            if(res.data.error == '') {
+                resolve(res.data.data)
+            } else {
+                reject(res.data.error)
+            }
+        })
+    })
+    p.then(e => {
+        //eslint-disable-next-line no-console
+        //console.log(e)
+    }).catch(e => {
+        //eslint-disable-next-line no-console
+        //console.log(e)
+    })
+    return p 
+
+}
+
+function dbGet(url) {
+    var p = new Promise((resolve, reject) => {
+        Axios.get(backend + url).then((res) => {
+            if(res.data.error == '') {
+                resolve(res.data.data)
+            } else {
+                reject(res.data.error)
+            }
+        })
+    })
+    p.then(e => {
+        //eslint-disable-next-line no-console
+        //console.log(e)
+    }).catch(e => {
+        //eslint-disable-next-line no-console
+        //console.log(e)
+    })
+    return p
+}
+
 function pad(n) {
     return n<10 ? '0'+n : n;
 }
@@ -51,52 +94,19 @@ export default {
     },
 
     login(email, password) {
-        var email2 = 'root@charpstar.com'
-        password = 'root'
-        Axios.post('http://46.101.115.253:8081/login', {email:email2, password:password}).then((e) => {
-            //eslint-disable-next-line no-console
-            console.log(e)
-        })
-        return new Promise((resolve, reject) => {
-            databaseGet("users").then((users) => {
-                if (users == null) {
-                    users = {}
-                }
-                users = Object.values(users)
-                var user = users.find(u => u.email == email)
-                
-                if(user) {
-                    resolve(user)
-                } else {
-                    reject()
-                }
-            })
-        })
+        return dbPost('/login', {email:email, password:password})
+    },
+
+    logout() {
+        return dbGet('/logout')
     },
 
     getUsers() {
-        Axios.get('http://46.101.115.253:8081/admin/getusers').then((e) => {
-            //eslint-disable-next-line no-console
-            console.log(e)
-        })
-        return new Promise((resolve) => {
-            databaseGet("users").then(data => {
-                resolve(data)
-            })
-        })
+        return dbGet('/admin/getusers')
     },
 
     getModelers() {
-        return new Promise((resolve) => {
-            databaseGet("users").then(data => {
-                Object.values(data).forEach(user => {
-                    if(user.type != 'modeler') {
-                        delete data[user.id]
-                    }
-                })
-                resolve(data)
-            })
-        })
+        return dbGet('/qa/modelers')
     },
 
     getOrders(clientid) {
@@ -119,6 +129,7 @@ export default {
     },
 
     getAllOrders() {
+        //return dbGet('/qa/getorders')
         return new Promise((resolve) => {
             databaseGet("orders").then((data) => {
                 if (data == null) {
@@ -131,7 +142,7 @@ export default {
                 })
                 resolve(data)
             })
-        })
+        }) 
     },
 
     getModels(orderid) {
@@ -210,18 +221,12 @@ export default {
         return Promise.all([androidTask, iosTask, thumbTask])
     },
 
-    newUser(name, email, type) {
-        return new Promise(resolve => {
-            var user = {
-                name: name,
-                email: email,
-                type: type.toLowerCase(),
-                id: this.randomid(32)
-            }
-            database.ref("users/" + user.id).set(user).then(() => {
-                resolve(user)
-            })
-        })
+    newUser(userObj) {
+        var password = this.randomid(10)
+        userObj.password = password
+        userObj.repeatPassword = password
+        userObj.active = true
+        return dbPost('/admin/createuser', userObj)
     },
 
     newModel(orderid, clientid, modelName) {
@@ -247,6 +252,22 @@ export default {
         })
     },
 
+    createOrder(file) {
+        var formData = new FormData()
+        formData.append("orderdata", file);
+        return new Promise((resolve, reject) => {
+            Axios.post(backend + '/client/createorder', formData, {
+                headers: {'Content-Type': 'multipart/form-data'}
+            }).then((res) => {
+                if(res.data.error == '') {
+                    resolve(res.data.data)
+                } else {
+                    reject(res.data.error)
+                }
+            })
+        })
+    },
+
     newOrder(client) {
         return new Promise((resolve) => {
             var orderid = this.randomid(32)
@@ -257,13 +278,13 @@ export default {
             var hour = pad(time.getHours());
             var minute = pad(time.getMinutes());
             for (let i = 0; i < 10; i++) {
-                this.newModel(orderid, client.id, "A new model")
+                this.newModel(orderid, client.userid, "A new model")
             }
             var order = {
                 orderid: orderid,
                 timestamp: time.getTime(),
                 time: year + '-' + month + '-' + date + ' ' + hour + ':' + minute,
-                clientid: client.id,
+                clientid: client.userid,
                 amount: 10,
                 status: 'Under review',
                 clientname: client.name,
@@ -280,7 +301,7 @@ export default {
         return new Promise(res => {
             var assignment = {
                 name: account.name,
-                userid: account.id
+                userid: account.userid
             }
             databaseSet('orders/' + orderid + '/assignedqa', assignment).then(() => {
                 res(assignment)
@@ -292,7 +313,7 @@ export default {
         return new Promise(res => {
             var assignment = {
                 name: account.name,
-                userid: account.id
+                userid: account.userid
             }
             databaseSet('models/' + modelid + '/assignedmodeler', assignment).then(() => {
                 res(assignment)
@@ -301,16 +322,37 @@ export default {
     },
 
     deleteUser(userid) {
-        return new Promise(res => {
-            databaseSet('users/' + userid, null).then(() => {
-                res()
+        return dbPost('/admin/deleteuser', {userid: userid})
+    },
+
+    resetPassword(userid, password) {
+        return dbPost('/admin/edituser', {userid: userid, password: password, repeatPassword: password})
+    },
+
+    getKeyByValue(object, value) {
+        return Object.keys(object).find(key => object[key] === value);
+    },
+
+    postIdFix(email) {
+        var db = this
+        return new Promise(resolve => {
+            db.getUsers().then(users => {
+                var id = db.getKeyByValue(users, email)
+                databaseSet('/tempidfix/' + id, email).then(() => {
+                    resolve(id)
+                })
             })
         })
     },
 
-    resetPassword() {
-        return new Promise(res => {
-            res(this.randomid(10))
+    getIdFix(email) {
+        var db = this
+        return new Promise(resolve => {
+            databaseGet('/tempidfix').then(users => {
+                var id = db.getKeyByValue(users, email)
+                resolve(id)
+            })
         })
     }
 }
+
