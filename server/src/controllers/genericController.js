@@ -41,7 +41,12 @@ export async function comment(req, res) {
   try {
     const { error, value } = commentParser.validate(req.body);
     if (typeof error !== 'undefined' && error !== null) {
-      return res.send(error);
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
     }
     return commentService(value, req.session.userid).then((result) => {
       res.send(result);
@@ -57,7 +62,12 @@ export async function getComments(req, res) {
   try {
     const { error, value } = commentIdParser.validate(req.body);
     if (typeof error !== 'undefined' && error !== null) {
-      return res.send(error);
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
     }
     return getCommentsService(value).then((result) => {
       res.send(result);

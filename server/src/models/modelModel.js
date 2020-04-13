@@ -20,7 +20,7 @@ const knexPool = knex({
 
 export async function getModelers() {
   return knexPool('users')
-    .select(['name', 'userid'])
+    .select(['name', 'userid', 'email'])
     .where('usertype', 'Modeller');
 }
 

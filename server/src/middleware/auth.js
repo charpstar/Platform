@@ -1,32 +1,55 @@
 import { getUser } from '../models/userModel';
 
 export async function genericAuth(req, res, next) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   if (typeof req.session.userid === 'undefined') {
-    return res.send({ error: 'Not signed in' });
+    responseObject.error = 'Not signed in';
+    return res.send(responseObject);
   }
 
   next();
 }
 
 export async function adminAuth(req, res, next) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   if (typeof req.session.userid === 'undefined') {
-    return res.send({ error: 'Not signed in' });
+    responseObject.error = 'Not signed in';
+    return res.send(responseObject);
   }
 
   if (req.session.usertype !== 'Admin') {
-    return res.send({ error: 'Insufficient permissions' });
+    responseObject.error = 'Insufficient permissions';
+    return res.send(responseObject);
   }
 
   next();
 }
 
 export async function modellerAuth(req, res, next) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   if (typeof req.session.userid === 'undefined') {
-    return res.send({ error: 'Not signed in' });
+    responseObject.error = 'Not signed in';
+    return res.send(responseObject);
   }
 
   if (!['Modeller', 'Admin', 'QA'].includes(req.session.usertype)) {
-    return res.send({ error: 'Insufficient permissions'});
+    responseObject.error = 'Insufficient permissions';
+    return res.send(responseObject);
   }
 
   next();
@@ -34,24 +57,40 @@ export async function modellerAuth(req, res, next) {
 
 
 export async function qaAuth(req, res, next) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   if (typeof req.session.userid === 'undefined') {
-    return res.send({ error: 'Not signed in' });
+    responseObject.error = 'Not signed in';
+    return res.send(responseObject);
   }
 
   if (!['QA', 'Admin'].includes(req.session.usertype)) {
-    return res.send({ error: 'Insufficient permissions'});
+    responseObject.error = 'Insufficient permissions';
+    return res.send(responseObject);
   }
 
   next();
 }
 
 export async function clientAuth(req, res, next) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   if (typeof req.session.userid === 'undefined') {
-    return res.send({ error: 'Not signed in' });
+    responseObject.error = 'Not signed in';
+    return res.send(responseObject);
   }
 
   if (req.session.usertype !== 'Client') {
-    return res.send({ error: 'Insufficient permissions' });
+    responseObject.error = 'Insufficient permissions';
+    return res.send(responseObject);
   }
 
   next();

@@ -5,13 +5,50 @@ export async function modelUploadService(data) {
 }
 
 export async function assignModelerService(data) {
-  return assignModeler(data);
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = await assignModeler(data);
+  [responseObject.data] = result;
+  responseObject.status = 'Modeller assigned';
+
+  return responseObject;
 }
 
 export async function getModelersService() {
-  return getModelers();
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = await getModelers();
+
+  result.forEach((modeler) => {
+    responseObject.data[modeler.userid] = modeler;
+  });
+
+  responseObject.status = 'Modellers fetched';
+
+  return responseObject;
 }
 
 export async function getModelsService(data) {
-  return getModels(data.orderid);
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = await getModels(data.orderid);
+  result.forEach((model) => {
+    responseObject.data[model.modelid] = model;
+  });
+
+  responseObject.status = 'Models fetched';
+
+  return responseObject;
 }

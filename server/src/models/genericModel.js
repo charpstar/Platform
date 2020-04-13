@@ -21,7 +21,7 @@ const knexPool = knex({
 export async function comment(data) {
   return knexPool('comments')
     .insert(data)
-    .returning(['comment', 'userid', 'time'])
+    .returning(['comment', 'time'])
     .catch((error) => {
       // eslint-disable-next-line no-console
       console.log(error);

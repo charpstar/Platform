@@ -41,7 +41,12 @@ export async function assignmodeler(req, res) {
   try {
     const { error, value } = modelAssignmentParser.validate(req.body);
     if (typeof error !== 'undefined' && error !== null) {
-      res.send(error);
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      res.send(responseObject);
     }
     return assignModelerService(value).then((result) => {
       res.send(result);
@@ -69,7 +74,12 @@ export async function getmodels(req, res) {
   try {
     const { error, value } = orderIdParser.validate(req.body);
     if (typeof error !== 'undefined' && error !== null) {
-      return res.send(error);
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
     }
     return getModelsService(value).then((result) => {
       res.send(result);

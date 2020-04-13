@@ -3,8 +3,15 @@ import fs from 'fs';
 import { createOrder, getOrders, claimOrder } from '../models/orderModel';
 
 export async function orderCreationService(req) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   if (typeof req.file === 'undefined' || req.file === null) {
-    return { error: 'No file was uploaded' };
+    responseObject.error = 'No file was uploaded';
+    return responseObject;
   }
 
   const file = xlsx.readFile(req.file.path);
@@ -39,7 +46,8 @@ export async function orderCreationService(req) {
   });
 
   if (errorText !== '') {
-    return { error: errorText };
+    responseObject.error = errorText;
+    return responseObject;
   }
 
   data.clientid = req.session.userid;
@@ -58,17 +66,46 @@ export async function orderCreationService(req) {
 
   data.models = parsedModels;
   const res = await createOrder(data);
-  return res;
+  if (typeof res.error !== 'undefined' && res.error !== '') {
+    responseObject.error = res.error;
+    return responseObject;
+  }
+
+  [responseObject.data] = res;
+  responseObject.status = 'Order successful';
+
+  return responseObject;
 }
 
 export async function getOrdersService() {
-  return getOrders();
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = await getOrders();
+  result.forEach((order) => {
+    responseObject.data[order.orderid] = order;
+  });
+  responseObject.status = 'Orders fetched';
+  return responseObject;
 }
 
 export async function claimOrderService(orderid, userid) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
   const success = await claimOrder(orderid, userid);
   if (!success) {
-    return { error: 'No such order' };
+    responseObject.error = 'No such order';
+    return responseObject;
   }
-  return { status: 'Success' };
+
+  responseObject.status = 'Claim successful';
+
+  return responseObject;
 }

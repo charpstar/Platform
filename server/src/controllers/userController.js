@@ -72,7 +72,12 @@ export async function login(req, res) {
   try {
     const { error, value } = loginParser.validate(req.body);
     if (typeof error !== 'undefined' && error !== null) {
-      return res.send(error);
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
     }
     return loginService(value).then((result) => {
       const temp = result;
@@ -94,7 +99,12 @@ export async function createuser(req, res) {
   try {
     const { error, value } = userParser.validate(req.body);
     if (typeof error !== 'undefined' && error !== null) {
-      return res.send(error);
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
     }
     return userCreationService(value).then((result) => {
       res.send(result);
@@ -134,7 +144,12 @@ export async function edituser(req, res) {
   try {
     const { error, value } = editUserParser.validate(req.body);
     if (typeof error !== 'undefined' && error !== null) {
-      return res.send(error);
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
     }
     return editUserService(value).then((result) => {
       res.send(result);
@@ -150,7 +165,12 @@ export async function deleteuser(req, res) {
   try {
     const { error, value } = editUserParser.validate(req.body);
     if (typeof error !== 'undefined' && error !== null) {
-      return res.send(error);
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
     }
     return deleteUserService(value).then((result) => {
       res.send(result);

@@ -36,7 +36,12 @@ export async function claimorder(req, res) {
   try {
     const { error, value } = idParser.validate(req.body);
     if (typeof error !== 'undefined' && error !== null) {
-      return res.send(error);
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
     }
     return claimOrderService(value, req.session.userid).then((result) => {
       res.send(result);

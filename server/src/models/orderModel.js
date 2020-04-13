@@ -21,12 +21,14 @@ const knexPool = knex({
 export async function createOrder(orderData) {
   const modelNames = Object.keys(orderData.models);
   try {
+    let createdOrderID = 0;
     await knexPool.transaction(async (trx) => {
       const [orderId] = await trx('orders')
         .insert({
           clientid: orderData.clientid,
         })
         .returning('orderid');
+      createdOrderID = orderId;
       modelNames.forEach((x, i) => {
         modelNames[i] = {
           orderid: orderId,
@@ -56,11 +58,12 @@ export async function createOrder(orderData) {
           stateafter: 'OrderReceived',
         });
     });
-    return { status: 'Order Made' };
+    return knexPool('orders')
+      .where('orderid', createdOrderID);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
-    return { status: 'Order failed' };
+    return { error: 'Order failed' };
   }
 }
 
