@@ -69,7 +69,6 @@ export default {
     },
     data() {
         return {
-            addComment: "",
             assignDialog: false,
             assignLoading: false,
             uploadDialog: false,

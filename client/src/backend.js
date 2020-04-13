@@ -155,15 +155,12 @@ export default {
                     if(model.orderid != orderid) {
                         delete data[model.modelid]
                     }
-                    if(model.blendercomments == null) {
-                        model.blendercomments = []
-                    }
-                    if(model.blendermodel == null) {
-                        model.blendermodel = ''
-                    }
                     Object.values(model.products).forEach(product => {
                         if(product.comments == null) {
                             product.comments = []
+                        }
+                        if(product.blendermodel == null) {
+                            product.blendermodel = ''
                         }
                     })
                 })
@@ -182,12 +179,12 @@ export default {
                     if(model.blendercomments == null) {
                         model.blendercomments = []
                     }
-                    if(model.blendermodel == null) {
-                        model.blendermodel = ''
-                    }
                     Object.values(model.products).forEach(product => {
                         if(product.comments == null) {
                             product.comments = []
+                        }
+                        if(product.blendermodel == null) {
+                            product.blendermodel = ''
                         }
                     })
                 })
@@ -245,10 +242,10 @@ export default {
         return Promise.all([androidTask, iosTask, thumbTask])
     },
 
-    uploadBlenderModel(model, blender) {
+    uploadBlenderModel(model, product, blender) {
         return new Promise((resolve) => {
-            databaseUpload('blender/' + model.modelid + '.blend', blender).then((url) => {
-                database.ref('models/' + model.modelid + "/blendermodel").set(url).then(
+            databaseUpload('blender/' + model.modelid + product.id + '.blend', blender).then((url) => {
+                database.ref('models/' + model.modelid + '/products/' + product.id + "/blendermodel").set(url).then(
                     resolve(url)
                 )
             })
@@ -263,34 +260,33 @@ export default {
         return dbPost('/admin/createuser', userObj)
     },
 
+    newProduct() {
+        var id = this.randomid(10)
+        return {
+            color: 'Gold',
+            iosmodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
+            androidmodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
+            blendermodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/blender%2F2U4HFJz629ALDFeBkKegSignrGKCJInY.blend?alt=media&token=6c009964-d3de-41d8-b34d-d7d81e7c9b43",
+            comments: [],
+            id: id
+        }
+    },
+
     newModel(orderid, clientid, modelName) {
         var backend = this
         return new Promise(resolve => {
             var products = {}
-            var id = backend.randomid(10)
-            products[id] = {
-                color: 'Gold',
-                iosmodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
-                androidmodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
-                comments: [],
-                id: id
-            }
-            id = backend.randomid(10)
-            products[id] = {
-                color: 'Black',
-                iosmodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
-                androidmodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
-                comments: [],
-                id: id
-            }
+            var prod = backend.newProduct()
+            products[prod.id] = prod
+            var prod = backend.newProduct()
+            prod.color = 'Black'
+            products[prod.id] = prod
             var model = {
                 thumbnail: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/thumbnails%2F0.png?alt=media&token=5c84937b-e978-4ac8-a28e-1a3cfd88922f",
                 products: products,
                 modelid: backend.randomid(32),
                 orderid: orderid,
                 clientid: clientid,
-                blendercomments: [],
-                blendermodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/blender%2F2U4HFJz629ALDFeBkKegSignrGKCJInY.blend?alt=media&token=6c009964-d3de-41d8-b34d-d7d81e7c9b43",
                 name: modelName,
                 status: 'Complete',
                 statusicon: 'check',
