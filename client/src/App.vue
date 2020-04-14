@@ -4,6 +4,7 @@
             :account="account"
             :loggedIn="view != 'login'"
             @logout="view = 'login'"
+            @home="home"
             :notifications="notifications"
         />
         <div id="center">
@@ -127,6 +128,16 @@ export default {
         notifications: {}
     }),
     methods: {
+        home() {
+            var vm = this
+            if(vm.view != 'login') {
+                if (account.usertype == "Client") {
+                    vm.view = "orderList";
+                } else {
+                    vm.view = "adminView";
+                }
+            }
+        },
         login(user) {
             var vm = this;
             vm.account = user;
@@ -187,7 +198,7 @@ export default {
 body {
     margin: 0;
     padding: 0;
-    background-color: grey;
+    background-color: #e8e8e8;
     height: 100vh;
     font-family: "Roboto";
 }
@@ -214,7 +225,7 @@ h2 {
     height: 100%;
     display: flex;
     flex-direction: column;
-    background-color: grey;
+    background-color: #e8e8e8;
 }
 
 #center {
@@ -253,11 +264,16 @@ th {
     text-align: start;
 }
 
-.v-btn {
+.iconColor {
+    color: #2196f3 !important;
+}
+.v-btn:not(.v-btn--icon) {
     background-color: #2196f3 !important;
 }
-
 .v-btn--icon {
-    background-color: white !important;
+    background-color: none !important;
+}
+a {
+    text-decoration: none;
 }
 </style>

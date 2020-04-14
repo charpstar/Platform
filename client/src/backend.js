@@ -97,6 +97,10 @@ export default {
         return dbPost('/login', {email:email, password:password})
     },
 
+    relogin() {
+        return dbGet('/login')
+    },
+
     logout() {
         return dbGet('/logout')
     },
@@ -155,12 +159,15 @@ export default {
                     if(model.orderid != orderid) {
                         delete data[model.modelid]
                     }
+                    if(model.comments == null) {
+                        model.comments = []
+                    }
+                    if(model.files == null) {
+                        model.files = {}
+                    }
                     Object.values(model.products).forEach(product => {
                         if(product.comments == null) {
                             product.comments = []
-                        }
-                        if(product.blendermodel == null) {
-                            product.blendermodel = ''
                         }
                     })
                 })
@@ -179,12 +186,15 @@ export default {
                     if(model.blendercomments == null) {
                         model.blendercomments = []
                     }
+                    if(model.comments == null) {
+                        model.comments = []
+                    }
+                    if(model.files == null) {
+                        model.files = {}
+                    }
                     Object.values(model.products).forEach(product => {
                         if(product.comments == null) {
                             product.comments = []
-                        }
-                        if(product.blendermodel == null) {
-                            product.blendermodel = ''
                         }
                     })
                 })
@@ -203,7 +213,7 @@ export default {
 
     updateModelComments(model) {
         return new Promise((resolve) => {
-            database.ref("models/" + model.modelid + "/blendercomments").set(model.blendercomments).then(() => {
+            database.ref("models/" + model.modelid + "/comments").set(model.comments).then(() => {
                 resolve()
             })
         })
@@ -217,29 +227,34 @@ export default {
         })
     },
 
-    uploadModels(model, product, android, ios, thumbnail) {
-        var androidTask = new Promise((resolve) => {
-            databaseUpload('android/' + model.modelid + product.id + '.glb', android).then((url) => {
+    uploadAndroidModel(model, product, file) {
+        return new Promise((resolve) => {
+            databaseUpload('android/' + model.modelid + product.id + '.glb', file).then((url) => {
                 database.ref('models/' + model.modelid + '/products/' + product.id + "/androidmodel").set(url).then(
                     resolve(url)
                 )
             })
         })
-        var iosTask = new Promise((resolve) => {
-            databaseUpload('ios/' + model.modelid + product.id + '.usdz', ios).then((url) => {
+    },
+
+    uploadIosModel(model, product, file) {
+        return new Promise((resolve) => {
+            databaseUpload('ios/' + model.modelid + product.id + '.glb', file).then((url) => {
                 database.ref('models/' + model.modelid + '/products/' + product.id + "/iosmodel").set(url).then(
                     resolve(url)
                 )
             })
         })
-        var thumbTask = new Promise((resolve) => {
+    },
+
+    uploadThumbnail(model, thumbnail) {
+        return new Promise((resolve) => {
             databaseUpload('thumbnails/' + model.modelid + '.png', thumbnail).then((url) => {
                 database.ref('models/' + model.modelid + "/thumbnail").set(url).then(
                     resolve(url)
                 )
             })
         })
-        return Promise.all([androidTask, iosTask, thumbTask])
     },
 
     uploadBlenderModel(model, product, blender) {
@@ -249,6 +264,27 @@ export default {
                     resolve(url)
                 )
             })
+        })
+    },
+
+    uploadModelFile(model, file) {
+        console.log(file)
+        return new Promise((resolve) => {
+            var id = this.randomid(10)
+            var reader = new FileReader();
+            reader.onload = e => {
+                databaseUpload('files/' + model.modelid + id, e.target.result).then((url) => {
+                    var fileObj = {
+                        name: file.name,
+                        link: url,
+                        id: id
+                    }
+                    database.ref('models/' + model.modelid + '/files/' + id).set(fileObj).then(
+                        resolve(fileObj)
+                    )
+                })
+            };
+            reader.readAsDataURL(file)
         })
     },
 
@@ -266,7 +302,6 @@ export default {
             color: 'Gold',
             iosmodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
             androidmodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
-            blendermodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/blender%2F2U4HFJz629ALDFeBkKegSignrGKCJInY.blend?alt=media&token=6c009964-d3de-41d8-b34d-d7d81e7c9b43",
             comments: [],
             id: id
         }
@@ -281,8 +316,17 @@ export default {
             var prod = backend.newProduct()
             prod.color = 'Black'
             products[prod.id] = prod
+            var files = {}
+            var id = backend.randomid(10)
+            files[id] = {
+                name: 'A file',
+                link: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
+                id: id
+            }
             var model = {
                 thumbnail: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/thumbnails%2F0.png?alt=media&token=5c84937b-e978-4ac8-a28e-1a3cfd88922f",
+                files: files,
+                comments: [],
                 products: products,
                 modelid: backend.randomid(32),
                 orderid: orderid,
@@ -365,6 +409,10 @@ export default {
                 res(assignment)
             })
         })
+    },
+
+    deleteModelFile(modelid, fileid) {
+        return databaseSet('models/' + modelid + '/files/' + fileid, null)
     },
 
     deleteUser(userid) {

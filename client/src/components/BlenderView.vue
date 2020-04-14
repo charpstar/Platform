@@ -15,49 +15,75 @@
         </v-dialog>
         <v-dialog v-model="uploadDialog" width="500">
             <div class="card">
-                <v-file-input :label="'Select Blender Model'" @change="onFileChange"></v-file-input>
+                <v-file-input :label="'Select file'" @change="onFileChange"></v-file-input>
                 <v-btn :loading="uploadLoading" @click="uploadModel">Upload</v-btn>
             </div>
         </v-dialog>
-        <div class="column">
-            <table id="itemTable">
+        <v-dialog v-model="deleteDialog" width="250px">
+            <div class="card flexcol">
+                <h2>Confirm Delete</h2>
+                <v-btn @click="deleteFileConfirmed" class="buttons">Confirm</v-btn>
+                <v-btn @click="deleteDialog = false" class="buttons">Cancel</v-btn>
+            </div>
+        </v-dialog>
+        <div class="flexrow" id="itemsrow">
+            <div class="column">
+                <div class="flexrow">
+                    <p>Files</p>
+                    <v-btn icon @click="uploadDialog = true">
+                        <v-icon class="iconColor">mdi-cloud-upload</v-icon>
+                    </v-btn>
+                </div>
+                <table class="fileList">
+                    <tr v-for="(file, id) in model.files" :key="id">
+                        <td>
+                            <div class="fileName">{{file.name}}</div>
+                        </td>
+                        <td>
+                            <a :href="file.link" target="_blank">
+                                <v-icon>mdi-cloud-download</v-icon>
+                            </a>
+                        </td>
+                        <td>
+                            <v-btn icon @click="() => {deleteFile(id)}">
+                                <v-icon >mdi-close</v-icon>
+                            </v-btn>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="column">
+                <table id="itemTable">
+                    <tr>
+                        <td>Assigned modeler:</td>
+                        <td>
+                            {{model.assignedmodeler ? model.assignedmodeler.name : 'none'}}
+                            <v-btn
+                                v-if="account.usertype != 'Modeller'"
+                                icon
+                                @click="assignDialog = true"
+                            >
+                                <v-icon class="iconColor">mdi-account-plus</v-icon>
+                            </v-btn>
+                        </td>
+                    </tr>
+                </table>
 
-                <tr>
-                    <td>Assigned modeler</td>
-                    <td >
-                        {{model.assignedmodeler ? model.assignedmodeler.name : 'none'}}
-                    </td>
-                    <td v-if="account.usertype != 'Modeller'">
-                        <v-btn @click="assignDialog = true">Assign Modeler</v-btn>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Blender model</td>
-                    <td>
-                        <v-btn :href="model.blendermodel" target="_blank" v-if="model.blendermodel != ''">Download</v-btn>
-                        <span v-else>none</span>
-                    </td>
-                    <td>
-                        <v-btn @click="uploadDialog = true">Upload</v-btn>
-                    </td>
- 
-                </tr>
-            </table>
-            <h2 id="commentsLabel">Comments</h2>
-            <comments
-                :account="account"
-                :comments="model.blendercomments"
-                @comment="sendComment"
-                :review="true"
-            />
+                <h2 id="commentsLabel">Comments</h2>
+                <comments
+                    :account="account"
+                    :comments="model.comments"
+                    @comment="sendComment"
+                    :review="true"
+                />
+            </div>
         </div>
     </div>
-
 </template>
 <script>
 import backend from "./../backend";
 import comments from "./CommentView";
+import Vue from 'vue'
 
 export default {
     components: {
@@ -73,45 +99,53 @@ export default {
             assignLoading: false,
             uploadDialog: false,
             uploadLoading: false,
+            deleteDialog: false,
+            deleteLoading: false,
+            selectedFile: false,
             modelers: [],
             modeler: false,
-            file: ''
+            file: ""
         };
     },
     methods: {
-         onFileChange(file) {
-            var vm = this
-            if (file) {
-                var reader = new FileReader()
-                reader.onload = e => {
-                    vm.file = e.target.result
-                };
-                reader.readAsDataURL(file)
-            } else {
-                vm.file = false
-            }
+        onFileChange(file) {
+            this.file = file
         },
         sendComment() {
-            var vm = this
+            var vm = this;
             backend.updateModelComments(vm.model);
         },
         assignModeler() {
-            var vm = this
+            var vm = this;
             vm.assignLoading = true;
             backend.assignModeler(vm.model.modelid, vm.modeler).then(data => {
-                vm.assignLoading = false
-                vm.assignDialog = false
+                vm.assignLoading = false;
+                vm.assignDialog = false;
                 vm.model.assignedmodeler = data;
             });
         },
         uploadModel() {
+            var vm = this;
+            vm.uploadLoading = true;
+            backend.uploadModelFile(vm.model, vm.file).then(newFile => {
+                vm.model.files[newFile.id] = newFile
+                vm.uploadLoading = false;
+                vm.uploadDialog = false;
+                vm.file = false;
+            });
+        },
+        deleteFile(id) {
+            this.deleteDialog = true
+            this.selectedFile = id
+        },
+        deleteFileConfirmed() {
             var vm = this
-            vm.uploadLoading = true
-            backend.uploadBlenderModel(vm.model, vm.file).then(url => {
-                vm.model.blendermodel = url
-                vm.uploadLoading = false
-                vm.uploadDialog = false
-                vm.file = false
+            vm.deleteLoading = true
+            backend.deleteModelFile(vm.model.modelid, vm.selectedFile).then(() => {
+                vm.deleteLoading = false
+                vm.deleteDialog = false
+                Vue.delete(vm.model.files, vm.selectedFile)
+                vm.selectedFile = false
             })
         }
     },
@@ -129,12 +163,11 @@ export default {
     width: 80vw;
 }
 #itemTable {
-    font-size: 26px;
+    font-size: 20px;
     color: grey;
     td {
         padding-right: 20px;
     }
-    margin-top: 20px;
 }
 #modelView {
     width: 400px;
@@ -152,12 +185,29 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    > * {
-        margin-bottom: 20px;
-    }
+    justify-content: flex-start;
 }
 
 #default-progress-bar {
     display: none !important;
+}
+
+.fileList {
+    width: 400px;
+    background-color: #cccccc;
+    td {
+        border: none;
+    }
+    max-height: 60px;
+    overflow-y: scroll;
+    margin-right: 20px;
+}
+
+.fileName {
+    width: 300px;
+    padding-left: 10px;
+}
+.buttons {
+    margin-top: 10px;
 }
 </style>

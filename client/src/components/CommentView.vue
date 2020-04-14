@@ -5,7 +5,7 @@
                 id="addComment"
                 v-model="addComment"
                 name="comment"
-                placeholder="Comment Message"
+                placeholder="Message"
                 :full-width="true"
                 :hide-details="true"
             ></v-textarea>

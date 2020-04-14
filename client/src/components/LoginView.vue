@@ -1,7 +1,7 @@
 <template>
     <div id="login">
         <div class="flexrow">
-            <img src="charpstar.png" id="logo" />
+            <img src="charpstar2.png" id="logo" />
         </div>
         <v-text-field label="email" v-model="email" />
         <v-text-field
@@ -36,7 +36,6 @@ export default {
             error: ""
         };
     },
-
     methods: {
         login() {
             var vm = this;
@@ -60,6 +59,16 @@ export default {
                 this.login();
             }
         }
+    },
+    mounted() {
+        var vm = this;
+        backend.relogin().then(userData => {
+            backend.getIdFix(userData.email).then(id => {
+                userData.userid = id;
+                vm.$emit("login", userData);
+                vm.loading = false;
+            });
+        })
     }
 };
 </script>
@@ -72,7 +81,7 @@ export default {
 }
 
 #logo {
-    max-width: 100px;
+    max-width: 150px;
     margin-bottom: 20px;
 }
 
@@ -86,5 +95,8 @@ h1 {
     color: #d12300 !important;
     margin-bottom: 5px;
     max-width: 200px;
+}
+.v-btn {
+    margin-top: 10px;
 }
 </style>

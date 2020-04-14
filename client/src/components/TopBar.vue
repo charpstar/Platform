@@ -1,7 +1,7 @@
 <template>
     <div id="header">
         <div class="row">
-            <p>3D asset management system</p>
+            <img src="charpstar3.png" class="logosmall" @click="$emit('home')"><p>3D asset management system</p>
         </div>
         <div v-if="loggedIn">
             <v-menu id="menu" offset-y v-model="menuOpen" :close-on-content-click="false">
@@ -92,6 +92,7 @@ export default {
     justify-content: space-between;
     .row {
         flex-grow: 0;
+        cursor: pointer;
     }
     p {
         font-size: 24px;
@@ -129,5 +130,10 @@ export default {
 #acountIcon {
     color: grey;
     font-size: 24px;
+}
+
+.logosmall {
+    height: 30px;
+    margin-left: 10px;
 }
 </style>
