@@ -1,5 +1,10 @@
 import Joi from 'joi';
-import { orderCreationService, getOrdersService, claimOrderService } from '../services/orderService';
+import {
+  orderCreationService,
+  getOrdersService,
+  claimOrderService,
+  getClientOrdersService,
+} from '../services/orderService';
 
 const idParser = Joi.object({
   id: Joi.number()
@@ -44,6 +49,27 @@ export async function claimorder(req, res) {
       return res.send(responseObject);
     }
     return claimOrderService(value, req.session.userid).then((result) => {
+      res.send(result);
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function getclientorders(req, res) {
+  try {
+    const { error, value } = idParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return getClientOrdersService(value).then((result) => {
       res.send(result);
     });
   } catch (e) {

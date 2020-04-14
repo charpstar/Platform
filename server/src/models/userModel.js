@@ -29,7 +29,7 @@ export async function createUser(userdata) {
     email: userdata.email,
     hash: userdata.hash,
     active: userdata.active,
-  }).returning(['name', 'usertype', 'active', 'email']);
+  }).returning(['userid', 'name', 'usertype', 'active', 'email']);
 }
 
 export async function getUser(id) {

@@ -4,6 +4,7 @@ import {
   assignModelerService,
   getModelersService,
   getModelsService,
+  getModellerModelsService,
 } from '../services/modelService';
 
 const orderIdParser = Joi.object({
@@ -25,9 +26,25 @@ const modelAssignmentParser = Joi.object({
     .required(),
 });
 
+const modelUploadParser = Joi.object({
+  productid: Joi.number()
+    .integer()
+    .min(0)
+    .required(),
+});
+
 export async function uploadmodel(req, res) {
   try {
-    return modelUploadService(req.body).then((result) => {
+    const { error, value } = modelUploadParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      res.send(responseObject);
+    }
+    return modelUploadService(req, value).then((result) => {
       res.send(result);
     });
   } catch (e) {
@@ -82,6 +99,18 @@ export async function getmodels(req, res) {
       return res.send(responseObject);
     }
     return getModelsService(value).then((result) => {
+      res.send(result);
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function getmodellermodels(req, res) {
+  try {
+    return getModellerModelsService(req.session.userid).then((result) => {
       res.send(result);
     });
   } catch (e) {

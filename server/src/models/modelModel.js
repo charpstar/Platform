@@ -36,3 +36,66 @@ export async function getModels(orderid) {
     .select(['modelid', 'modelowner', 'name'])
     .where('orderid', orderid);
 }
+
+export async function uploadModel(path, ext, id) {
+  const [exists] = await knexPool('productversions')
+    .where('productid', id)
+    .count();
+
+  if (exists.count === '0') {
+    if (ext === '.glb') {
+      return knexPool('productversions')
+        .insert({
+          productid: id,
+          androidlink: path,
+        })
+        .returning(['androidlink']);
+    }
+
+    if (ext === '.usdz') {
+      return knexPool('productversions')
+        .insert({
+          productid: id,
+          ioslink: path,
+        })
+        .returning(['ioslink']);
+    }
+
+    return knexPool('productversions')
+      .insert({
+        productid: id,
+        blenderlink: path,
+      })
+      .returning(['blenderlink']);
+  }
+
+  if (ext === '.glb') {
+    return knexPool('productversions')
+      .update({
+        androidlink: path,
+      })
+      .where('productid', id)
+      .returning(['androidlink']);
+  }
+
+  if (ext === '.usdz') {
+    return knexPool('productversions')
+      .update({
+        ioslink: path,
+      })
+      .where('productid', id)
+      .returning(['ioslink']);
+  }
+
+  return knexPool('productversions')
+    .update({
+      blenderlink: path,
+    })
+    .where('productid', id)
+    .returning(['blenderlink']);
+}
+
+export async function getModellerModels(id) {
+  return knexPool('models')
+    .where('modelowner', id);
+}

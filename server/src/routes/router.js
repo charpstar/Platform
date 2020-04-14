@@ -13,8 +13,14 @@ import {
   assignmodeler,
   getmodelers,
   getmodels,
+  getmodellermodels,
 } from '../controllers/modelController';
-import { createorder, getorders, claimorder } from '../controllers/orderController';
+import {
+  createorder,
+  getorders,
+  claimorder,
+  getclientorders,
+} from '../controllers/orderController';
 import { comment, getComments } from '../controllers/genericController';
 
 const upload = multer({ dest: './private/' });
@@ -42,10 +48,13 @@ router.post('/admin/deleteuser', deleteuser);
 router.get('/qa/getorders', getorders);
 router.post('/client/createorder', upload.single('orderdata'), createorder);
 router.post('/qa/claimorder', claimorder);
+router.post('/gen/getclientorders', getclientorders);
 
 // Model related
 router.get('/qa/getmodelers', getmodelers);
-router.post('/modeller/uploadmodel', uploadmodel);
+router.get('/modeller/models', getmodellermodels);
 router.post('/qa/assignmodeler', assignmodeler);
-router.post('/qa/getmodels', getmodels);
+router.post('/gen/getmodels', getmodels);
+router.post('/modeller/uploadmodel', upload.single('modelfile'), uploadmodel);
+
 export default router;

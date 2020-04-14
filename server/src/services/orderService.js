@@ -1,6 +1,11 @@
 import xlsx from 'xlsx';
 import fs from 'fs';
-import { createOrder, getOrders, claimOrder } from '../models/orderModel';
+import {
+  createOrder,
+  getOrders,
+  claimOrder,
+  getClientOrders,
+} from '../models/orderModel';
 
 export async function orderCreationService(req) {
   const responseObject = {
@@ -106,6 +111,24 @@ export async function claimOrderService(orderid, userid) {
   }
 
   responseObject.status = 'Claim successful';
+
+  return responseObject;
+}
+
+export async function getClientOrdersService(client) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = await getClientOrders(client.id);
+
+  result.forEach((order) => {
+    responseObject.data[order.orderid] = order;
+  });
+
+  responseObject.status = 'Orders fetched';
 
   return responseObject;
 }
