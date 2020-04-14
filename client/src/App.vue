@@ -131,7 +131,7 @@ export default {
         home() {
             var vm = this
             if(vm.view != 'login') {
-                if (account.usertype == "Client") {
+                if (vm.account.usertype == "Client") {
                     vm.view = "orderList";
                 } else {
                     vm.view = "adminView";

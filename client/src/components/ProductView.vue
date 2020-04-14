@@ -44,14 +44,14 @@
 import modelupload from "./ModelUpload"
 import backend from "./../backend"
 import comments from "./CommentView"
-import iconbutton from './IconButton'
+//import iconbutton from './IconButton'
 import modelversions from './VersionModal'
 
 export default {
     components: {
         modelupload,
         comments,
-        iconbutton,
+        //iconbutton,
         modelversions
     },
     props: {

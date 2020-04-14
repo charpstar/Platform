@@ -268,7 +268,6 @@ export default {
     },
 
     uploadModelFile(model, file) {
-        console.log(file)
         return new Promise((resolve) => {
             var id = this.randomid(10)
             var reader = new FileReader();
@@ -313,7 +312,7 @@ export default {
             var products = {}
             var prod = backend.newProduct()
             products[prod.id] = prod
-            var prod = backend.newProduct()
+            prod = backend.newProduct()
             prod.color = 'Black'
             products[prod.id] = prod
             var files = {}

@@ -1,0 +1,1 @@
+docker create --name ui --restart unless-stopped -p 80:80 charpstar/ui
