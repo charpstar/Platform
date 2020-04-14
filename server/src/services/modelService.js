@@ -6,6 +6,7 @@ import {
   getModels,
   assignModeler,
   uploadModel,
+  getModellerModels,
 } from '../models/modelModel';
 
 export async function modelUploadService(req, data) {
@@ -68,6 +69,8 @@ export async function getModelersService() {
 
   const result = await getModelers();
 
+  console.log(result);
+
   result.forEach((modeler) => {
     responseObject.data[modeler.userid] = modeler;
   });
@@ -85,6 +88,24 @@ export async function getModelsService(data) {
   };
 
   const result = await getModels(data.orderid);
+  result.forEach((model) => {
+    responseObject.data[model.modelid] = model;
+  });
+
+  responseObject.status = 'Models fetched';
+
+  return responseObject;
+}
+
+export async function getModellerModelsService(id) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = await getModellerModels(id);
+
   result.forEach((model) => {
     responseObject.data[model.modelid] = model;
   });

@@ -94,3 +94,8 @@ export async function uploadModel(path, ext, id) {
     .where('productid', id)
     .returning(['blenderlink']);
 }
+
+export async function getModellerModels(id) {
+  return knexPool('models')
+    .where('modelowner', id);
+}

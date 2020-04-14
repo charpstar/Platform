@@ -35,7 +35,7 @@ app.use(cors({
   methods:['GET', 'POST'],
   credentials: true,
 }));
-app.use(express.static('./public/'));
+app.use('/public', express.static('./public/'));
 
 const pgSession = connectPgSimple(session);
 const pgPool = new pg.Pool({
@@ -74,6 +74,8 @@ app.post('/login', router);
 // Generic routes (requires being logged in)
 app.post('/gen/comment', router);
 app.post('/gen/getComments', router);
+app.post('/gen/getclientorders', router);
+app.post('/gen/getmodels', router);
 
 // Admin routes
 app.get('/admin/getusers', router);
@@ -84,11 +86,11 @@ app.post('/admin/deleteuser', router);
 // QA routes
 app.get('/qa/getorders', router);
 app.get('/qa/getmodelers', router);
-app.post('/qa/getmodels', router);
 app.post('/qa/claimorder', router);
 app.post('/qa/assignmodeler', router);
 
 // Modeller routes
+app.get('/modeller/models', router);
 app.post('/modeller/uploadModel', router);
 
 // Client routes

@@ -4,6 +4,7 @@ import {
   assignModelerService,
   getModelersService,
   getModelsService,
+  getModellerModelsService,
 } from '../services/modelService';
 
 const orderIdParser = Joi.object({
@@ -98,6 +99,18 @@ export async function getmodels(req, res) {
       return res.send(responseObject);
     }
     return getModelsService(value).then((result) => {
+      res.send(result);
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function getmodellermodels(req, res) {
+  try {
+    return getModellerModelsService(req.session.userid).then((result) => {
       res.send(result);
     });
   } catch (e) {

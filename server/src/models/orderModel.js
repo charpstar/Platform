@@ -108,3 +108,8 @@ export async function claimOrder(orderId, userId) {
     return { status: 'Claim failed' };
   }
 }
+
+export async function getClientOrders(id) {
+  return knexPool('orders')
+    .where('clientid', id);
+}
