@@ -83,7 +83,6 @@ export async function login(req, res) {
       const temp = result;
       if (result.error === '') {
         req.session.userid = result.data.userid;
-        delete temp.data.userid;
         req.session.usertype = result.data.usertype;
       }
       res.send(temp);
