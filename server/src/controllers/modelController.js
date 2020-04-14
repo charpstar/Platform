@@ -25,9 +25,25 @@ const modelAssignmentParser = Joi.object({
     .required(),
 });
 
+const modelUploadParser = Joi.object({
+  productid: Joi.number()
+    .integer()
+    .min(0)
+    .required(),
+});
+
 export async function uploadmodel(req, res) {
   try {
-    return modelUploadService(req.body).then((result) => {
+    const { error, value } = modelUploadParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      res.send(responseObject);
+    }
+    return modelUploadService(req, value).then((result) => {
       res.send(result);
     });
   } catch (e) {

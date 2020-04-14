@@ -1,4 +1,6 @@
 node_modules
+public/*
+private/*
 
 # local env files
 .env
