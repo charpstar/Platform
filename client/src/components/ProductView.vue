@@ -22,6 +22,11 @@
                             <modelupload v-if="account.usertype != 'Client'" :model="model" :product="product" :uploadfun="iosUploadFun" @upload="uploadedIos" />
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            <modelversions :product="product"></modelversions>
+                        </td>
+                    </tr>
                 </table>
                 <h2 id="commentsLabel">Comments</h2>
                 <comments
@@ -36,16 +41,18 @@
     </div>
 </template>
 <script>
-import modelupload from "./ModelUpload";
-import backend from "./../backend";
-import comments from "./CommentView";
+import modelupload from "./ModelUpload"
+import backend from "./../backend"
+import comments from "./CommentView"
 import iconbutton from './IconButton'
+import modelversions from './VersionModal'
 
 export default {
     components: {
         modelupload,
         comments,
-        iconbutton
+        iconbutton,
+        modelversions
     },
     props: {
         product: { type: Object, required: true },

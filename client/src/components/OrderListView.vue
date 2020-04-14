@@ -2,7 +2,7 @@
     <div>
         <v-dialog v-model="dialog" width="500">
             <div class="card">
-                <v-file-input :label="'Select Excel Docuemnt'" @change="onFileChange"></v-file-input>
+                <v-file-input :label="'Select Excel Document'" @change="onFileChange"></v-file-input>
                 <p v-if="error != ''">{{error}}</p>
                 <v-btn :loading="loading" @click="newOrder">Upload</v-btn>
             </div>
