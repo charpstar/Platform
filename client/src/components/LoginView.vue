@@ -13,9 +13,9 @@
             @keydown="buttonPress"
         />
         <transitionexpandheight>
-            <p class="error" v-if="error != ''">{{error}}</p>
+            <p class="error" v-if="button.error">{{button.error}}</p>
         </transitionexpandheight>
-        <v-btn @click="login" :loading="loading">Login</v-btn>
+        <v-btn @click="button.execute" :loading="button.loading" :disabled="!email || !password">Login</v-btn>
     </div>
 </template>
 
@@ -32,31 +32,23 @@ export default {
             email: "",
             password: "",
             showPassword: false,
-            loading: false,
-            error: ""
+            button: backend.promiseHandler(this.login)
         };
     },
     methods: {
         login() {
             var vm = this;
-            vm.loading = true;
-            backend
-                .login(vm.email, vm.password)
+            return backend.login(vm.email, vm.password)
                 .then(userData => {
                     backend.getIdFix(userData.email).then(id => {
                         userData.userid = id;
                         vm.$emit("login", userData);
-                        vm.loading = false;
                     });
                 })
-                .catch(error => {
-                    vm.error = error;
-                    vm.loading = false;
-                });
         },
         buttonPress(button) {
             if (button.key == "Enter") {
-                this.login();
+                this.button.execute();
             }
         }
     },
@@ -66,7 +58,6 @@ export default {
             backend.getIdFix(userData.email).then(id => {
                 userData.userid = id;
                 vm.$emit("login", userData);
-                vm.loading = false;
             });
         })
     }

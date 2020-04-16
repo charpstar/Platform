@@ -1,9 +1,10 @@
 <template>
     <div>
-        <v-dialog v-model="dialog" width="500">
+        <v-dialog v-model="newModelHandler.modal" width="500">
             <div class="card">
                 <v-text-field label="Name" v-model="name" />
-                <v-btn :loading="loading" @click="newModel">New Model</v-btn>
+                <v-btn :loading="newModelHandler.loading" @click="newModelHandler.execute">New Model</v-btn>
+                <p class="error-text" v-if="newModelHandler.error">{{newModelHandler.error}}</p>
             </div>
         </v-dialog>
         <div class="flexrow" id="topRow">
@@ -13,24 +14,35 @@
                 </v-btn>
                 <h2>Models</h2>
             </div>
-            <v-btn id="buttonNew" @click="dialog = true" v-if="!emptyObj(order)">
+            <v-btn id="buttonNew" @click="newModelHandler.dialog = true" v-if="!emptyObj(order)">
                 New Model
                 <v-icon right>mdi-file-plus</v-icon>
             </v-btn>
         </div>
         <div id="itemsView">
+            <v-text-field
+                v-model="search"
+                append-icon="search"
+                label="Filter"
+                single-line
+                hide-details
+            ></v-text-field>
             <v-data-table
                 id="table"
                 :headers="headers"
                 :items="Object.values(models)"
                 :items-per-page="-1"
+                :must-sort="true"
+                :sort-by="'name'"
+                :search="search"
                 @click:row="handleClick"
             >
                 <template v-slot:item.thumbnail="{value}">
                     <img :src="value" class="thumbnail" />
                 </template>
-                <template v-slot:item.statusicon="{value}">
-                    <i class="material-icons">{{value}}</i>
+                <template v-slot:item.status="{value}">
+                    {{backend.messageFromStatus(value)}}
+                    <v-icon>{{backend.iconFromStatus(value)}}</v-icon>
                 </template>
             </v-data-table>
         </div>
@@ -55,16 +67,11 @@ export default {
                 },
                 { text: "Name", value: "name", align: "left" },
                 { text: "Status", value: "status", align: "left" },
-                {
-                    text: "",
-                    value: "statusicon",
-                    align: "left",
-                    sortable: false
-                }
             ],
-            dialog: false,
-            loading: false,
-            name: ""
+            newModelHandler: backend.promiseHandler(this.newModel),
+            name: "",
+            search: "",
+            backend: backend
         };
     },
     methods: {
@@ -73,11 +80,10 @@ export default {
         },
         newModel() {
             var vm = this;
-            vm.loading = true;
-            backend
+            return backend
                 .newModel(vm.order.orderid, vm.order.clientid, vm.name)
                 .then(model => {
-                    (vm.loading = false), (vm.dialog = false), (vm.name = "");
+                    vm.name = "";
                     vm.models[model.modelid] = model;
                 });
         },

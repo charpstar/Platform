@@ -276,4 +276,11 @@ th {
 a {
     text-decoration: none;
 }
+.v-data-table tr {
+    cursor: pointer;
+}
+.error-text {
+    color: #d12300;
+    margin-bottom: 5px;
+}
 </style>

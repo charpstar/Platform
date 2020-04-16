@@ -1,6 +1,6 @@
 <template>
     <div class="modelUpload">
-        <v-dialog v-model="dialog" width="500">
+        <v-dialog v-model="handler.modal" width="500">
             <template v-slot:activator="{ on }">
                 <v-btn v-on="on" icon>
                     <v-icon class="iconColor">mdi-cloud-upload</v-icon>
@@ -16,12 +16,12 @@
                     </div>
                 </div>
                 <v-divider></v-divider>
-
+                <p class="error-text" v-if="handler.error">{{handler.error}}</p>
                 <v-card-actions>
                     <v-checkbox v-model="thumbnail" :label="' Update Thumbnail'" color="#2196f3"></v-checkbox>
                     <v-spacer></v-spacer>
-                    <v-btn class="buttons" @click="upload" :loading="loading">Upload</v-btn>
-                    <v-btn class="buttons" @click="dialog = false">Cancel</v-btn>
+                    <v-btn class="buttons" @click="handler.execute" :loading="handler.loading" :disabled="!modelFile.model">Upload</v-btn>
+                    <v-btn class="buttons" @click="handler.modal = false">Cancel</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -43,8 +43,7 @@ export default {
     },
     data() {
         return {
-            dialog: false,
-            loading: false,
+            handler: backend.promiseHandler(this.upload),
             thumbnail: true,
             modelFile: {
                 model: "",
@@ -53,22 +52,29 @@ export default {
             },
         };
     },
+    computed: {
+        open() {
+            return this.handler.modal
+        }
+    },
     methods: {
         upload() {
             var vm = this
-            vm.loading = true
             var promises = []
             promises.push(vm.uploadfun(vm.model, vm.product, vm.modelFile.model))
             if(vm.thumbnail) {
                 promises.push(backend.uploadThumbnail(vm.model, vm.modelFile.image))
             }
-            Promise.all(promises).then(values => {
-                vm.loading = false
+            return Promise.all(promises).then(values => {
                 vm.modelFile.model = ""
                 vm.$emit("upload", values)
-                vm.dialog = false
             });
         }
+    },
+    watch: {
+        open(val) {
+            this.$emit('opened', val)
+        },
     }
 };
 </script>

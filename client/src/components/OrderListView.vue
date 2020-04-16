@@ -1,10 +1,10 @@
 <template>
     <div>
-        <v-dialog v-model="dialog" width="500">
+        <v-dialog v-model="newOrderHandler.modal" width="500">
             <div class="card">
                 <v-file-input :label="'Select Excel Document'" @change="onFileChange"></v-file-input>
-                <p v-if="error != ''">{{error}}</p>
-                <v-btn :loading="loading" @click="newOrder">Upload</v-btn>
+                <p v-if="newOrderHandler.error">{{newOrderHandler.error}}</p>
+                <v-btn :disabled="!file" :loading="newOrderHandler.loading" @click="newOrderHandler.execute">Upload</v-btn>
             </div>
         </v-dialog>
         <div class="flexrow" id="topRow">
@@ -14,19 +14,49 @@
                 </v-btn>
                 <h2>Orders</h2>
             </div>
-            <v-btn id="buttonNew" @click="dialog = true" v-if="!emptyObj(user)">
+            <v-btn id="buttonNew" @click="newOrderHandler.modal=true" v-if="!emptyObj(user)">
                 New Order
                 <v-icon right>mdi-file-plus</v-icon>
             </v-btn>
         </div>
         <div id="itemsView">
+            <v-text-field
+                v-model="search"
+                append-icon="search"
+                label="Filter"
+                single-line
+                hide-details
+            ></v-text-field>
             <v-data-table
                 id="table"
                 :headers="headers"
                 :items="Object.values(orders)"
                 :items-per-page="-1"
+                :must-sort="true"
+                :sort-by="'time'"
+                :search="search"
                 @click:row="handleClick"
-            ></v-data-table>
+            >
+                <template v-slot:item.complete="{item}">
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on }">
+                            <v-progress-linear
+                                :buffer-value="100"
+                                :height="10"
+                                :rounded="true"
+                                :value="item.complete/item.amount * 100"
+                                color="#2196f3"
+                                v-on="on"
+                            ></v-progress-linear>
+                        </template>
+                        <span>{{item.complete}}/{{item.amount}}</span>
+                    </v-tooltip>
+                </template>
+                <template v-slot:item.status="{value}">
+                    {{backend.messageFromStatus(value)}}
+                    <v-icon>{{backend.iconFromStatus(value)}}</v-icon>
+                </template>
+            </v-data-table>
         </div>
     </div>
 </template>
@@ -45,14 +75,15 @@ export default {
             headers: [
                 { text: "Date", value: "time", align: "left" },
                 { text: "Models", value: "amount", align: "left" },
+                { text: "Progress", value: "complete", align: "left" },
                 { text: "Status", value: "status", align: "left" },
                 { text: "Client", value: "clientname", align: "left" },
                 { text: "Assigned QA", value: "assignedqa.name", align: "left" }
             ],
-            dialog: false,
-            loading: false,
+            newOrderHandler: backend.promiseHandler(this.newOrder),
             file: false,
-            error: ""
+            search: "",
+            backend: backend
         };
     },
     methods: {
@@ -65,22 +96,12 @@ export default {
         newOrder() {
             var vm = this;
             if (vm.file) {
-                vm.loading = true;
-                backend
-                    .createOrder(vm.file)
-                    .then(order => {
-                        vm.loading = false;
-                        vm.dialog = false;
+                /*backend.createOrder(vm.file).then(order => {
                         vm.orders[order.orderid] = order;
-                    })
-                    .catch(error => {
-                        vm.error = error;
-                        vm.loading = false;
-                    });
-                backend.newOrder(vm.user, vm.file).then(order => {
-                    vm.loading = false;
-                    vm.dialog = false;
+                    })*/
+                return backend.newOrder(vm.user, vm.file).then(order => {
                     vm.orders[order.orderid] = order;
+                    vm.file = false
                 });
             }
         },

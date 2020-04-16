@@ -1,17 +1,19 @@
 <template>
     <div class="view">
-        <v-dialog v-model="deleteConfirm" width="250px">
+        <v-dialog v-model="deleteHandler.modal" width="250px">
             <div class="card flexcol">
                 <h2>Confirm Delete</h2>
-                <v-btn @click="deleteUser">Confirm</v-btn>
-                <v-btn @click="deleteConfirm = false">Cancel</v-btn>
+                <v-btn :loading="resetHandler.loading" @click="deleteHandler.execute">Confirm</v-btn>
+                <v-btn @click="deleteHandler.modal = false">Cancel</v-btn>
+                <p class="error-text" v-if="deleteHandler.error">{{deleteHandler.error}}</p>
             </div>
         </v-dialog>
-        <v-dialog v-model="resetConfirm" width="250px">
+        <v-dialog v-model="resetHandler.modal" width="250px">
             <div class="card flexcol">
                 <h2>Confirm Reset</h2>
-                <v-btn @click="resetUser">Confirm</v-btn>
-                <v-btn @click="resetConfirm = false">Cancel</v-btn>
+                <v-btn :loading="resetHandler.loading" @click="resetHandler.execute">Confirm</v-btn>
+                <v-btn @click="resetHandler.modal = false">Cancel</v-btn>
+                <p class="error-text" v-if="resetHandler.error">{{resetHandler.error}}</p>
             </div>
         </v-dialog>
         <div class="flexrow" id="topRow">
@@ -49,7 +51,7 @@
             </table>
             <div class="flexcol" id="buttons">
                 <div class="flexrow">
-                    <v-btn :loading="resetLoading" @click="resetConfirm = true">Reset Password</v-btn>
+                    <v-btn @click="resetHandler.modal=true">Reset Password</v-btn>
                     <v-text-field
                         outlined
                         readonly
@@ -61,7 +63,7 @@
                     ></v-text-field>
                 </div>
                 <v-btn :loading="viewLoading" @click="viewOrders">View Orders</v-btn>
-                <v-btn :loading="deleteLoading" @click="deleteConfirm = true">Delete</v-btn>
+                <v-btn @click="deleteHandler.modal = true">Delete</v-btn>
             </div>
         </div>
         <v-snackbar v-model="snackbar" :timeout="3000">Password copied to clipboard</v-snackbar>
@@ -77,12 +79,10 @@ export default {
     },
     data() {
         return {
-            resetLoading: false,
-            resetConfirm: false,
+            deleteHandler: backend.promiseHandler(this.deleteUser),
+            resetHandler: backend.promiseHandler(this.resetUser),
             newPassword: "",
             viewLoading: false,
-            deleteLoading: false,
-            deleteConfirm: false,
             snackbar: false
         };
     },
@@ -96,20 +96,14 @@ export default {
         },
         resetUser() {
             var vm = this;
-            vm.resetLoading = true;
-            vm.resetConfirm = false;
             var password = backend.randomid(10);
-            backend.resetPassword(vm.user.userid, password).then(() => {
-                vm.resetLoading = false;
+            return backend.resetPassword(vm.user.userid, password).then(() => {
                 vm.newPassword = password;
             });
         },
         deleteUser() {
             var vm = this;
-            vm.deleteLoading = true;
-            vm.deleteConfirm = false;
-            backend.deleteUser(vm.user.userid).then(() => {
-                vm.deleteLoading = false;
+            return backend.deleteUser(vm.user.userid).then(() => {
                 vm.$emit("delete", vm.user.userid);
             });
         },

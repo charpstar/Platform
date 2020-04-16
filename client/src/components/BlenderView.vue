@@ -1,6 +1,6 @@
 <template>
     <div id="item">
-        <v-dialog v-model="assignDialog" width="500">
+        <v-dialog v-model="assign.modal" width="500">
             <div class="card">
                 <v-select :items="modelers" label="Modeler" v-model="modeler">
                     <template v-slot:item="{item}">
@@ -10,27 +10,29 @@
                         <span>{{item.name}}</span>
                     </template>
                 </v-select>
-                <v-btn :loading="assignLoading" @click="assignModeler">Assign</v-btn>
+                <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!modeler">Assign</v-btn>
+                <p class="error-text" v-if="assign.error">{{assign.error}}</p>
             </div>
         </v-dialog>
-        <v-dialog v-model="uploadDialog" width="500">
+        <v-dialog v-model="upload.modal" width="500">
             <div class="card">
                 <v-file-input :label="'Select file'" @change="onFileChange"></v-file-input>
-                <v-btn :loading="uploadLoading" @click="uploadModel">Upload</v-btn>
+                <v-btn :loading="upload.loading" @click="upload.execute" :disabled="!file">Upload</v-btn>
             </div>
         </v-dialog>
-        <v-dialog v-model="deleteDialog" width="250px">
+        <v-dialog v-model="deleteHandler.modal" width="250px">
             <div class="card flexcol">
                 <h2>Confirm Delete</h2>
-                <v-btn @click="deleteFileConfirmed" class="buttons">Confirm</v-btn>
-                <v-btn @click="deleteDialog = false" class="buttons">Cancel</v-btn>
+                <v-btn @click="deleteHandler.execute" class="buttons" :loading="deleteHandler.loading">Confirm</v-btn>
+                <p class="error-text" v-if="deleteHandler.error">{{deleteHandler.error}}</p>
+                <v-btn @click="deleteHandler.modal = false" class="buttons">Cancel</v-btn>
             </div>
         </v-dialog>
         <div class="flexrow" id="itemsrow">
             <div class="column">
                 <div class="flexrow">
                     <p>Files</p>
-                    <v-btn icon @click="uploadDialog = true">
+                    <v-btn icon @click="upload.modal = true">
                         <v-icon class="iconColor">mdi-cloud-upload</v-icon>
                     </v-btn>
                 </div>
@@ -46,7 +48,7 @@
                         </td>
                         <td>
                             <v-btn icon @click="() => {deleteFile(id)}">
-                                <v-icon >mdi-close</v-icon>
+                                <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </td>
                     </tr>
@@ -61,7 +63,7 @@
                             <v-btn
                                 v-if="account.usertype != 'Modeller'"
                                 icon
-                                @click="assignDialog = true"
+                                @click="assign.modal = true"
                             >
                                 <v-icon class="iconColor">mdi-account-plus</v-icon>
                             </v-btn>
@@ -73,7 +75,7 @@
                 <comments
                     :account="account"
                     :comments="model.comments"
-                    @comment="sendComment"
+                    :commentendpoint="sendComment"
                     :review="true"
                 />
             </div>
@@ -83,7 +85,7 @@
 <script>
 import backend from "./../backend";
 import comments from "./CommentView";
-import Vue from 'vue'
+import Vue from "vue";
 
 export default {
     components: {
@@ -95,12 +97,9 @@ export default {
     },
     data() {
         return {
-            assignDialog: false,
-            assignLoading: false,
-            uploadDialog: false,
-            uploadLoading: false,
-            deleteDialog: false,
-            deleteLoading: false,
+            assign: backend.promiseHandler(this.assignModeler),
+            upload: backend.promiseHandler(this.uploadModel),
+            deleteHandler: backend.promiseHandler(this.deleteFileConfirmed),
             selectedFile: false,
             modelers: [],
             modeler: false,
@@ -109,44 +108,37 @@ export default {
     },
     methods: {
         onFileChange(file) {
-            this.file = file
+            this.file = file;
         },
         sendComment() {
             var vm = this;
-            backend.updateModelComments(vm.model);
+            return backend.updateModelComments(vm.model);
         },
         assignModeler() {
             var vm = this;
-            vm.assignLoading = true;
-            backend.assignModeler(vm.model.modelid, vm.modeler).then(data => {
-                vm.assignLoading = false;
-                vm.assignDialog = false;
+            return backend.assignModeler(vm.model.modelid, vm.modeler).then(data => {
                 vm.model.assignedmodeler = data;
-            });
+            })
         },
         uploadModel() {
             var vm = this;
-            vm.uploadLoading = true;
-            backend.uploadModelFile(vm.model, vm.file).then(newFile => {
-                vm.model.files[newFile.id] = newFile
-                vm.uploadLoading = false;
-                vm.uploadDialog = false;
+            return backend.uploadModelFile(vm.model, vm.file).then(newFile => {
+                vm.model.files[newFile.id] = newFile;
                 vm.file = false;
             });
         },
         deleteFile(id) {
-            this.deleteDialog = true
-            this.selectedFile = id
+            this.deleteHandler.modal = true;
+            this.selectedFile = id;
         },
         deleteFileConfirmed() {
-            var vm = this
-            vm.deleteLoading = true
-            backend.deleteModelFile(vm.model.modelid, vm.selectedFile).then(() => {
-                vm.deleteLoading = false
-                vm.deleteDialog = false
-                Vue.delete(vm.model.files, vm.selectedFile)
-                vm.selectedFile = false
-            })
+            var vm = this;
+            return backend
+                .deleteModelFile(vm.model.modelid, vm.selectedFile)
+                .then(() => {
+                    Vue.delete(vm.model.files, vm.selectedFile);
+                    vm.selectedFile = false;
+                });
         }
     },
     mounted() {

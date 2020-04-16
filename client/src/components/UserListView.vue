@@ -1,6 +1,6 @@
 <template>
     <div>
-        <usernewmodal :open="newUserDialog" @newuser="newUser" @close="newUserDialog = false" />
+        <usernewmodal @newuser="newUser" :handler="newUserHandler"/>
         <div class="flexrow" id="topRow">
             <div class="flexrow">
                 <v-btn icon class="hidden-xs-only">
@@ -8,17 +8,27 @@
                 </v-btn>
                 <h2>Users</h2>
             </div>
-            <v-btn id="buttonNew" @click="newUserDialog = true">
+            <v-btn id="buttonNew" @click="newUserHandler.modal = true">
                 New User
                 <v-icon right>mdi-account-plus</v-icon>
             </v-btn>
         </div>
         <div id="itemsView">
+            <v-text-field
+                v-model="search"
+                append-icon="search"
+                label="Filter"
+                single-line
+                hide-details
+            ></v-text-field>
             <v-data-table
                 id="table"
                 :headers="headers"
                 :items="Object.values(users)"
                 :items-per-page="-1"
+                :must-sort="true"
+                :sort-by="'userid'"
+                :search="search"
                 @click:row="handleClick"
             >
                 <template v-slot:item.active="{value}">
@@ -31,6 +41,7 @@
 
 <script>
 import usernewmodal from "./UserNewModal";
+import backend from '../backend';
 
 export default {
     components: {
@@ -48,7 +59,8 @@ export default {
                 { text: "ID", value: "userid", align: "left" },
                 { text: "Active", value: "active", align: "left" }
             ],
-            newUserDialog: false
+            search: "",
+            newUserHandler: backend.promiseHandler(this.newUser)
         };
     },
     methods: {
@@ -57,7 +69,6 @@ export default {
         },
         newUser(user) {
             var vm = this;
-            vm.newUserDialog = false;
             vm.users[user.userid] = user;
         }
     }

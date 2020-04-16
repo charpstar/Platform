@@ -74,7 +74,94 @@ function databaseUpload(ref, data) {
         })
     })
 }
+
+const StatusIcons = {
+    1: '',
+    2: '',
+    3: 'mdi-information',
+    4: '',
+    5: 'mdi-information',
+    6: 'mdi-information',
+    7: '',
+    8: '',
+    9: '',
+    10: 'mdi-image-search',
+    11: '',
+    12: 'mdi-check',
+    13: '',
+    14: ''
+}
+
+const Messages = {
+    1: 'Order received',
+    2: 'Under review',
+    3: 'Information missing',
+    4: 'Under development',
+    5: 'Information missing',
+    6: 'Information missing',
+    7: 'QA review',
+    8: 'QA review',
+    9: 'Redoing model',
+    10: 'Client review',
+    11: 'Redoing model',
+    12: 'Complete',
+    13: 'Pause',
+    14: 'Error'
+
+}
+
+const ClientMessages = {
+    1: 'Order received',
+    2: 'Order received',
+    3: 'Information missing',
+    4: 'Under development',
+    5: 'Information missing',
+    6: 'Information missing',
+    7: 'Under development',
+    8: 'Under development',
+    9: 'Under development',
+    10: 'Ready for review',
+    11: 'Incorporating feedback',
+    12: 'Complete',
+    13: 'Pause',
+    14: 'Error'
+}
+
 export default {
+
+    promiseHandler(fun) {
+        var handler = {
+            modal: false,
+            loading: false,
+            error: '',
+            fun: fun
+        }
+        handler.execute = () => {
+            handler.loading = true
+            handler.fun().then(() => {
+                handler.modal = false
+                handler.loading = false
+                handler.error = ''
+            }).catch(error => {
+                handler.error = error
+                handler.loading = false
+            })
+        }
+        return handler
+    },
+
+    messageFromStatus(status, usertype) {
+        if(usertype == 'Client') {
+            return ClientMessages[status]
+        }
+        return Messages[status]
+    },
+
+    iconFromStatus(status) {
+        return StatusIcons[status]
+    },
+
+
     emptyObj(obj) {
         return Object.keys(obj).length === 0
     },
@@ -169,6 +256,9 @@ export default {
                         if(product.comments == null) {
                             product.comments = []
                         }
+                        if(product.qacomments == null) {
+                            product.qacomments = []
+                        }
                     })
                 })
                 resolve(data)
@@ -196,6 +286,9 @@ export default {
                         if(product.comments == null) {
                             product.comments = []
                         }
+                        if(product.qacomments == null) {
+                            product.qacomments = []
+                        }
                     })
                 })
                 resolve(data)
@@ -222,6 +315,14 @@ export default {
     updateProductComments(model, product) {
         return new Promise((resolve) => {
             database.ref("models/" + model.modelid + "/products/" + product.id + '/comments').set(product.comments).then(() => {
+                resolve()
+            })
+        })
+    },
+
+    updateProductQAComments(model, product) {
+        return new Promise((resolve) => {
+            database.ref("models/" + model.modelid + "/products/" + product.id + '/qacomments').set(product.qacomments).then(() => {
                 resolve()
             })
         })
@@ -302,6 +403,7 @@ export default {
             iosmodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
             androidmodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
             comments: [],
+            qacomments: [],
             id: id
         }
     },
@@ -326,14 +428,14 @@ export default {
                 thumbnail: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/thumbnails%2F0.png?alt=media&token=5c84937b-e978-4ac8-a28e-1a3cfd88922f",
                 files: files,
                 comments: [],
+                blendercomments: [],
                 products: products,
                 modelid: backend.randomid(32),
                 orderid: orderid,
                 clientid: clientid,
                 name: modelName,
-                status: 'Complete',
-                statusicon: 'check',
-                assignedmodeler: false
+                status: Math.ceil(Math.random() * 14),
+                assignedmodeler: false,
             }
             database.ref("models/" + model.modelid).set(model).then(() => {
                 resolve(model)
@@ -375,10 +477,11 @@ export default {
                 time: year + '-' + month + '-' + date + ' ' + hour + ':' + minute,
                 clientid: client.userid,
                 amount: 10,
-                status: 'Under review',
+                complete: Math.ceil(Math.random() * 10),
                 clientname: client.name,
                 comments: [],
-                assignedqa: false
+                assignedqa: false,
+                status: Math.ceil(Math.random() * 14)
             }
             database.ref("orders/" + orderid).set(order).then(() => {
                 resolve(order)
@@ -446,6 +549,8 @@ export default {
                 resolve(id)
             })
         })
-    }
+    },
+
+
 }
 

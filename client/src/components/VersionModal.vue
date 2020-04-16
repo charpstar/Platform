@@ -29,6 +29,11 @@ export default {
         return {
             open: false
         }
+    },
+    watch: {
+        open(val) {
+            this.$emit('opened', val)
+        },
     }
 }
 </script>

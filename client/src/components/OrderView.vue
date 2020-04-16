@@ -25,11 +25,31 @@
                     </tr>
                     <tr>
                         <td>Status</td>
-                        <td>{{order.status}}</td>
+                        <td>
+                            {{backend.messageFromStatus(order.status)}}
+                            <v-icon>{{backend.iconFromStatus(order.status)}}</v-icon>
+                        </td>
                     </tr>
                     <tr>
                         <td>Assigned QA</td>
-                        <td v-if="order.assignedqa">{{order.assignedqa.name}}</td>
+                        <td>
+                            {{order.assignedqa ? order.assignedqa : 'none'}}
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on }">
+                                    <v-btn
+                                        v-if="account.usertype == 'QA' || account.usertype == 'Admin'"
+                                        icon
+                                        @click="assignQA"
+                                        v-on="on"
+                                    >
+                                        <v-icon class="iconColor">mdi-account-plus</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Assign self</span>
+                            </v-tooltip>
+                            
+                        </td>
+                        
                     </tr>
                 </table>
                 <div class="flexcol" id="buttons">
@@ -38,16 +58,11 @@
                         Export Models
                         <v-icon right>mdi-microsoft-excel</v-icon>
                     </v-btn>
-                    <v-btn
-                        @click="assignQA"
-                        :loading="assignLoading"
-                        v-if="account.usertype == 'QA' || account.usertype == 'Admin'"
-                    >Assign self</v-btn>
                 </div>
             </div>
             <div>
                 <h2 id="commentsLabel">Comments</h2>
-                <comments :account="account" :comments="order.comments" @comment="sendComment" />
+                <comments :commentendpoint="sendComment" :account="account" :comments="order.comments" />
             </div>
         </div>
     </div>
@@ -66,7 +81,8 @@ export default {
     data() {
         return {
             addComment: "",
-            assignLoading: false
+            assignLoading: false,
+            backend: backend
         };
     },
     methods: {
@@ -75,7 +91,7 @@ export default {
         },
         sendComment() {
             var vm = this;
-            backend.updateOrderComments(vm.order);
+            return backend.updateOrderComments(vm.order);
         },
         assignQA() {
             var vm = this;

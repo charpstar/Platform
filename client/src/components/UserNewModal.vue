@@ -1,13 +1,13 @@
 <template>
-    <v-dialog v-model="open" @click:outside="close" width="500">
+    <v-dialog v-model="handler.modal" width="500">
         <div class="card">
             <h2>New User</h2>
             <v-form v-model="valid">
                 <v-text-field v-model="name" label="Name" :rules="nameRules"></v-text-field>
                 <v-text-field v-model="email" label="Email" :rules="emailRules"></v-text-field>
                 <v-select :items="accountTypes" label="Type" v-model="usertype"></v-select>
-                <p class="error" v-if="error != ''">{{error}}</p>
-                <v-btn :loading="loading" :disabled="!valid" @click="newUser">Create</v-btn>
+                <p class="error-text" v-if="handler.error">{{handler.error}}</p>
+                <v-btn :loading="handler.loading" :disabled="!valid" @click="handler.execute">Create</v-btn>
             </v-form>
         </div>
     </v-dialog>
@@ -18,7 +18,7 @@ import backend from "../backend";
 
 export default {
     props: {
-        open: { type: Boolean, required: true }
+        handler: { type: Object, required: true }
     },
     data() {
         return {
@@ -28,30 +28,24 @@ export default {
                 v => !!v || "E-mail is required",
                 v => /.+@.+/.test(v) || "E-mail must be valid"
             ],
-            loading: false,
             name: "",
             email: "",
             usertype: "Client",
             valid: false,
-            error: ""
         };
     },
     methods: {
         newUser() {
             var vm = this;
-            vm.loading = true;
             var userObj = {
                 name: vm.name,
                 email: vm.email,
                 usertype: vm.usertype
             };
-            backend.newUser(userObj).then(newUser => {
+            return backend.newUser(userObj).then(newUser => {
                 backend.postIdFix(newUser.email).then(id => {
                     newUser.userid = id;
-                    vm.loading = false;
-                    vm.name = "";
-                    vm.email = "";
-                    vm.usertype = "Client";
+                    vm.close()
                     vm.$emit("newuser", newUser);
                 });
             });
@@ -61,15 +55,10 @@ export default {
             vm.name = "";
             vm.email = "";
             vm.usertype = "Client";
-            vm.$emit("close");
         }
+    },
+    mounted() {
+        this.handler.fun = this.newUser
     }
 };
 </script>
-
-<style lang="scss" scoped>
-.error {
-    color: #d12300;
-    margin-bottom: 5px;
-}
-</style>

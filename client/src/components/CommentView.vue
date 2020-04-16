@@ -10,15 +10,15 @@
                 :hide-details="true"
             ></v-textarea>
             <div class="flexcol" id="sendButtons">
-                <v-btn v-if="review" block @click="() => sendComment(1)" class="approve">
+                <v-btn v-if="review" block @click="() => sendComment(1)" :loading="loading[1]" class="approve">
                     Approve
                     <v-icon right>mdi-check</v-icon>
                 </v-btn>
-                <v-btn v-if="review" block @click="() => sendComment(2)" class="reject">
+                <v-btn v-if="review" block @click="() => sendComment(2)" :loading="loading[2]" class="reject">
                     Reject
                     <v-icon right class="rejectIcon">mdi-refresh</v-icon>
                 </v-btn>
-                <v-btn block @click="() => sendComment(0)">
+                <v-btn block @click="() => sendComment(0)" :loading="loading[0]">
                     Send
                     <v-icon right>mdi-send</v-icon>
                 </v-btn>
@@ -26,6 +26,7 @@
         </div>
         <div id="comments">
             <table>
+                <tr v-if="error != ''"><td><p class="error-text">{{error}}</p></td></tr>
                 <tr class="comment" v-for="comment in comments" :key="comment.userid">
                     <td>
                         <i
@@ -51,12 +52,15 @@ export default {
     props: {
         comments: { type: Array, required: true },
         account: { type: Object, required: true },
-        review: { type: Boolean, default: false }
+        review: { type: Boolean, default: false },
+        commentendpoint: {type: Function, required: true}
     },
     data() {
         return {
             addComment: "",
-            snackbar: false
+            snackbar: false,
+            error: '',
+            loading: [false, false, false]
         };
     },
     methods: {
@@ -72,9 +76,15 @@ export default {
                     id: backend.randomid(32),
                     commenttype: type
                 };
-                vm.comments.push(comment);
-                vm.addComment = "";
-                vm.$emit("comment", comment);
+                vm.loading[type] = true
+                vm.commentendpoint(comment).then(() => {
+                    vm.comments.push(comment);
+                    vm.addComment = "";
+                    vm.loading = [false,false,false]
+                }).catch(error => {
+                    vm.error = error
+                    vm.loading = [false,false,false]
+                })
             }
         }
     }

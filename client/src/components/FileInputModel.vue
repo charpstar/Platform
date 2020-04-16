@@ -5,7 +5,7 @@
                 :src="value.model"
                 interaction-prompt="none"
                 camera-controls
-                id="mv"
+                id="viewer"
                 v-bind:style="{opacity: value.model == '' ? 0 : 100}"
                 @model-visibility="onModelLoad"
             ></model-viewer>
@@ -44,13 +44,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-img {
-    height: 100px;
-}
 
-#mv {
-    width: 150px;
-    height: 150px;
+#viewer {
+    width: 400px;
+    height: 400px;
     margin-bottom: 10px;
 }
 </style>
