@@ -15,6 +15,7 @@ function dbPost(url, data) {
             }
         })
     })
+    /*
     p.then(e => {
         //eslint-disable-next-line no-console
         console.log(e)
@@ -22,6 +23,7 @@ function dbPost(url, data) {
         //eslint-disable-next-line no-console
         console.log(e)
     })
+    */
     return p 
 
 }
@@ -36,6 +38,7 @@ function dbGet(url) {
             }
         })
     })
+    /*
     p.then(e => {
         //eslint-disable-next-line no-console
         console.log(e)
@@ -43,6 +46,7 @@ function dbGet(url) {
         //eslint-disable-next-line no-console
         console.log(e)
     })
+    */
     return p
 }
 

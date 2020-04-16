@@ -1,6 +1,6 @@
 <template>
     <div id="header">
-        <div class="row">
+        <div class="flexrow">
             <img src="charpstar3.png" class="logosmall" @click="$emit('home')"><p>3D asset management system</p>
         </div>
         <div v-if="loggedIn">
