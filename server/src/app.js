@@ -72,6 +72,8 @@ app.get('/logout', router);
 app.post('/login', router);
 
 // Generic routes (requires being logged in)
+app.get('/gen/login', router);
+app.post('/gen/getproducts', router);
 app.post('/gen/comment', router);
 app.post('/gen/getComments', router);
 app.post('/gen/getclientorders', router);
@@ -86,6 +88,7 @@ app.post('/admin/deleteuser', router);
 // QA routes
 app.get('/qa/getorders', router);
 app.get('/qa/getmodelers', router);
+app.get('/qa/getallmodels', router);
 app.post('/qa/claimorder', router);
 app.post('/qa/assignmodeler', router);
 

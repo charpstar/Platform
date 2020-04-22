@@ -21,18 +21,19 @@ const knexPool = knex({
 export async function comment(data) {
   return knexPool('comments')
     .insert(data)
-    .returning(['comment', 'time'])
-    .catch((error) => {
-      // eslint-disable-next-line no-console
-      console.log(error);
-      return { error: 'Something went wrong' };
-    });
+    .returning(['comment', 'time']);
 }
 
 export async function getComments(data) {
   return knexPool('comments')
     .where(data)
     .innerJoin('users', 'comments.userid', 'users.userid')
-    .select('time', 'comment', 'usertype', 'name')
+    .select('time', 'comment', 'usertype', 'name', 'internal')
     .orderBy('time');
+}
+
+export async function getLogin(userid) {
+  return knexPool('users')
+    .where('userid', userid)
+    .select('userid', 'usertype', 'name', 'email');
 }
