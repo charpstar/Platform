@@ -12,6 +12,10 @@
             <div class="flexcolumn">
                 <table>
                     <tr>
+                        <td>ID</td>
+                        <td>{{order.orderid}}</td>
+                    </tr>
+                    <tr>
                         <td>Client</td>
                         <td>{{order.clientname}}</td>
                     </tr>
@@ -21,7 +25,7 @@
                     </tr>
                     <tr>
                         <td>Models</td>
-                        <td>{{order.amount}}</td>
+                        <td>{{order.models}}</td>
                     </tr>
                     <tr>
                         <td>Status</td>
@@ -33,7 +37,7 @@
                     <tr>
                         <td>Assigned QA</td>
                         <td>
-                            {{order.assignedqa ? order.assignedqa : 'none'}}
+                            {{order.qaowner ? order.qaownername : 'none'}}
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on }">
                                     <v-btn
@@ -62,7 +66,7 @@
             </div>
             <div>
                 <h2 id="commentsLabel">Comments</h2>
-                <comments :commentendpoint="sendComment" :account="account" :comments="order.comments" />
+                <comments :idobj="{orderid: order.orderid}" :type="'Order'"/>
             </div>
         </div>
     </div>
@@ -89,19 +93,15 @@ export default {
         viewModels() {
             this.$emit("view-models");
         },
-        sendComment() {
-            var vm = this;
-            return backend.updateOrderComments(vm.order);
-        },
         assignQA() {
             var vm = this;
             vm.assignLoading = true;
-            backend.assignQA(vm.order.orderid, vm.account).then(data => {
+            backend.assignQA(vm.order.orderid).then(() => {
                 vm.assignLoading = false;
-                vm.order.assignedqa = data;
+                vm.order.qaownername = vm.account.username;
             });
         }
-    }
+    },
 };
 </script>
 

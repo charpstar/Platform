@@ -1,14 +1,25 @@
 <template>
     <div id="item">
         <div class="flexrow" id="itemsrow">
-            <model-viewer :src="product.androidmodel" auto-rotate camera-controls id="modelViewer" v-if="!hideMv"></model-viewer>
-            <div id="modelViewer" v-else></div>
+            <div style="position:relative;">
+                <v-btn icon @click="reload" class="reloadIcon">
+                    <v-icon >mdi-reload</v-icon>
+                </v-btn>
+                
+                <model-viewer :src="product.androidmodel" auto-rotate camera-controls id="modelViewer" v-if="!hideMv"></model-viewer>
+                <div id="modelViewer" v-else></div>
+            </div>
+
             <div class="column">
                 <table id="itemTable">
                     <tr>
+                        <td>Link</td>
+                        <td><a :href="product.link" target="_blank"><v-icon class="iconColor">mdi-share</v-icon></a></td>
+                    </tr>
+                    <tr>
                         <td>Android link</td>
-                        <td v-if="product.androidmodel != ''">
-                            <v-btn @click="snackbar = true" icon>
+                        <td>
+                            <v-btn @click="() => {toClipboard(product.androidlink)}" icon v-if="product.androidlink">
                                 <v-icon class="iconColor">mdi-clipboard-text-outline</v-icon>
                             </v-btn>
                             <modelupload
@@ -23,8 +34,8 @@
                     </tr>
                     <tr>
                         <td>iOS link</td>
-                        <td v-if="product.iosmodel != ''">
-                            <v-btn @click="snackbar = true" icon>
+                        <td>
+                            <v-btn @click="() => {toClipboard(product.ioslink)}" icon v-if="product.ioslink">
                                 <v-icon class="iconColor">mdi-clipboard-text-outline</v-icon>
                             </v-btn>
                             <modelupload
@@ -50,18 +61,18 @@
                     <v-tab v-if="account.usertype != 'Modeller'" :href="`#client`">Comments</v-tab>
                     <v-tab-item :value="'qa'" class="tab">
                         <comments
-                            :account="account"
-                            :comments="product.qacomments"
-                            :commentendpoint="sendQAComment"
-                            :review="true"
+                            :idobj="{productid: product.productid}"
+                            :type="'ProductQA'"
+                            :review="account.usertype != 'Modeller'"
+                            :markdone="account.usertype == 'Modeller'"
                         />
                     </v-tab-item>
                     <v-tab-item :value="'client'" class="tab">
                         <comments
-                            :account="account"
-                            :comments="product.comments"
-                            :commentendpoint="sendComment"
-                            :review="true"
+                            :idobj="{productid: product.productid}"
+                            :type="'Product'"
+                            :review="account.usertype == 'Client'"
+                            :markdone="account.usertype != 'Client'"
                         />
                     </v-tab-item>
                 </v-tabs>
@@ -109,13 +120,23 @@ export default {
                 this.model.thumbnail = values[1];
             }
         },
-        sendComment() {
+        toClipboard(text) {
             var vm = this;
-            return backend.updateProductComments(vm.model, vm.product);
+            vm.$copyText(text).then(
+                () => {
+                    vm.snackbar = true;
+                },
+                () => {
+                    alert("Could not copy");
+                }
+            );
         },
-        sendQAComment() {
+        reload() {
             var vm = this;
-            return backend.updateProductQAComments(vm.model, vm.product);
+            vm.hideMv = true;
+            vm.$nextTick(() => {
+                vm.hideMv = false;
+            })
         }
     }
 };
@@ -152,5 +173,16 @@ export default {
 
 #default-progress-bar {
     display: none !important;
+}
+
+.reloadIcon {
+
+    position:absolute; 
+    top:0; 
+    left:0;
+    z-index: 1;
+    .v-icon {
+        color: lightgray;
+    }
 }
 </style>

@@ -38,12 +38,9 @@ export default {
     methods: {
         login() {
             var vm = this;
-            return backend.login(vm.email, vm.password)
+            return backend.login(vm.email.toLowerCase(), vm.password)
                 .then(userData => {
-                    backend.getIdFix(userData.email).then(id => {
-                        userData.userid = id;
-                        vm.$emit("login", userData);
-                    });
+                    vm.$emit("login", userData);
                 })
         },
         buttonPress(button) {
@@ -55,10 +52,7 @@ export default {
     mounted() {
         var vm = this;
         backend.relogin().then(userData => {
-            backend.getIdFix(userData.email).then(id => {
-                userData.userid = id;
-                vm.$emit("login", userData);
-            });
+            vm.$emit("login", userData);
         })
     }
 };

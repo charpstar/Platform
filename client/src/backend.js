@@ -3,7 +3,6 @@ import Axios from 'axios'
 Axios.defaults.withCredentials = true
 
 const backend = 'http://46.101.115.253:8081'
-var database = null
 
 function dbPost(url, data) {
     var p = new Promise((resolve, reject) => {
@@ -15,7 +14,6 @@ function dbPost(url, data) {
             }
         })
     })
-    /*
     p.then(e => {
         //eslint-disable-next-line no-console
         console.log(e)
@@ -23,7 +21,6 @@ function dbPost(url, data) {
         //eslint-disable-next-line no-console
         console.log(e)
     })
-    */
     return p 
 
 }
@@ -38,7 +35,6 @@ function dbGet(url) {
             }
         })
     })
-    /*
     p.then(e => {
         //eslint-disable-next-line no-console
         console.log(e)
@@ -46,28 +42,7 @@ function dbGet(url) {
         //eslint-disable-next-line no-console
         console.log(e)
     })
-    */
     return p
-}
-
-function pad(n) {
-    return n<10 ? '0'+n : n;
-}
-
-function databaseGet(ref) {
-    return new Promise((resolve) => {
-        database.ref(ref).once('value').then((data) => {
-            resolve(data.val())
-        })
-    })
-}
-
-function databaseSet(ref, val) {
-    return new Promise((resolve) => {
-        database.ref(ref).set(val).then(() => {
-            resolve()
-        })
-    })
 }
 
 function databaseUpload(ref, data) {
@@ -80,55 +55,57 @@ function databaseUpload(ref, data) {
 }
 
 const StatusIcons = {
-    1: '',
-    2: '',
-    3: 'mdi-information',
-    4: '',
-    5: 'mdi-information',
-    6: 'mdi-information',
-    7: '',
-    8: '',
-    9: '',
-    10: 'mdi-image-search',
-    11: '',
-    12: 'mdi-check',
-    13: '',
-    14: ''
+    OrderReceived: "",
+    OrderReview: "",
+    OrderMissing: "mdi-information",
+    OrderDev: "",
+    OrderDone: "mdi-check",
+    ModelReceived: "",
+    ModelDev: "",
+    ModelMissing: "mdi-information",
+    ModelReview: "",
+    ModelRefine: "",
+    ClientModelReceived: "mdi-image-search",
+    ClientFeedback: "",
+    ModelDone: "mdi-check",
+    Pause: "",
+    Error: ""
 }
 
 const Messages = {
-    1: 'Order received',
-    2: 'Under review',
-    3: 'Information missing',
-    4: 'Under development',
-    5: 'Information missing',
-    6: 'Information missing',
-    7: 'QA review',
-    8: 'QA review',
-    9: 'Redoing model',
-    10: 'Client review',
-    11: 'Redoing model',
-    12: 'Complete',
-    13: 'Pause',
-    14: 'Error'
-
+    OrderReceived: "Order received",
+    OrderReview: "Under development",
+    OrderMissing: "Information missing",
+    OrderDev: "Under development",
+    OrderDone: "Complete",
+    ModelReceived: "Model received",
+    ModelDev: "Under development",
+    ModelMissing: "Information missing",
+    ModelReview: "QA Review",
+    ModelRefine: "Redoing model",
+    ClientModelReceived: "Client review",
+    ClientFeedback: "Redoing model",
+    ModelDone: "Complete",
+    Pause: "Pause",
+    Error: "Error"
 }
 
 const ClientMessages = {
-    1: 'Order received',
-    2: 'Order received',
-    3: 'Information missing',
-    4: 'Under development',
-    5: 'Information missing',
-    6: 'Information missing',
-    7: 'Under development',
-    8: 'Under development',
-    9: 'Under development',
-    10: 'Ready for review',
-    11: 'Incorporating feedback',
-    12: 'Complete',
-    13: 'Pause',
-    14: 'Error'
+    OrderReceived: "Order received",
+    OrderReview: "Under development",
+    OrderMissing: "Information missing",
+    OrderDev: "Under development",
+    OrderDone: "Complete",
+    ModelReceived: "Model received",
+    ModelDev: "Under development",
+    ModelMissing: "Information missing",
+    ModelReview: "Under development",
+    ModelRefine: "Under development",
+    ClientModelReceived: "Awaiting review",
+    ClientFeedback: "Under development",
+    ModelDone: "Complete",
+    Pause: "Pause",
+    Error: "Error"
 }
 
 export default {
@@ -165,7 +142,6 @@ export default {
         return StatusIcons[status]
     },
 
-
     emptyObj(obj) {
         return Object.keys(obj).length === 0
     },
@@ -178,10 +154,6 @@ export default {
            result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
         return result;
-     },
-
-    init() {
-        database = firebase.database()
     },
 
     login(email, password) {
@@ -189,7 +161,7 @@ export default {
     },
 
     relogin() {
-        return dbGet('/login')
+        return dbGet('/gen/login')
     },
 
     logout() {
@@ -205,139 +177,41 @@ export default {
     },
 
     getOrders(clientid) {
-        return new Promise((resolve) => {
-            databaseGet("orders").then((data) => {
-                if (data == null) {
-                    data = {}
-                }
-                Object.values(data).forEach(order => {
-                    if(order.clientid != clientid) {
-                        delete data[order.orderid]
-                    }
-                    if(order.comments == null) {
-                        order.comments = []
-                    }
-                })
-                resolve(data)
-            })
-        })
+        return dbPost('/gen/getclientorders', {id: clientid})
     },
 
     getAllOrders() {
-        //return dbGet('/qa/getorders')
-        return new Promise((resolve) => {
-            databaseGet("orders").then((data) => {
-                if (data == null) {
-                    data = {}
-                }
-                Object.values(data).forEach(order => {
-                    if(order.comments == null) {
-                        order.comments = []
-                    }
-                })
-                resolve(data)
-            })
-        }) 
+        return dbGet('/qa/getorders')
+    },
+
+    getComments(idobj) {
+        return dbPost('/gen/getComments', idobj)
+    },
+
+    sendComment(comment) {
+        return dbPost('/gen/comment', comment)
     },
 
     getModels(orderid) {
-        return new Promise((resolve) => {
-            databaseGet("models").then((data) => {
-                if (data == null) {
-                    data = {}
-                }
-                Object.values(data).forEach(model => {
-                    if(model.orderid != orderid) {
-                        delete data[model.modelid]
-                    }
-                    if(model.comments == null) {
-                        model.comments = []
-                    }
-                    if(model.files == null) {
-                        model.files = {}
-                    }
-                    Object.values(model.products).forEach(product => {
-                        if(product.comments == null) {
-                            product.comments = []
-                        }
-                        if(product.qacomments == null) {
-                            product.qacomments = []
-                        }
-                    })
-                })
-                resolve(data)
-            })
-        })
+        return dbPost('/gen/getmodels', {orderid: orderid})
     },
 
     getAllModels() {
-        return new Promise((resolve) => {
-            databaseGet("models").then((data) => {
-                if (data == null) {
-                    data = {}
-                }
-                Object.values(data).forEach(model => {
-                    if(model.blendercomments == null) {
-                        model.blendercomments = []
-                    }
-                    if(model.comments == null) {
-                        model.comments = []
-                    }
-                    if(model.files == null) {
-                        model.files = {}
-                    }
-                    Object.values(model.products).forEach(product => {
-                        if(product.comments == null) {
-                            product.comments = []
-                        }
-                        if(product.qacomments == null) {
-                            product.qacomments = []
-                        }
-                    })
-                })
-                resolve(data)
-            })
-        })
+        return dbGet('/qa/getallmodels')
     },
 
-    updateOrderComments(order) {
-        return new Promise((resolve) => {
-            database.ref("orders/" + order.orderid + "/comments").set(order.comments).then(() => {
-                resolve()
-            })
-        })
+    getModellerModels() {
+        return dbGet('/modeller/models')
     },
 
-    updateModelComments(model) {
-        return new Promise((resolve) => {
-            database.ref("models/" + model.modelid + "/comments").set(model.comments).then(() => {
-                resolve()
-            })
-        })
-    },
-
-    updateProductComments(model, product) {
-        return new Promise((resolve) => {
-            database.ref("models/" + model.modelid + "/products/" + product.id + '/comments').set(product.comments).then(() => {
-                resolve()
-            })
-        })
-    },
-
-    updateProductQAComments(model, product) {
-        return new Promise((resolve) => {
-            database.ref("models/" + model.modelid + "/products/" + product.id + '/qacomments').set(product.qacomments).then(() => {
-                resolve()
-            })
-        })
+    getProducts(modelid) {
+        return dbPost('/gen/getproducts', {modelid: modelid})
     },
 
     uploadAndroidModel(model, product, file) {
         return new Promise((resolve) => {
             databaseUpload('android/' + model.modelid + product.id + '.glb', file).then((url) => {
-                database.ref('models/' + model.modelid + '/products/' + product.id + "/androidmodel").set(url).then(
-                    resolve(url)
-                )
+                resolve(url)
             })
         })
     },
@@ -345,9 +219,7 @@ export default {
     uploadIosModel(model, product, file) {
         return new Promise((resolve) => {
             databaseUpload('ios/' + model.modelid + product.id + '.glb', file).then((url) => {
-                database.ref('models/' + model.modelid + '/products/' + product.id + "/iosmodel").set(url).then(
-                    resolve(url)
-                )
+                resolve(url)
             })
         })
     },
@@ -355,9 +227,7 @@ export default {
     uploadThumbnail(model, thumbnail) {
         return new Promise((resolve) => {
             databaseUpload('thumbnails/' + model.modelid + '.png', thumbnail).then((url) => {
-                database.ref('models/' + model.modelid + "/thumbnail").set(url).then(
-                    resolve(url)
-                )
+                resolve(url)
             })
         })
     },
@@ -365,9 +235,7 @@ export default {
     uploadBlenderModel(model, product, blender) {
         return new Promise((resolve) => {
             databaseUpload('blender/' + model.modelid + product.id + '.blend', blender).then((url) => {
-                database.ref('models/' + model.modelid + '/products/' + product.id + "/blendermodel").set(url).then(
-                    resolve(url)
-                )
+                resolve(url)
             })
         })
     },
@@ -383,9 +251,7 @@ export default {
                         link: url,
                         id: id
                     }
-                    database.ref('models/' + model.modelid + '/files/' + id).set(fileObj).then(
-                        resolve(fileObj)
-                    )
+                    resolve(fileObj)
                 })
             };
             reader.readAsDataURL(file)
@@ -400,50 +266,10 @@ export default {
         return dbPost('/admin/createuser', userObj)
     },
 
-    newProduct() {
-        var id = this.randomid(10)
-        return {
-            color: 'Gold',
-            iosmodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
-            androidmodel: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
-            comments: [],
-            qacomments: [],
-            id: id
-        }
-    },
-
+    //eslint-disable-next-line no-unused-vars
     newModel(orderid, clientid, modelName) {
-        var backend = this
-        return new Promise(resolve => {
-            var products = {}
-            var prod = backend.newProduct()
-            products[prod.id] = prod
-            prod = backend.newProduct()
-            prod.color = 'Black'
-            products[prod.id] = prod
-            var files = {}
-            var id = backend.randomid(10)
-            files[id] = {
-                name: 'A file',
-                link: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/models%2Fandroid%2F0.glb?alt=media&token=89b5e290-7299-4145-90e1-2e35f1f8fe01",
-                id: id
-            }
-            var model = {
-                thumbnail: "https://firebasestorage.googleapis.com/v0/b/mvk-charpstar.appspot.com/o/thumbnails%2F0.png?alt=media&token=5c84937b-e978-4ac8-a28e-1a3cfd88922f",
-                files: files,
-                comments: [],
-                blendercomments: [],
-                products: products,
-                modelid: backend.randomid(32),
-                orderid: orderid,
-                clientid: clientid,
-                name: modelName,
-                status: Math.ceil(Math.random() * 14),
-                assignedmodeler: false,
-            }
-            database.ref("models/" + model.modelid).set(model).then(() => {
-                resolve(model)
-            })
+        return new Promise((resolve, reject) => {
+            reject('Unimplemented')
         })
     },
 
@@ -463,62 +289,19 @@ export default {
         })
     },
 
-    newOrder(client) {
-        return new Promise((resolve) => {
-            var orderid = this.randomid(32)
-            var time = new Date()
-            var year = time.getFullYear();
-            var month = pad(time.getMonth() + 1); 
-            var date = pad(time.getDate());
-            var hour = pad(time.getHours());
-            var minute = pad(time.getMinutes());
-            for (let i = 0; i < 10; i++) {
-                this.newModel(orderid, client.userid, "A new model")
-            }
-            var order = {
-                orderid: orderid,
-                timestamp: time.getTime(),
-                time: year + '-' + month + '-' + date + ' ' + hour + ':' + minute,
-                clientid: client.userid,
-                amount: 10,
-                complete: Math.ceil(Math.random() * 10),
-                clientname: client.name,
-                comments: [],
-                assignedqa: false,
-                status: Math.ceil(Math.random() * 14)
-            }
-            database.ref("orders/" + orderid).set(order).then(() => {
-                resolve(order)
-            })
-        })
+    assignQA(orderid) {
+        return dbPost('/qa/claimorder', {id: orderid})
     },
 
-    assignQA(orderid, account) {
-        return new Promise(res => {
-            var assignment = {
-                name: account.name,
-                userid: account.userid
-            }
-            databaseSet('orders/' + orderid + '/assignedqa', assignment).then(() => {
-                res(assignment)
-            })
-        })
+    assignModeler(modelid, modeler) {
+        return dbPost('/qa/assignmodeler', {modelid: modelid, modelerid: modeler.userid})
     },
 
-    assignModeler(modelid, account) {
-        return new Promise(res => {
-            var assignment = {
-                name: account.name,
-                userid: account.userid
-            }
-            databaseSet('models/' + modelid + '/assignedmodeler', assignment).then(() => {
-                res(assignment)
-            })
-        })
-    },
-
+    //eslint-disable-next-line no-unused-vars
     deleteModelFile(modelid, fileid) {
-        return databaseSet('models/' + modelid + '/files/' + fileid, null)
+        return new Promise(resolve => {
+            resolve({});
+        })
     },
 
     deleteUser(userid) {
@@ -532,29 +315,5 @@ export default {
     getKeyByValue(object, value) {
         return Object.keys(object).find(key => object[key] === value);
     },
-
-    postIdFix(email) {
-        var db = this
-        return new Promise(resolve => {
-            db.getUsers().then(users => {
-                var id = db.getKeyByValue(users, email)
-                databaseSet('/tempidfix/' + id, email).then(() => {
-                    resolve(id)
-                })
-            })
-        })
-    },
-
-    getIdFix(email) {
-        var db = this
-        return new Promise(resolve => {
-            databaseGet('/tempidfix').then(users => {
-                var id = db.getKeyByValue(users, email)
-                resolve(id)
-            })
-        })
-    },
-
-
 }
 

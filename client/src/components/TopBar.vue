@@ -1,6 +1,6 @@
 <template>
     <div id="header">
-        <div class="flexrow">
+        <div class="flexrow homebutton">
             <img src="charpstar3.png" class="logosmall" @click="$emit('home')"><p>3D asset management system</p>
         </div>
         <div v-if="loggedIn">
@@ -52,9 +52,13 @@ export default {
     }),
     methods: {
         logout() {
-            this.menuOpen = false;
-            backend.logout();
-            this.$emit("logout");
+            var vm = this
+            vm.menuOpen = false;
+            backend.logout().then(() => {
+                vm.$emit("logout");
+            }).catch(() => {
+                vm.$emit("logout");
+            })
         },
         closeNotification(id) {
             Vue.delete(this.notifications, id);
@@ -83,6 +87,9 @@ export default {
 }
 .v-menu__content {
     min-width: 300px !important;
+}
+.homebutton {
+    cursor: pointer;
 }
 #header {
     display: flex;

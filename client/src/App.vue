@@ -67,6 +67,7 @@
                         v-if="view == 'modelList'"
                         :order="order"
                         :models="models"
+                        :account="account"
                         @back="modelListBack"
                         @select="model = $event; view = 'model'"
                     />
@@ -147,6 +148,12 @@ export default {
                     vm.orders = orders;
                     vm.view = "orderList";
                 });
+            } else if (user.usertype == "Modeller") {
+                backend.getModellerModels().then(models => {
+                    vm.user = user;
+                    vm.models = models;
+                    vm.view = "modelList";
+                });
             } else {
                 vm.view = "adminView";
             }
@@ -188,7 +195,6 @@ export default {
         }
     },
     mounted() {
-        backend.init();
         this.notifications[1] = { message: "There are 2 new orders", click: this.viewAllOrders }
     }
 };

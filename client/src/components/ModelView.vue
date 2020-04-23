@@ -8,13 +8,13 @@
         <v-tabs v-model="tab">
             <v-tabs-slider></v-tabs-slider>
             <v-tab v-if="account.usertype != 'Client'" :href="`#blendertab`">Model</v-tab>
-            <v-tab v-for="(p, id) in model.products" :key="id" :href="`#tab-${id}`">
+            <v-tab v-for="(p, id) in products" :key="id" :href="`#tab-${id}`">
                 {{p.color}}
             </v-tab>
             <v-tab-item :value="'blendertab'" class="tab">
                 <blenderview :model="model" :account="account"/>
             </v-tab-item>
-            <v-tab-item class="tab" v-for="(p, id) in model.products" :key="id" :value="'tab-' + id">
+            <v-tab-item class="tab" v-for="(p, id) in products" :key="id" :value="'tab-' + id">
                 <productview :model="model" :product="p" :account="account"/>
             </v-tab-item>
         </v-tabs>
@@ -23,7 +23,8 @@
 <script>
 import blenderview from './BlenderView'
 import productview from './ProductView'
-
+import backend from '../backend';
+import Vue from 'vue'
 export default {
     components: {
         blenderview,
@@ -36,8 +37,15 @@ export default {
     data() {
         return {
             tab: '',
+            products: []
         };
     },
+    mounted() {
+        var vm = this
+        backend.getProducts(vm.model.modelid).then(products => {
+            Vue.set(vm, 'products', products)
+        })
+    }
 };
 </script>
 

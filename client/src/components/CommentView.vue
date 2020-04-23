@@ -10,75 +10,95 @@
                 :hide-details="true"
             ></v-textarea>
             <div class="flexcol" id="sendButtons">
-                <v-btn v-if="review" block @click="() => sendComment(1)" :loading="loading[1]" class="approve">
+                <v-btn v-if="review" block @click="() => sendComment('approve')" :loading="loading['approve']" class="approve">
                     Approve
                     <v-icon right>mdi-check</v-icon>
                 </v-btn>
-                <v-btn v-if="review" block @click="() => sendComment(2)" :loading="loading[2]" class="reject">
+                <v-btn v-if="markdone" block @click="() => sendComment('done')" :loading="loading['done']" class="approve">
+                    Done
+                    <v-icon right>mdi-check</v-icon>
+                </v-btn>
+                <v-btn v-if="review" block @click="() => sendComment('reject')" :loading="loading['reject']" class="reject">
                     Reject
                     <v-icon right class="rejectIcon">mdi-refresh</v-icon>
                 </v-btn>
-                <v-btn block @click="() => sendComment(0)" :loading="loading[0]">
+                <v-btn v-if="markdone" block @click="() => sendComment('info')" :loading="loading['info']" class="reject">
+                    Info
+                    <v-icon right class="rejectIcon">mdi-information</v-icon>
+                </v-btn>
+                <v-btn block @click="() => sendComment('comment')" :loading="loading['comment']">
                     Send
                     <v-icon right>mdi-send</v-icon>
                 </v-btn>
             </div>
         </div>
         <div id="comments">
-            <table>
-                <tr v-if="error != ''"><td><p class="error-text">{{error}}</p></td></tr>
-                <tr class="comment" v-for="comment in comments" :key="comment.userid">
-                    <td>
-                        <i
-                            :class="'material-icons accountType ' + comment.usertype.toLowerCase()"
-                        >account_circle</i>
-                    </td>
-                    <td>
-                        <v-icon v-if="comment.commenttype==1" class="approve">mdi-check</v-icon>
-                        <v-icon v-if="comment.commenttype==2" class="reject rejectIcon">mdi-refresh</v-icon>
-                    </td>
-                    <td class="name">{{comment.name}}:</td>
-                    <td>{{comment.message}}</td>
-                </tr>
-            </table>
+            <div v-if="error != ''" class="error-text">{{error}}</div>
+            <div class="comment" v-for="(comment, index) in comments" :key="index">
+                <div>
+                    <span :class="'name ' + (comment.usertype ? comment.usertype.toLowerCase() : 'client')">{{comment.name}}</span>
+                    <span class="timestamp">{{formatTime(comment.time)}}</span>
+                    <v-icon v-if="comment.commenttype==1" class="approve">mdi-check</v-icon>
+                    <v-icon v-if="comment.commenttype==2" class="reject rejectIcon">mdi-refresh</v-icon>
+                </div>
+                <div>
+                    {{comment.comment}}
+                </div>
+            </div>
         </div>
-        <v-snackbar v-model="snackbar" :timeout="3000">No empty comment</v-snackbar>
+        <v-snackbar v-model="snackbar" :timeout="3000">Please add a comment</v-snackbar>
     </div>
 </template>
 
 <script>
-import backend from "../backend";
+import backend from '../backend'
 export default {
     props: {
-        comments: { type: Array, required: true },
-        account: { type: Object, required: true },
+        type: {type: String, required: true},
+        idobj: {type: Object, required: true},
         review: { type: Boolean, default: false },
-        commentendpoint: {type: Function, required: true}
+        markdone: {type: Boolean, default: false},
     },
     data() {
         return {
+            comments: [],
             addComment: "",
             snackbar: false,
             error: '',
-            loading: [false, false, false]
+            loading: {
+                reject: false,
+                approve: false,
+                comment: false,
+                done: false,
+                info: false,
+            }
         };
     },
     methods: {
-        sendComment(type) {
+        formatTime(timestamp) {
+            var now = new Date(Date.parse(timestamp));
+            var date = [ now.getFullYear(), now.getMonth() + 1, now.getDate()];
+            var time = [ now.getHours(), now.getMinutes()];
+            for ( var i = 1; i < 3; i++ ) {
+                if ( time[i] < 10 ) {
+                time[i] = "0" + time[i];
+                }
+            }
+            return date.join("/") + " " + time.join(":")
+        },
+        sendComment(ctype) {
             var vm = this;
-            if (vm.addComment === "") {
+            if (vm.addComment === "" && !(ctype == 'done' || ctype == 'approve')) {
                 vm.snackbar = true;
             } else {
                 var comment = {
-                    name: vm.account.name,
-                    usertype: vm.account.usertype,
-                    message: vm.addComment,
-                    id: backend.randomid(32),
-                    commenttype: type
+                    comment: vm.addComment,
+                    commenttype: vm.type
                 };
-                vm.loading[type] = true
-                vm.commentendpoint(comment).then(() => {
-                    vm.comments.push(comment);
+                comment = Object.assign(comment, vm.idobj)
+                vm.loading[ctype] = true
+                backend.sendComment(comment).then((newComment) => {
+                    vm.comments.push(newComment);
                     vm.addComment = "";
                     vm.loading = [false,false,false]
                 }).catch(error => {
@@ -87,29 +107,40 @@ export default {
                 })
             }
         }
+    },
+    mounted() {
+        var vm = this
+        backend.getComments(vm.idobj).then(comments => {
+            vm.comments = comments
+        })
     }
 };
 </script>
 
 <style lang="scss" scoped>
+.timestamp {
+    font-size: 14px;
+    color: #878787;
+}
 .comment {
     font-size: 20px;
-    td {
-        padding-right: 0px;
-    }
     .qa {
+        color: blueviolet;
+    }
+    .admin {
         color: blueviolet;
     }
     .client {
         color: #289deb;
     }
-    .material-icons {
-        padding-top: 5px;
+    .modeller {
+        color: green;
     }
     .name {
-        color: grey;
+        font-size: 16px;
         padding-right: 5px;
     }
+    margin-top: 10px;
 }
 
 .column {

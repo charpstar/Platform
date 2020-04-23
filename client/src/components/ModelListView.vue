@@ -9,7 +9,7 @@
         </v-dialog>
         <div class="flexrow" id="topRow">
             <div class="flexrow">
-                <v-btn icon class="hidden-xs-only">
+                <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Modeller'">
                     <v-icon @click="$emit('back')">mdi-arrow-left</v-icon>
                 </v-btn>
                 <h2>Models</h2>
@@ -20,13 +20,32 @@
             </v-btn>
         </div>
         <div id="itemsView">
-            <v-text-field
-                v-model="search"
-                append-icon="search"
-                label="Filter"
-                single-line
-                hide-details
-            ></v-text-field>
+            <div class="flexrow">
+                <v-text-field
+                    v-model="search"
+                    append-icon="search"
+                    label="Filter"
+                    single-line
+                    hide-details
+                ></v-text-field>
+                <v-menu offset-y v-model="menuOpen">
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" class="filterbutton">
+                            Filter
+                            <v-icon right>mdi-menu-down</v-icon>
+                        </v-btn>
+                    </template>
+                    <v-list>
+                        <v-list-item
+                            v-for="(text, filter) in filters"
+                            :key="filter"
+                            @click="search += ' ' + filter + ' '"
+                        >
+                            <v-list-item-title>{{ text }}</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+            </div>
             <v-data-table
                 id="table"
                 :headers="headers"
@@ -54,7 +73,8 @@ import backend from "../backend";
 export default {
     props: {
         order: { type: Object },
-        models: { required: true, typ: Object }
+        models: { required: true, type: Object },
+        account: { required: true, type: Object }
     },
     data() {
         return {
@@ -65,13 +85,19 @@ export default {
                     sortable: false,
                     value: "thumbnail"
                 },
+                { text: "ID", value: "modelid", align: "left" },
                 { text: "Name", value: "name", align: "left" },
-                { text: "Status", value: "status", align: "left" },
+                { text: "Status", value: "status", align: "left" }
             ],
+            filters: {
+                ModelMissing: 'Missing information',
+                ClientModelReceived: 'Awaiting review'
+            },
             newModelHandler: backend.promiseHandler(this.newModel),
             name: "",
             search: "",
-            backend: backend
+            backend: backend,
+            menuOpen: false,
         };
     },
     methods: {
@@ -89,6 +115,16 @@ export default {
         },
         emptyObj(obj) {
             return Object.keys(obj).length === 0;
+        }
+    },
+    mounted() {
+        var vm = this;
+        if (vm.account.usertype != "Client") {
+            vm.headers.push({
+                text: "Modeller",
+                value: "modelowner",
+                align: "left"
+            });
         }
     }
 };
@@ -110,5 +146,8 @@ export default {
 }
 th {
     text-align: start;
+}
+.filterbutton {
+    margin-left: 10px;
 }
 </style>

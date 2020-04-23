@@ -4,7 +4,8 @@
             <div class="card">
                 <v-file-input :label="'Select Excel Document'" @change="onFileChange"></v-file-input>
                 <p v-if="newOrderHandler.error">{{newOrderHandler.error}}</p>
-                <v-btn :disabled="!file" :loading="newOrderHandler.loading" @click="newOrderHandler.execute">Upload</v-btn>
+                <p v-if="!fileIsExcel">Must be a .xlsx file</p>
+                <v-btn :disabled="!file || !fileIsExcel" :loading="newOrderHandler.loading" @click="newOrderHandler.execute">Upload</v-btn>
             </div>
         </v-dialog>
         <div class="flexrow" id="topRow">
@@ -20,13 +21,32 @@
             </v-btn>
         </div>
         <div id="itemsView">
-            <v-text-field
-                v-model="search"
-                append-icon="search"
-                label="Filter"
-                single-line
-                hide-details
-            ></v-text-field>
+            <div class="flexrow">
+                <v-text-field
+                    v-model="search"
+                    append-icon="search"
+                    label="Filter"
+                    single-line
+                    hide-details
+                ></v-text-field>
+                <v-menu offset-y v-model="menuOpen">
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" class="filterbutton">
+                            Filter
+                            <v-icon right>mdi-menu-down</v-icon>
+                        </v-btn>
+                    </template>
+                    <v-list>
+                        <v-list-item
+                            v-for="(text, filter) in filters"
+                            :key="filter"
+                            @click="search += ' ' + filter + ' '"
+                        >
+                            <v-list-item-title>{{ text }}</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+            </div>
             <v-data-table
                 id="table"
                 :headers="headers"
@@ -73,18 +93,34 @@ export default {
     data() {
         return {
             headers: [
+                { text: "ID", value: "orderid", align: "left" },
                 { text: "Date", value: "time", align: "left" },
                 { text: "Models", value: "amount", align: "left" },
                 { text: "Progress", value: "complete", align: "left" },
                 { text: "Status", value: "status", align: "left" },
                 { text: "Client", value: "clientname", align: "left" },
-                { text: "Assigned QA", value: "assignedqa.name", align: "left" }
+                { text: "Assigned QA", value: "qaownername", align: "left" }
             ],
+            filters: {
+
+            },
             newOrderHandler: backend.promiseHandler(this.newOrder),
             file: false,
             search: "",
-            backend: backend
+            backend: backend,
+            menuOpen:false,
         };
+    },
+    computed: {
+        fileIsExcel() {
+            var vm = this;
+            if(vm.file) {
+                var arr = vm.file.name.split('.')
+                var last = arr[arr.length -1]
+                return last == "xlsx"
+            }
+            return true
+        },
     },
     methods: {
         handleClick(value) {
@@ -96,18 +132,19 @@ export default {
         newOrder() {
             var vm = this;
             if (vm.file) {
-                /*backend.createOrder(vm.file).then(order => {
+                return backend.createOrder(vm.file).then(order => {
                         vm.orders[order.orderid] = order;
-                    })*/
-                return backend.newOrder(vm.user, vm.file).then(order => {
-                    vm.orders[order.orderid] = order;
-                    vm.file = false
-                });
+                        vm.file = false;
+                })
             }
         },
         emptyObj(obj) {
             return Object.keys(obj).length === 0;
         }
+    },
+    mounted() {
+        var vm = this;
+        vm.filters[vm.account.name] = 'Assigned to'
     }
 };
 </script>
@@ -126,5 +163,8 @@ export default {
 .error {
     color: #d12300;
     margin-bottom: 5px;
+}
+.filterbutton {
+    margin-left: 10px;
 }
 </style>

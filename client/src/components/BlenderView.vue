@@ -73,10 +73,10 @@
 
                 <h2 id="commentsLabel">Comments</h2>
                 <comments
-                    :account="account"
-                    :comments="model.comments"
-                    :commentendpoint="sendComment"
-                    :review="true"
+                    :idobj="{modelid: model.modelid}"
+                    :type="'Model'"
+                    :review="account.usertype != 'Modeller'"
+                    :markdone="account.usertype == 'Modeller'"
                 />
             </div>
         </div>
@@ -109,10 +109,6 @@ export default {
     methods: {
         onFileChange(file) {
             this.file = file;
-        },
-        sendComment() {
-            var vm = this;
-            return backend.updateModelComments(vm.model);
         },
         assignModeler() {
             var vm = this;
