@@ -37,6 +37,11 @@ export async function getModels(orderid) {
     .where('orderid', orderid);
 }
 
+export async function getAllModels() {
+  return knexPool('models')
+    .select(['modelid', 'modelowner', 'name']);
+}
+
 export async function uploadModel(path, ext, id) {
   const [exists] = await knexPool('productversions')
     .where('productid', id)
@@ -98,4 +103,19 @@ export async function uploadModel(path, ext, id) {
 export async function getModellerModels(id) {
   return knexPool('models')
     .where('modelowner', id);
+}
+
+export async function getProducts(id) {
+  return knexPool()
+    .select('products.productid',
+      'products.modelid',
+      'products.color',
+      'products.link',
+      'products.broken',
+      'productversions.time',
+      'productversions.androidlink',
+      'productversions.ioslink')
+    .from('products')
+    .leftJoin('productversions', 'products.productid', 'productversions.productid')
+    .where('modelid', id);
 }

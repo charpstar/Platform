@@ -14,6 +14,8 @@ import {
   getmodelers,
   getmodels,
   getmodellermodels,
+  getallmodels,
+  getproducts,
 } from '../controllers/modelController';
 import {
   createorder,
@@ -21,7 +23,7 @@ import {
   claimorder,
   getclientorders,
 } from '../controllers/orderController';
-import { comment, getComments } from '../controllers/genericController';
+import { comment, getComments, getLogin } from '../controllers/genericController';
 
 const upload = multer({ dest: './private/' });
 
@@ -33,6 +35,7 @@ router.get('/', (req, res) => {
 });
 
 // Generic/Multi-use
+router.get('/gen/login', getLogin);
 router.post('/gen/comment', comment);
 router.post('/gen/getComments', getComments);
 
@@ -53,8 +56,10 @@ router.post('/gen/getclientorders', getclientorders);
 // Model related
 router.get('/qa/getmodelers', getmodelers);
 router.get('/modeller/models', getmodellermodels);
+router.get('/qa/getallmodels', getallmodels);
 router.post('/qa/assignmodeler', assignmodeler);
 router.post('/gen/getmodels', getmodels);
 router.post('/modeller/uploadmodel', upload.single('modelfile'), uploadmodel);
+router.post('/gen/getproducts', getproducts);
 
 export default router;

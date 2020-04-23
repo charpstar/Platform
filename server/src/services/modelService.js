@@ -7,6 +7,8 @@ import {
   assignModeler,
   uploadModel,
   getModellerModels,
+  getAllModels,
+  getProducts,
 } from '../models/modelModel';
 
 export async function modelUploadService(req, data) {
@@ -97,6 +99,23 @@ export async function getModelsService(data) {
   return responseObject;
 }
 
+export async function getAllModelsService() {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = await getAllModels();
+  result.forEach((model) => {
+    responseObject.data[model.modelid] = model;
+  });
+
+  responseObject.status = 'Models fetched';
+
+  return responseObject;
+}
+
 export async function getModellerModelsService(id) {
   const responseObject = {
     status: '',
@@ -111,6 +130,24 @@ export async function getModellerModelsService(id) {
   });
 
   responseObject.status = 'Models fetched';
+
+  return responseObject;
+}
+
+export async function getProductsService(data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = await getProducts(data.modelid);
+
+  result.forEach((product) => {
+    responseObject.data[product.productid] = product;
+  });
+
+  responseObject.status = 'Products fetched';
 
   return responseObject;
 }

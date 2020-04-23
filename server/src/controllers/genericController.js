@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { commentService, getCommentsService } from '../services/genericService';
+import { commentService, getCommentsService, getLoginService } from '../services/genericService';
 
 const commentIdParser = Joi.object({
   orderid: Joi.number()
@@ -70,6 +70,18 @@ export async function getComments(req, res) {
       return res.send(responseObject);
     }
     return getCommentsService(value).then((result) => {
+      res.send(result);
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function getLogin(req, res) {
+  try {
+    return getLoginService(req).then((result) => {
       res.send(result);
     });
   } catch (e) {
