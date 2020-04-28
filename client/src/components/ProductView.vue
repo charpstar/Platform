@@ -3,23 +3,37 @@
         <div class="flexrow" id="itemsrow">
             <div style="position:relative;">
                 <v-btn icon @click="reload" class="reloadIcon">
-                    <v-icon >mdi-reload</v-icon>
+                    <v-icon>mdi-reload</v-icon>
                 </v-btn>
-                
-                <model-viewer :src="product.androidmodel" auto-rotate camera-controls id="modelViewer" v-if="!hideMv"></model-viewer>
+
+                <model-viewer
+                    :src="product.androidmodel"
+                    auto-rotate
+                    camera-controls
+                    id="modelViewer"
+                    v-if="!hideMv"
+                ></model-viewer>
                 <div id="modelViewer" v-else></div>
             </div>
 
             <div class="column">
                 <table id="itemTable">
                     <tr>
-                        <td>Link</td>
-                        <td><a :href="product.link" target="_blank"><v-icon class="iconColor">mdi-share</v-icon></a></td>
+                        <td>Product page</td>
+                        <td>
+                            <a :href="product.link" target="_blank">
+                                <v-icon class="iconColor">mdi-share</v-icon>
+                            </a>
+                        </td>
                     </tr>
                     <tr>
                         <td>Android link</td>
                         <td>
-                            <v-btn @click="() => {toClipboard(product.androidlink)}" icon v-if="product.androidlink">
+                            <v-btn
+                                @click="() => {toClipboard(product.androidlink)}"
+                                icon
+                                v-if="product.androidlink"
+                            >
                                 <v-icon class="iconColor">mdi-clipboard-text-outline</v-icon>
                             </v-btn>
                             <modelupload
@@ -35,7 +49,11 @@
                     <tr>
                         <td>iOS link</td>
                         <td>
-                            <v-btn @click="() => {toClipboard(product.ioslink)}" icon v-if="product.ioslink">
+                            <v-btn
+                                @click="() => {toClipboard(product.ioslink)}"
+                                icon
+                                v-if="product.ioslink"
+                            >
                                 <v-icon class="iconColor">mdi-clipboard-text-outline</v-icon>
                             </v-btn>
                             <modelupload
@@ -50,8 +68,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <modelversions :product="product"
-                            @opened="hideMv = $event"></modelversions>
+                            <modelversions :product="product" @opened="hideMv = $event"></modelversions>
                         </td>
                     </tr>
                 </table>
@@ -136,7 +153,7 @@ export default {
             vm.hideMv = true;
             vm.$nextTick(() => {
                 vm.hideMv = false;
-            })
+            });
         }
     }
 };
@@ -176,10 +193,9 @@ export default {
 }
 
 .reloadIcon {
-
-    position:absolute; 
-    top:0; 
-    left:0;
+    position: absolute;
+    top: 0;
+    left: 0;
     z-index: 1;
     .v-icon {
         color: lightgray;

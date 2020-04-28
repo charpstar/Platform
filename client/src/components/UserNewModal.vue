@@ -31,7 +31,7 @@ export default {
             name: "",
             email: "",
             usertype: "Client",
-            valid: false,
+            valid: false
         };
     },
     methods: {
@@ -43,11 +43,8 @@ export default {
                 usertype: vm.usertype
             };
             return backend.newUser(userObj).then(newUser => {
-                backend.postIdFix(newUser.email).then(id => {
-                    newUser.userid = id;
-                    vm.close()
-                    vm.$emit("newuser", newUser);
-                });
+                vm.$emit("newuser", newUser);
+                vm.close();
             });
         },
         close() {
@@ -58,7 +55,7 @@ export default {
         }
     },
     mounted() {
-        this.handler.fun = this.newUser
+        this.handler.fun = this.newUser;
     }
 };
 </script>

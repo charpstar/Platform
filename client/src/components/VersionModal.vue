@@ -28,14 +28,14 @@ export default {
     data() {
         return {
             open: false
-        }
+        };
     },
     watch: {
         open(val) {
-            this.$emit('opened', val)
-        },
+            this.$emit("opened", val);
+        }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -44,5 +44,4 @@ export default {
     height: 250px;
     margin: 20px;
 }
-
 </style>
