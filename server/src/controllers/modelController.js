@@ -7,6 +7,10 @@ import {
   getModellerModelsService,
   getAllModelsService,
   getProductsService,
+  modelFileDownloadService,
+  listModelFilesService,
+  iosUploadService,
+  androidUploadService,
 } from '../services/modelService';
 
 const orderIdParser = Joi.object({
@@ -28,10 +32,27 @@ const modelAssignmentParser = Joi.object({
     .required(),
 });
 
-const modelUploadParser = Joi.object({
+const modelFileParser = Joi.object({
+  modelid: Joi.number()
+    .integer()
+    .min(0)
+    .required(),
+});
+
+const productFileParser = Joi.object({
   productid: Joi.number()
     .integer()
     .min(0)
+    .required(),
+});
+
+const modelFileDownloadParser = Joi.object({
+  modelid: Joi.number()
+    .integer()
+    .min(0)
+    .required(),
+
+  filename: Joi.string()
     .required(),
 });
 
@@ -42,20 +63,94 @@ const modelIdParser = Joi.object({
     .required(),
 });
 
-export async function uploadmodel(req, res) {
+export async function uploadmodelfile(req, res) {
   try {
-    const { error, value } = modelUploadParser.validate(req.body);
+    const { error, value } = modelFileParser.validate(req.body);
     if (typeof error !== 'undefined' && error !== null) {
       const responseObject = {
         status: '',
         error: error.details[0].message,
         data: {},
       };
-      res.send(responseObject);
+      return res.send(responseObject);
     }
-    return modelUploadService(req, value).then((result) => {
-      res.send(result);
-    });
+    return modelUploadService(req, value).then((result) => res.send(result));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function downloadmodelfile(req, res) {
+  try {
+    const { error, value } = modelFileDownloadParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return modelFileDownloadService(value).then((result) => res.download(result));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function listmodelfiles(req, res) {
+  try {
+    const { error, value } = modelIdParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return listModelFilesService(value).then((result) => res.send(result));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function uploadios(req, res) {
+  try {
+    const { error, value } = productFileParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return iosUploadService(req, value).then((result) => res.send(result));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function uploadandroid(req, res) {
+  try {
+    const { error, value } = productFileParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return androidUploadService(req, value).then((result) => res.send(result));
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);

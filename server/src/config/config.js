@@ -1,3 +1,2 @@
-const port = 8081;
-
-export default port;
+export const port = 8081;
+export const domain = 'localhost';

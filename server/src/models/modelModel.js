@@ -42,62 +42,102 @@ export async function getAllModels() {
     .select(['modelid', 'modelowner', 'name']);
 }
 
-export async function uploadModel(path, ext, id) {
-  const [exists] = await knexPool('productversions')
-    .where('productid', id)
-    .count();
-
-  if (exists.count === '0') {
-    if (ext === '.glb') {
-      return knexPool('productversions')
-        .insert({
-          productid: id,
-          androidlink: path,
-        })
-        .returning(['androidlink']);
-    }
-
-    if (ext === '.usdz') {
-      return knexPool('productversions')
-        .insert({
-          productid: id,
-          ioslink: path,
-        })
-        .returning(['ioslink']);
-    }
-
-    return knexPool('productversions')
-      .insert({
-        productid: id,
-        blenderlink: path,
-      })
-      .returning(['blenderlink']);
-  }
-
-  if (ext === '.glb') {
-    return knexPool('productversions')
-      .update({
-        androidlink: path,
-      })
-      .where('productid', id)
-      .returning(['androidlink']);
-  }
-
-  if (ext === '.usdz') {
-    return knexPool('productversions')
-      .update({
-        ioslink: path,
-      })
-      .where('productid', id)
-      .returning(['ioslink']);
-  }
-
-  return knexPool('productversions')
-    .update({
-      blenderlink: path,
+export async function uploadModelFile(userid, path, modelid) {
+  return knexPool('modelfiles')
+    .insert({
+      modelid,
+      userid,
+      path,
     })
+    .returning('*');
+}
+
+export async function uploadIos(path, id, userid) {
+  await knexPool('appleversions')
+    .insert({
+      productid: id,
+      userid,
+      ioslink: path,
+    });
+
+  await knexPool('appleversions')
     .where('productid', id)
-    .returning(['blenderlink']);
+    .whereNotIn('time', (querybuilder) => {
+      querybuilder.select('time')
+        .from('appleversions')
+        .where('productid', id)
+        .orderBy('time', 'desc')
+        .limit(2);
+    })
+    .del();
+
+  const [tempRes] = await knexPool('appleversions')
+    .where('productid', id)
+    .orderBy('time', 'asc')
+    .limit(1);
+
+  const regex = /newios/g;
+  const newLink = tempRes.ioslink.replace(regex, 'oldios');
+
+  await knexPool('appleversions')
+    .whereNotIn('time', (querybuilder) => {
+      querybuilder.select('time')
+        .from('appleversions')
+        .where('productid', id)
+        .orderBy('time', 'desc')
+        .limit(1);
+    })
+    .update('ioslink', newLink);
+
+  const res = await knexPool('appleversions')
+    .where('productid', id)
+    .orderBy('time', 'desc');
+
+  return res;
+}
+
+export async function uploadAndroid(path, id, userid) {
+  await knexPool('androidversions')
+    .insert({
+      productid: id,
+      userid,
+      androidlink: path,
+    });
+
+  await knexPool('androidversions')
+    .where('productid', id)
+    .whereNotIn('time', (querybuilder) => {
+      querybuilder.select('time')
+        .from('androidversions')
+        .where('productid', id)
+        .orderBy('time', 'desc')
+        .limit(2);
+    })
+    .del();
+
+  const [tempRes] = await knexPool('androidversions')
+    .where('productid', id)
+    .orderBy('time', 'asc')
+    .limit(1);
+
+  const regex = /newandroid/g;
+  const newLink = tempRes.androidlink.replace(regex, 'oldandroid');
+
+  await knexPool('androidversions')
+    .whereNotIn('time', (querybuilder) => {
+      querybuilder.select('time')
+        .from('androidversions')
+        .where('productid', id)
+        .orderBy('time', 'desc')
+        .limit(1);
+    })
+    .update('androidlink', newLink);
+
+  const res = await knexPool('androidversions')
+    .where('productid', id)
+    .orderBy('time', 'desc');
+
+  return res;
 }
 
 export async function getModellerModels(id) {

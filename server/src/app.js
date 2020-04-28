@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import session from 'express-session';
 import pg from 'pg';
 import connectPgSimple from 'connect-pg-simple';
-import port from './config/config';
+import { port } from './config/config';
 import router from './routes/router';
 import {
   adminAuth,
@@ -91,15 +91,19 @@ app.get('/qa/getmodelers', router);
 app.get('/qa/getallmodels', router);
 app.post('/qa/claimorder', router);
 app.post('/qa/assignmodeler', router);
+app.post('/qa/uploadios', router);
+app.post('/qa/uploadandroid', router);
 
 // Modeller routes
 app.get('/modeller/models', router);
-app.post('/modeller/uploadModel', router);
+app.post('/modeller/listmodelfiles', router);
+app.post('/modeller/uploadmodelfile', router);
+app.post('/modeller/downloadmodelfile', router);
 
 // Client routes
 app.post('/client/createorder', router);
 
-export default app.listen(port, () => {
+app.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log(`Server started on port ${port}`);
 });

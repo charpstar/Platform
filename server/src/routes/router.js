@@ -9,13 +9,17 @@ import {
   deleteuser,
 } from '../controllers/userController';
 import {
-  uploadmodel,
+  uploadmodelfile,
   assignmodeler,
   getmodelers,
   getmodels,
   getmodellermodels,
   getallmodels,
   getproducts,
+  downloadmodelfile,
+  listmodelfiles,
+  uploadios,
+  uploadandroid,
 } from '../controllers/modelController';
 import {
   createorder,
@@ -57,9 +61,13 @@ router.post('/gen/getclientorders', getclientorders);
 router.get('/qa/getmodelers', getmodelers);
 router.get('/modeller/models', getmodellermodels);
 router.get('/qa/getallmodels', getallmodels);
+router.post('/modeller/listmodelfiles', listmodelfiles);
 router.post('/qa/assignmodeler', assignmodeler);
 router.post('/gen/getmodels', getmodels);
-router.post('/modeller/uploadmodel', upload.single('modelfile'), uploadmodel);
+router.post('/modeller/uploadmodelfile', upload.single('modelfile'), uploadmodelfile);
 router.post('/gen/getproducts', getproducts);
+router.post('/modeller/downloadmodelfile', downloadmodelfile);
+router.post('/qa/uploadios', upload.single('modelfile'), uploadios);
+router.post('/qa/uploadandroid', upload.single('modelfile'), uploadandroid);
 
 export default router;
