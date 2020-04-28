@@ -10,11 +10,11 @@
         <div class="flexrow" id="topRow">
             <div class="flexrow">
                 <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Modeller'">
-                    <v-icon @click="$emit('back')">mdi-arrow-left</v-icon>
+                    <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
                 <h2>Models</h2>
             </div>
-            <v-btn id="buttonNew" @click="newModelHandler.dialog = true" v-if="!emptyObj(order)">
+            <v-btn id="buttonNew" @click="newModelHandler.dialog = true" v-if="order">
                 New Model
                 <v-icon right>mdi-file-plus</v-icon>
             </v-btn>
@@ -72,12 +72,11 @@
 import backend from "../backend";
 export default {
     props: {
-        order: { type: Object },
-        models: { required: true, type: Object },
         account: { required: true, type: Object }
     },
     data() {
         return {
+            models: {},
             headers: [
                 {
                     text: "",
@@ -90,31 +89,27 @@ export default {
                 { text: "Status", value: "status", align: "left" }
             ],
             filters: {
-                ModelMissing: 'Missing information',
-                ClientModelReceived: 'Awaiting review'
+                ModelMissing: "Missing information",
+                ClientModelReceived: "Awaiting review"
             },
             newModelHandler: backend.promiseHandler(this.newModel),
             name: "",
             search: "",
             backend: backend,
             menuOpen: false,
+            order: false
         };
     },
     methods: {
-        handleClick(value) {
-            this.$emit("select", value);
+        handleClick(model) {
+            this.$router.push("/model/" + model.modelid);
         },
         newModel() {
             var vm = this;
-            return backend
-                .newModel(vm.order.orderid, vm.order.clientid, vm.name)
-                .then(model => {
-                    vm.name = "";
-                    vm.models[model.modelid] = model;
-                });
-        },
-        emptyObj(obj) {
-            return Object.keys(obj).length === 0;
+            return backend.newModel(vm.order, vm.name).then(model => {
+                vm.name = "";
+                vm.models[model.modelid] = model;
+            });
         }
     },
     mounted() {
@@ -124,6 +119,20 @@ export default {
                 text: "Modeller",
                 value: "modelowner",
                 align: "left"
+            });
+        }
+        if (vm.$route.path == "/modeller/models") {
+            backend.getModellerModels().then(models => {
+                vm.models = models;
+            });
+        } else if (vm.$route.path == "/admin/models") {
+            backend.getAllModels().then(models => {
+                vm.models = models;
+            });
+        } else {
+            vm.order = vm.$route.params.id;
+            backend.getModels(vm.order).then(models => {
+                vm.models = models;
             });
         }
     }

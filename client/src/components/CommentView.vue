@@ -10,19 +10,43 @@
                 :hide-details="true"
             ></v-textarea>
             <div class="flexcol" id="sendButtons">
-                <v-btn v-if="review" block @click="() => sendComment('approve')" :loading="loading['approve']" class="approve">
+                <v-btn
+                    v-if="review"
+                    block
+                    @click="() => sendComment('approve')"
+                    :loading="loading['approve']"
+                    class="approve"
+                >
                     Approve
                     <v-icon right>mdi-check</v-icon>
                 </v-btn>
-                <v-btn v-if="markdone" block @click="() => sendComment('done')" :loading="loading['done']" class="approve">
+                <v-btn
+                    v-if="markdone"
+                    block
+                    @click="() => sendComment('done')"
+                    :loading="loading['done']"
+                    class="approve"
+                >
                     Done
                     <v-icon right>mdi-check</v-icon>
                 </v-btn>
-                <v-btn v-if="review" block @click="() => sendComment('reject')" :loading="loading['reject']" class="reject">
+                <v-btn
+                    v-if="review"
+                    block
+                    @click="() => sendComment('reject')"
+                    :loading="loading['reject']"
+                    class="reject"
+                >
                     Reject
                     <v-icon right class="rejectIcon">mdi-refresh</v-icon>
                 </v-btn>
-                <v-btn v-if="markdone" block @click="() => sendComment('info')" :loading="loading['info']" class="reject">
+                <v-btn
+                    v-if="markdone"
+                    block
+                    @click="() => sendComment('info')"
+                    :loading="loading['info']"
+                    class="reject"
+                >
                     Info
                     <v-icon right class="rejectIcon">mdi-information</v-icon>
                 </v-btn>
@@ -36,14 +60,14 @@
             <div v-if="error != ''" class="error-text">{{error}}</div>
             <div class="comment" v-for="(comment, index) in comments" :key="index">
                 <div>
-                    <span :class="'name ' + (comment.usertype ? comment.usertype.toLowerCase() : 'client')">{{comment.name}}</span>
-                    <span class="timestamp">{{formatTime(comment.time)}}</span>
+                    <span
+                        :class="'name ' + (comment.usertype ? comment.usertype.toLowerCase() : 'client')"
+                    >{{comment.name}}</span>
+                    <span class="timestamp">{{$formatTime(comment.time)}}</span>
                     <v-icon v-if="comment.commenttype==1" class="approve">mdi-check</v-icon>
                     <v-icon v-if="comment.commenttype==2" class="reject rejectIcon">mdi-refresh</v-icon>
                 </div>
-                <div>
-                    {{comment.comment}}
-                </div>
+                <div>{{comment.comment}}</div>
             </div>
         </div>
         <v-snackbar v-model="snackbar" :timeout="3000">Please add a comment</v-snackbar>
@@ -51,68 +75,63 @@
 </template>
 
 <script>
-import backend from '../backend'
+import backend from "../backend";
 export default {
     props: {
-        type: {type: String, required: true},
-        idobj: {type: Object, required: true},
+        type: { type: String, required: true },
+        idobj: { type: Object, required: true },
         review: { type: Boolean, default: false },
-        markdone: {type: Boolean, default: false},
+        markdone: { type: Boolean, default: false }
     },
     data() {
         return {
             comments: [],
             addComment: "",
             snackbar: false,
-            error: '',
+            error: "",
             loading: {
                 reject: false,
                 approve: false,
                 comment: false,
                 done: false,
-                info: false,
+                info: false
             }
         };
     },
     methods: {
-        formatTime(timestamp) {
-            var now = new Date(Date.parse(timestamp));
-            var date = [ now.getFullYear(), now.getMonth() + 1, now.getDate()];
-            var time = [ now.getHours(), now.getMinutes()];
-            for ( var i = 1; i < 3; i++ ) {
-                if ( time[i] < 10 ) {
-                time[i] = "0" + time[i];
-                }
-            }
-            return date.join("/") + " " + time.join(":")
-        },
         sendComment(ctype) {
             var vm = this;
-            if (vm.addComment === "" && !(ctype == 'done' || ctype == 'approve')) {
+            if (
+                vm.addComment === "" &&
+                !(ctype == "done" || ctype == "approve")
+            ) {
                 vm.snackbar = true;
             } else {
                 var comment = {
                     comment: vm.addComment,
                     commenttype: vm.type
                 };
-                comment = Object.assign(comment, vm.idobj)
-                vm.loading[ctype] = true
-                backend.sendComment(comment).then((newComment) => {
-                    vm.comments.push(newComment);
-                    vm.addComment = "";
-                    vm.loading = [false,false,false]
-                }).catch(error => {
-                    vm.error = error
-                    vm.loading = [false,false,false]
-                })
+                comment = Object.assign(comment, vm.idobj);
+                vm.loading[ctype] = true;
+                backend
+                    .sendComment(comment)
+                    .then(newComment => {
+                        vm.comments.push(newComment);
+                        vm.addComment = "";
+                        vm.loading = [false, false, false];
+                    })
+                    .catch(error => {
+                        vm.error = error;
+                        vm.loading = [false, false, false];
+                    });
             }
         }
     },
     mounted() {
-        var vm = this
+        var vm = this;
         backend.getComments(vm.idobj).then(comments => {
-            vm.comments = comments
-        })
+            vm.comments = comments;
+        });
     }
 };
 </script>

@@ -44,7 +44,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 #viewer {
     width: 400px;
     height: 400px;

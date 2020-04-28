@@ -3,11 +3,12 @@ import Axios from 'axios'
 Axios.defaults.withCredentials = true
 
 const backend = 'http://46.101.115.253:8081'
+var account = false
 
 function dbPost(url, data) {
     var p = new Promise((resolve, reject) => {
         Axios.post(backend + url, data).then((res) => {
-            if(res.data.error == '') {
+            if (res.data.error == '') {
                 resolve(res.data.data)
             } else {
                 reject(res.data.error)
@@ -21,14 +22,14 @@ function dbPost(url, data) {
         //eslint-disable-next-line no-console
         console.log(e)
     })
-    return p 
+    return p
 
 }
 
 function dbGet(url) {
     var p = new Promise((resolve, reject) => {
         Axios.get(backend + url).then((res) => {
-            if(res.data.error == '') {
+            if (res.data.error == '') {
                 resolve(res.data.data)
             } else {
                 reject(res.data.error)
@@ -48,9 +49,9 @@ function dbGet(url) {
 function databaseUpload(ref, data) {
     return new Promise((resolve) => {
         firebase.storage().ref(ref).putString(data, 'data_url')
-        .then(snapshot => snapshot.ref.getDownloadURL()).then((url) => {
-            resolve(url)
-        })
+            .then(snapshot => snapshot.ref.getDownloadURL()).then((url) => {
+                resolve(url)
+            })
     })
 }
 
@@ -108,6 +109,8 @@ const ClientMessages = {
     Error: "Error"
 }
 
+
+
 export default {
 
     promiseHandler(fun) {
@@ -132,7 +135,7 @@ export default {
     },
 
     messageFromStatus(status, usertype) {
-        if(usertype == 'Client') {
+        if (usertype == 'Client') {
             return ClientMessages[status]
         }
         return Messages[status]
@@ -147,25 +150,37 @@ export default {
     },
 
     randomid(length) {
-        var result           = '';
-        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         var charactersLength = characters.length;
-        for ( var i = 0; i < length; i++ ) {
-           result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
         return result;
     },
 
     login(email, password) {
-        return dbPost('/login', {email:email, password:password})
+        var promise = dbPost('/login', { email: email, password: password })
+        promise.then((data) => {
+            account = data;
+        })
+        return promise
     },
 
     relogin() {
-        return dbGet('/gen/login')
+        var promise = dbGet('/gen/login')
+        promise.then((data) => {
+            account = data;
+        })
+        return promise
     },
 
     logout() {
-        return dbGet('/logout')
+        var promise = dbGet('/logout')
+        promise.then(() => {
+            account = false;
+        })
+        return promise
     },
 
     getUsers() {
@@ -177,11 +192,27 @@ export default {
     },
 
     getOrders(clientid) {
-        return dbPost('/gen/getclientorders', {id: clientid})
+        return dbPost('/gen/getclientorders', { id: clientid })
     },
 
     getAllOrders() {
         return dbGet('/qa/getorders')
+    },
+
+    getOrder(orderid) {
+        return new Promise((resolve, reject) => {
+            if (!account) {
+                reject('Not logged in')
+            } else if (account.usertype == 'Client') {
+                this.getOrders(account.userid).then(data => {
+                    resolve(data[orderid])
+                })
+            } else {
+                this.getAllOrders().then(data => {
+                    resolve(data[orderid])
+                })
+            }
+        })
     },
 
     getComments(idobj) {
@@ -193,7 +224,7 @@ export default {
     },
 
     getModels(orderid) {
-        return dbPost('/gen/getmodels', {orderid: orderid})
+        return dbPost('/gen/getmodels', { orderid: orderid })
     },
 
     getAllModels() {
@@ -204,8 +235,35 @@ export default {
         return dbGet('/modeller/models')
     },
 
+    getModel(modelid) {
+        return new Promise((resolve, reject) => {
+            if (!account) {
+                reject('Not logged in')
+            } else if (account.usertype == 'Client') {
+                this.getOrders(account.userid).then(orders => {
+                    Object.keys(orders).forEach(orderid => {
+                        this.getModels(orderid).then(models => {
+                            if (models[modelid] != null) {
+                                resolve(models[modelid])
+                            }
+                        })
+                    });
+                })
+
+            } else if (account.usertype == 'Modeller') {
+                this.getModellerModels().then(data => {
+                    resolve(data[modelid])
+                })
+            } else {
+                this.getAllModels().then(data => {
+                    resolve(data[modelid])
+                })
+            }
+        })
+    },
+
     getProducts(modelid) {
-        return dbPost('/gen/getproducts', {modelid: modelid})
+        return dbPost('/gen/getproducts', { modelid: modelid })
     },
 
     uploadAndroidModel(model, product, file) {
@@ -267,7 +325,7 @@ export default {
     },
 
     //eslint-disable-next-line no-unused-vars
-    newModel(orderid, clientid, modelName) {
+    newModel(orderid, modelName) {
         return new Promise((resolve, reject) => {
             reject('Unimplemented')
         })
@@ -278,9 +336,9 @@ export default {
         formData.append("orderdata", file);
         return new Promise((resolve, reject) => {
             Axios.post(backend + '/client/createorder', formData, {
-                headers: {'Content-Type': 'multipart/form-data'}
+                headers: { 'Content-Type': 'multipart/form-data' }
             }).then((res) => {
-                if(res.data.error == '') {
+                if (res.data.error == '') {
                     resolve(res.data.data)
                 } else {
                     reject(res.data.error)
@@ -290,11 +348,15 @@ export default {
     },
 
     assignQA(orderid) {
-        return dbPost('/qa/claimorder', {id: orderid})
+        return dbPost('/qa/claimorder', { id: orderid })
     },
 
     assignModeler(modelid, modeler) {
-        return dbPost('/qa/assignmodeler', {modelid: modelid, modelerid: modeler.userid})
+        return dbPost('/qa/assignmodeler', { modelid: modelid, modelerid: modeler.userid })
+    },
+
+    getModelFiles(modelid) {
+        return dbPost('/modeller/listmodelfiles', { modelid: modelid })
     },
 
     //eslint-disable-next-line no-unused-vars
@@ -305,11 +367,11 @@ export default {
     },
 
     deleteUser(userid) {
-        return dbPost('/admin/deleteuser', {userid: userid})
+        return dbPost('/admin/deleteuser', { userid: userid })
     },
 
     resetPassword(userid, password) {
-        return dbPost('/admin/edituser', {userid: userid, password: password, repeatPassword: password})
+        return dbPost('/admin/edituser', { userid: userid, password: password, repeatPassword: password })
     },
 
     getKeyByValue(object, value) {

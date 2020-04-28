@@ -19,7 +19,7 @@
         <div class="flexrow" id="topRow">
             <div class="flexrow">
                 <v-btn icon class="hidden-xs-only">
-                    <v-icon @click="$emit('back')">mdi-arrow-left</v-icon>
+                    <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
                 <h2>User</h2>
             </div>
@@ -74,11 +74,9 @@
 import backend from "../backend";
 
 export default {
-    props: {
-        user: { type: Object, required: true }
-    },
     data() {
         return {
+            user: {},
             deleteHandler: backend.promiseHandler(this.deleteUser),
             resetHandler: backend.promiseHandler(this.resetUser),
             newPassword: "",
@@ -90,9 +88,7 @@ export default {
         viewOrders() {
             var vm = this;
             vm.viewLoading = true;
-            backend.getOrders(vm.user.userid).then(orders => {
-                (vm.viewLoading = false), vm.$emit("orders", orders);
-            });
+            vm.$router.push("/user/" + vm.user.userid + "/orders");
         },
         resetUser() {
             var vm = this;
@@ -104,7 +100,7 @@ export default {
         deleteUser() {
             var vm = this;
             return backend.deleteUser(vm.user.userid).then(() => {
-                vm.$emit("delete", vm.user.userid);
+                vm.$router.go(-1);
             });
         },
         toClipboard() {
@@ -118,6 +114,12 @@ export default {
                 }
             );
         }
+    },
+    mounted() {
+        var vm = this;
+        backend.getUsers().then(users => {
+            vm.user = users[vm.$route.params.id];
+        });
     }
 };
 </script>

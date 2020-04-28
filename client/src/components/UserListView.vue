@@ -1,10 +1,10 @@
 <template>
     <div>
-        <usernewmodal @newuser="newUser" :handler="newUserHandler"/>
+        <usernewmodal @newuser="newUser" :handler="newUserHandler" />
         <div class="flexrow" id="topRow">
             <div class="flexrow">
                 <v-btn icon class="hidden-xs-only">
-                    <v-icon @click="$emit('back')">mdi-arrow-left</v-icon>
+                    <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
                 <h2>Users</h2>
             </div>
@@ -41,17 +41,16 @@
 
 <script>
 import usernewmodal from "./UserNewModal";
-import backend from '../backend';
+import backend from "../backend";
+import Vue from "vue";
 
 export default {
     components: {
         usernewmodal
     },
-    props: {
-        users: { required: true, type: Object }
-    },
     data() {
         return {
+            users: {},
             headers: [
                 { text: "Name", value: "name", align: "left" },
                 { text: "Email", value: "email", align: "left" },
@@ -64,13 +63,18 @@ export default {
         };
     },
     methods: {
-        handleClick(value) {
-            this.$emit("select", value);
+        handleClick(user) {
+            this.$router.push("/user/" + user.userid);
         },
         newUser(user) {
-            var vm = this;
-            vm.users[user.userid] = user;
+            Vue.set(this.users, user.userid, user);
         }
+    },
+    mounted() {
+        var vm = this;
+        backend.getUsers().then(users => {
+            vm.users = users;
+        });
     }
 };
 </script>

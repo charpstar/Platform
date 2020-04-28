@@ -15,7 +15,11 @@
         <transitionexpandheight>
             <p class="error" v-if="button.error">{{button.error}}</p>
         </transitionexpandheight>
-        <v-btn @click="button.execute" :loading="button.loading" :disabled="!email || !password">Login</v-btn>
+        <v-btn
+            @click="button.execute"
+            :loading="button.loading"
+            :disabled="!email || !password"
+        >Login</v-btn>
     </div>
 </template>
 
@@ -38,22 +42,17 @@ export default {
     methods: {
         login() {
             var vm = this;
-            return backend.login(vm.email.toLowerCase(), vm.password)
+            return backend
+                .login(vm.email.toLowerCase(), vm.password)
                 .then(userData => {
                     vm.$emit("login", userData);
-                })
+                });
         },
         buttonPress(button) {
             if (button.key == "Enter") {
                 this.button.execute();
             }
         }
-    },
-    mounted() {
-        var vm = this;
-        backend.relogin().then(userData => {
-            vm.$emit("login", userData);
-        })
     }
 };
 </script>

@@ -3,7 +3,7 @@
         <div class="flexrow" id="topRow">
             <div class="flexrow">
                 <v-btn icon class="hidden-xs-only">
-                    <v-icon @click="$emit('back')">mdi-arrow-left</v-icon>
+                    <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
                 <h2>Order</h2>
             </div>
@@ -51,9 +51,7 @@
                                 </template>
                                 <span>Assign self</span>
                             </v-tooltip>
-                            
                         </td>
-                        
                     </tr>
                 </table>
                 <div class="flexcol" id="buttons">
@@ -66,7 +64,7 @@
             </div>
             <div>
                 <h2 id="commentsLabel">Comments</h2>
-                <comments :idobj="{orderid: order.orderid}" :type="'Order'"/>
+                <comments v-if="order" :idobj="{orderid: order.orderid}" :type="'Order'" />
             </div>
         </div>
     </div>
@@ -79,11 +77,11 @@ export default {
         comments
     },
     props: {
-        order: { type: Object, required: true },
         account: { type: Object, required: true }
     },
     data() {
         return {
+            order: false,
             addComment: "",
             assignLoading: false,
             backend: backend
@@ -91,7 +89,7 @@ export default {
     },
     methods: {
         viewModels() {
-            this.$emit("view-models");
+            this.$router.push("/order/" + this.order.orderid + "/models");
         },
         assignQA() {
             var vm = this;
@@ -102,6 +100,12 @@ export default {
             });
         }
     },
+    mounted() {
+        var vm = this;
+        backend.getOrder(vm.$route.params.id).then(order => {
+            vm.order = order;
+        });
+    }
 };
 </script>
 

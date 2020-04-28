@@ -23,7 +23,11 @@
         <v-dialog v-model="deleteHandler.modal" width="250px">
             <div class="card flexcol">
                 <h2>Confirm Delete</h2>
-                <v-btn @click="deleteHandler.execute" class="buttons" :loading="deleteHandler.loading">Confirm</v-btn>
+                <v-btn
+                    @click="deleteHandler.execute"
+                    class="buttons"
+                    :loading="deleteHandler.loading"
+                >Confirm</v-btn>
                 <p class="error-text" v-if="deleteHandler.error">{{deleteHandler.error}}</p>
                 <v-btn @click="deleteHandler.modal = false" class="buttons">Cancel</v-btn>
             </div>
@@ -73,6 +77,7 @@
 
                 <h2 id="commentsLabel">Comments</h2>
                 <comments
+                    v-if="model.modelid"
                     :idobj="{modelid: model.modelid}"
                     :type="'Model'"
                     :review="account.usertype != 'Modeller'"
@@ -112,9 +117,11 @@ export default {
         },
         assignModeler() {
             var vm = this;
-            return backend.assignModeler(vm.model.modelid, vm.modeler).then(data => {
-                vm.model.assignedmodeler = data;
-            })
+            return backend
+                .assignModeler(vm.model.modelid, vm.modeler)
+                .then(data => {
+                    vm.model.assignedmodeler = data;
+                });
         },
         uploadModel() {
             var vm = this;
@@ -139,6 +146,9 @@ export default {
     },
     mounted() {
         var vm = this;
+        backend.getModelFiles(vm.model.modelid).then(files => {
+            vm.files = files
+        })
         backend.getModelers().then(modelers => {
             vm.modelers = Object.values(modelers);
         });

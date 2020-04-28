@@ -1,9 +1,10 @@
 <template>
     <div id="header">
-        <div class="flexrow homebutton">
-            <img src="charpstar3.png" class="logosmall" @click="$emit('home')"><p>3D asset management system</p>
+        <div class="flexrow homebutton" @click="$emit('home')">
+            <img src="/charpstar3.png" class="logosmall" />
+            <p>3D asset management system</p>
         </div>
-        <div v-if="loggedIn">
+        <div v-if="$route.path != '/'">
             <v-menu id="menu" offset-y v-model="menuOpen" :close-on-content-click="false">
                 <template v-slot:activator="{ on }">
                     <v-btn text id="menuButton" v-on="on">
@@ -23,7 +24,7 @@
                     <v-list-item
                         v-for="(item, id) in notifications"
                         :key="'notification' + id"
-                        @click="item.click"
+                        @click="$router.push(item.url)"
                     >
                         <p class="notification-small"></p>
                         <v-list-item-title>{{ item.message }}</v-list-item-title>
@@ -42,7 +43,6 @@ import Vue from "vue";
 import backend from "../backend";
 export default {
     props: {
-        loggedIn: { type: Boolean, required: true },
         account: { type: Object, required: true },
         notifications: { type: Object, required: true }
     },
@@ -52,13 +52,16 @@ export default {
     }),
     methods: {
         logout() {
-            var vm = this
+            var vm = this;
             vm.menuOpen = false;
-            backend.logout().then(() => {
-                vm.$emit("logout");
-            }).catch(() => {
-                vm.$emit("logout");
-            })
+            backend
+                .logout()
+                .then(() => {
+                    vm.$router.push("/");
+                })
+                .catch(() => {
+                    vm.$router.push("/");
+                });
         },
         closeNotification(id) {
             Vue.delete(this.notifications, id);
