@@ -146,16 +146,19 @@ export async function getModellerModels(id) {
 }
 
 export async function getProducts(id) {
-  return knexPool()
+  return knexPool('products')
     .select('products.productid',
       'products.modelid',
       'products.color',
       'products.link',
       'products.broken',
-      'productversions.time',
-      'productversions.androidlink',
-      'productversions.ioslink')
-    .from('products')
-    .leftJoin('productversions', 'products.productid', 'productversions.productid')
+      { androidtime: 'androidversions.time' },
+      'androidversions.androidlink',
+      { androiduser: 'androidversions.userid' },
+      { iostime: 'appleversions.time' },
+      'appleversions.ioslink',
+      { iosuser: 'appleversions.userid' })
+    .leftJoin('androidversions', 'products.productid', 'androidversions.productid')
+    .leftJoin('appleversions', 'products.productid', 'appleversions.productid')
     .where('modelid', id);
 }
