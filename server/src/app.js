@@ -37,7 +37,7 @@ app.use(cors({
 }));
 app.use('/public', express.static('./public/'));
 app.use('/public', (req, res) => {
- res.redirect('/public/default.txt'); 
+ res.send('The file you requested does not exist on the server!'); 
 });
 
 const pgSession = connectPgSimple(session);
