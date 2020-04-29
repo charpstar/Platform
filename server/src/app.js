@@ -36,6 +36,9 @@ app.use(cors({
   credentials: true,
 }));
 app.use('/public', express.static('./public/'));
+app.use('/public', (req, res) => {
+ res.redirect('/public/default.txt'); 
+});
 
 const pgSession = connectPgSimple(session);
 const pgPool = new pg.Pool({
@@ -78,6 +81,7 @@ app.post('/gen/comment', router);
 app.post('/gen/getComments', router);
 app.post('/gen/getclientorders', router);
 app.post('/gen/getmodels', router);
+app.post('/gen/getexcel', router);
 
 // Admin routes
 app.get('/admin/getusers', router);
