@@ -66,6 +66,7 @@ export async function deleteModelFile(data) {
 
 export async function listModelFiles(modelid) {
   return knexPool('modelfiles')
+    .select('time', 'filename')
     .where('modelid', modelid);
 }
 
