@@ -17,6 +17,8 @@ import {
 } from '../models/modelModel';
 import { domain, port } from '../config/config';
 
+const mvp = promisify(mv);
+
 export async function modelUploadService(req, data) {
   const responseObject = {
     status: '',
@@ -34,7 +36,7 @@ export async function modelUploadService(req, data) {
   try {
     const dest = path.resolve(`./private/${data.modelid}/`);
     await mkdir(dest, { recursive: true });
-    await mv(req.file.path, `${dest}/${req.file.originalname}`);
+    await mvp(req.file.path, `${dest}/${req.file.originalname}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -97,7 +99,7 @@ export async function thumbUploadService(req, data) {
 
   try {
     await mkdir(thumbsFolder, { recursive: true });
-    mv(req.file.path, `${thumbsFolder}/${data.modelid}${fileExt}`);
+    mvp(req.file.path, `${thumbsFolder}/${data.modelid}${fileExt}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -160,10 +162,10 @@ export async function iosUploadService(req, data) {
     const oldFiles = await readdir(destNew);
 
     for (const file of oldFiles) {
-      await mv(`${destNew}/${file}`, `${destOld}/${file}`);
+      await mvp(`${destNew}/${file}`, `${destOld}/${file}`);
     }
 
-    await mv(req.file.path, `${destNew}/${req.file.originalname}`);
+    await mvp(req.file.path, `${destNew}/${req.file.originalname}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -220,10 +222,10 @@ export async function androidUploadService(req, data) {
     const oldFiles = await readdir(destNew);
 
     for (const file of oldFiles) {
-      await mv(`${destNew}/${file}`, `${destOld}/${file}`);
+      await mvp(`${destNew}/${file}`, `${destOld}/${file}`);
     }
 
-    await mv(req.file.path, `${destNew}/${req.file.originalname}`);
+    await mvp(req.file.path, `${destNew}/${req.file.originalname}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
