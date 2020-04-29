@@ -12,6 +12,7 @@ import {
   uploadAndroid,
   uploadModelFile,
   deleteModelFile,
+  listModelFiles,
 } from '../models/modelModel';
 import { domain, port } from '../config/config';
 
@@ -117,16 +118,10 @@ export async function listModelFilesService(data) {
     data: {},
   };
 
-  const readdir = promisify(fs.readdir);
+  const tempRes = await listModelFiles(data.modelid);
 
-  try {
-    const files = await readdir(`./private/${data.modelid}/`);
-    responseObject.data.files = files;
-  } catch (e) {
-    // eslint-disable-next-line
-    console.log(e);
-    responseObject.error = 'Something went wrong';
-    return responseObject;
+  for (const file of tempRes) {
+    responseObject.data[file.time] = file.filename;
   }
 
   responseObject.status = 'Files fetched';
