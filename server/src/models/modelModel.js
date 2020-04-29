@@ -42,12 +42,12 @@ export async function getAllModels() {
     .select(['modelid', 'modelowner', 'name']);
 }
 
-export async function uploadModelFile(userid, path, modelid) {
+export async function uploadModelFile(userid, filename, modelid) {
   return knexPool('modelfiles')
     .insert({
       modelid,
       userid,
-      path,
+      filename,
     })
     .returning('*');
 }

@@ -29,7 +29,10 @@ import {
 } from '../controllers/orderController';
 import { comment, getComments, getLogin } from '../controllers/genericController';
 
-const upload = multer({ dest: './private/' });
+const upload = multer({
+  dest: './private/',
+  limits: { fieldSize: 100 * 1024 * 1024 },
+});
 
 const router = express.Router();
 

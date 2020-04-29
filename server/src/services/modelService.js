@@ -40,7 +40,11 @@ export async function modelUploadService(req, data) {
     return responseObject;
   }
 
-  [responseObject.data] = await uploadModelFile(req.session.userid, `/private/${data.modelid}/${req.file.originalname}`, data.modelid);
+  [responseObject.data] = await uploadModelFile(
+    req.session.userid,
+    req.file.originalname,
+    data.modelid,
+  );
 
   responseObject.status = 'File uploaded';
 
@@ -119,7 +123,11 @@ export async function iosUploadService(req, data) {
     return responseObject;
   }
 
-  const [first, other] = await uploadIos(`${domain}:${port}/public/${data.productid}/newios/${req.file.originalname}`, data.productid, req.session.userid);
+  const [first, other] = await uploadIos(
+    `${domain}:${port}/public/${data.productid}/newios/${req.file.originalname}`,
+    data.productid,
+    req.session.userid,
+  );
 
   responseObject.data.new = first;
 
