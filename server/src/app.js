@@ -31,7 +31,7 @@ app.use(express.urlencoded({
 app.use(morgan('combined'));
 app.use(helmet());
 app.use(cors({
-  origin:['http://46.101.115.253:8080'],
+  origin:true,
   methods:['GET', 'POST'],
   credentials: true,
 }));
