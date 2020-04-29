@@ -20,6 +20,8 @@ import {
   listmodelfiles,
   uploadios,
   uploadandroid,
+  deletemodelfile,
+  uploadthumb,
 } from '../controllers/modelController';
 import {
   createorder,
@@ -69,5 +71,7 @@ router.post('/gen/getproducts', getproducts);
 router.post('/modeller/downloadmodelfile', downloadmodelfile);
 router.post('/qa/uploadios', upload.single('modelfile'), uploadios);
 router.post('/qa/uploadandroid', upload.single('modelfile'), uploadandroid);
+router.post('/modeller/deletemodelfile', deletemodelfile);
+router.post('/qa/uploadthumb', upload.single('thumb'), uploadthumb);
 
 export default router;

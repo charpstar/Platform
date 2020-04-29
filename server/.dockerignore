@@ -1,4 +1,6 @@
 node_modules
+private
+public
 .gitignore
 01-buildImage.sh
 02-createContainer.sh

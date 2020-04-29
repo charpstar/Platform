@@ -1,6 +1,7 @@
 import { promisify } from 'util';
 import path from 'path';
 import fs from 'fs';
+import mv from 'mv';
 import {
   getModelers,
   getModels,
@@ -11,8 +12,12 @@ import {
   uploadIos,
   uploadAndroid,
   uploadModelFile,
+  deleteModelFile,
+  listModelFiles,
 } from '../models/modelModel';
 import { domain, port } from '../config/config';
+
+const mvp = promisify(mv);
 
 export async function modelUploadService(req, data) {
   const responseObject = {
@@ -22,7 +27,6 @@ export async function modelUploadService(req, data) {
   };
 
   const mkdir = promisify(fs.mkdir);
-  const rename = promisify(fs.rename);
 
   if (typeof req.file === 'undefined') {
     responseObject.error = 'No file uploaded';
@@ -32,7 +36,7 @@ export async function modelUploadService(req, data) {
   try {
     const dest = path.resolve(`./private/${data.modelid}/`);
     await mkdir(dest, { recursive: true });
-    await rename(req.file.path, `${dest}/${req.file.originalname}`);
+    await mvp(req.file.path, `${dest}/${req.file.originalname}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -40,7 +44,11 @@ export async function modelUploadService(req, data) {
     return responseObject;
   }
 
-  [responseObject.data] = await uploadModelFile(req.session.userid, `/private/${data.modelid}/${req.file.originalname}`, data.modelid);
+  [responseObject.data] = await uploadModelFile(
+    req.session.userid,
+    req.file.originalname,
+    data.modelid,
+  );
 
   responseObject.status = 'File uploaded';
 
@@ -51,6 +59,59 @@ export async function modelFileDownloadService(data) {
   return `./private/${data.modelid}/${data.filename}`;
 }
 
+export async function modelFileDeleteService(data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const unlink = promisify(fs.unlink);
+
+  const deletionPath = path.resolve(`./private/${data.modelid}/${data.filename}`);
+
+  try {
+    await unlink(deletionPath);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    responseObject.error = 'No such file';
+    return responseObject;
+  }
+
+  deleteModelFile(data);
+
+  responseObject.status = 'File deleted';
+  return responseObject;
+}
+
+export async function thumbUploadService(req, data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const mkdir = promisify(fs.mkdir);
+
+  const thumbsFolder = path.resolve('./public/thumbs/');
+  const fileExt = path.extname(req.file.originalname);
+
+  try {
+    await mkdir(thumbsFolder, { recursive: true });
+    mvp(req.file.path, `${thumbsFolder}/${data.modelid}${fileExt}`);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    responseObject.error = 'Something went wrong';
+    return responseObject;
+  }
+
+  responseObject.status = 'Thumbnail uploaded';
+
+  return responseObject;
+}
+
 export async function listModelFilesService(data) {
   const responseObject = {
     status: '',
@@ -58,16 +119,10 @@ export async function listModelFilesService(data) {
     data: {},
   };
 
-  const readdir = promisify(fs.readdir);
+  const tempRes = await listModelFiles(data.modelid);
 
-  try {
-    const files = await readdir(`./private/${data.modelid}/`);
-    responseObject.data.files = files;
-  } catch (e) {
-    // eslint-disable-next-line
-    console.log(e);
-    responseObject.error = 'Something went wrong';
-    return responseObject;
+  for (const file of tempRes) {
+    responseObject.data[file.time] = file.filename;
   }
 
   responseObject.status = 'Files fetched';
@@ -83,7 +138,6 @@ export async function iosUploadService(req, data) {
   };
 
   const mkdir = promisify(fs.mkdir);
-  const rename = promisify(fs.rename);
   const readdir = promisify(fs.readdir);
   const unlink = promisify(fs.unlink);
 
@@ -108,10 +162,10 @@ export async function iosUploadService(req, data) {
     const oldFiles = await readdir(destNew);
 
     for (const file of oldFiles) {
-      await rename(`${destNew}/${file}`, `${destOld}/${file}`);
+      await mvp(`${destNew}/${file}`, `${destOld}/${file}`);
     }
 
-    await rename(req.file.path, `${destNew}/${req.file.originalname}`);
+    await mvp(req.file.path, `${destNew}/${req.file.originalname}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -119,7 +173,11 @@ export async function iosUploadService(req, data) {
     return responseObject;
   }
 
-  const [first, other] = await uploadIos(`${domain}:${port}/public/${data.productid}/newios/${req.file.originalname}`, data.productid, req.session.userid);
+  const [first, other] = await uploadIos(
+    `${domain}:${port}/public/${data.productid}/newios/${req.file.originalname}`,
+    data.productid,
+    req.session.userid,
+  );
 
   responseObject.data.new = first;
 
@@ -140,7 +198,6 @@ export async function androidUploadService(req, data) {
   };
 
   const mkdir = promisify(fs.mkdir);
-  const rename = promisify(fs.rename);
   const readdir = promisify(fs.readdir);
   const unlink = promisify(fs.unlink);
 
@@ -165,10 +222,10 @@ export async function androidUploadService(req, data) {
     const oldFiles = await readdir(destNew);
 
     for (const file of oldFiles) {
-      await rename(`${destNew}/${file}`, `${destOld}/${file}`);
+      await mvp(`${destNew}/${file}`, `${destOld}/${file}`);
     }
 
-    await rename(req.file.path, `${destNew}/${req.file.originalname}`);
+    await mvp(req.file.path, `${destNew}/${req.file.originalname}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);

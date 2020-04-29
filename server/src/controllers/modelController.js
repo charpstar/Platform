@@ -11,12 +11,24 @@ import {
   listModelFilesService,
   iosUploadService,
   androidUploadService,
+  modelFileDeleteService,
+  thumbUploadService,
 } from '../services/modelService';
 
 const orderIdParser = Joi.object({
   orderid: Joi.number()
     .integer()
     .min(0)
+    .required(),
+});
+
+const deleteModelFileParser = Joi.object({
+  modelid: Joi.number()
+    .integer()
+    .min(0)
+    .required(),
+
+  filename: Joi.string()
     .required(),
 });
 
@@ -94,6 +106,44 @@ export async function downloadmodelfile(req, res) {
       return res.send(responseObject);
     }
     return modelFileDownloadService(value).then((result) => res.download(result));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function deletemodelfile(req, res) {
+  try {
+    const { error, value } = deleteModelFileParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return modelFileDeleteService(value).then((result) => res.send(result));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function uploadthumb(req, res) {
+  try {
+    const { error, value } = modelFileParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return thumbUploadService(req, value).then((result) => res.send(result));
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);

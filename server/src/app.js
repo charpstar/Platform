@@ -36,6 +36,9 @@ app.use(cors({
   credentials: true,
 }));
 app.use('/public', express.static('./public/'));
+app.use('/public', (req, res) => {
+ res.send('The file you requested does not exist on the server!'); 
+});
 
 const pgSession = connectPgSimple(session);
 const pgPool = new pg.Pool({
@@ -78,6 +81,7 @@ app.post('/gen/comment', router);
 app.post('/gen/getComments', router);
 app.post('/gen/getclientorders', router);
 app.post('/gen/getmodels', router);
+app.post('/gen/getexcel', router);
 
 // Admin routes
 app.get('/admin/getusers', router);
@@ -93,12 +97,14 @@ app.post('/qa/claimorder', router);
 app.post('/qa/assignmodeler', router);
 app.post('/qa/uploadios', router);
 app.post('/qa/uploadandroid', router);
+app.post('/qa/uploadthumb', router);
 
 // Modeller routes
 app.get('/modeller/models', router);
 app.post('/modeller/listmodelfiles', router);
 app.post('/modeller/uploadmodelfile', router);
 app.post('/modeller/downloadmodelfile', router);
+app.post('/modeller/deletemodelfile', router);
 
 // Client routes
 app.post('/client/createorder', router);
