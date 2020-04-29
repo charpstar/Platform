@@ -22,7 +22,7 @@
                         class="buttons"
                         @click="handler.execute"
                         :loading="handler.loading"
-                        :disabled="!modelFile.model"
+                        :disabled="!(modelFile.file && modelFile.image)"
                     >Upload</v-btn>
                     <v-btn class="buttons" @click="handler.modal = false">Cancel</v-btn>
                 </v-card-actions>
@@ -49,6 +49,7 @@ export default {
             handler: backend.promiseHandler(this.upload),
             thumbnail: true,
             modelFile: {
+                file: false,
                 model: "",
                 image: "",
                 label: "Select Model File"
@@ -65,7 +66,7 @@ export default {
             var vm = this;
             var promises = [];
             promises.push(
-                vm.uploadfun(vm.model, vm.product, vm.modelFile.model)
+                vm.uploadfun(vm.product, vm.modelFile.file)
             );
             if (vm.thumbnail) {
                 promises.push(

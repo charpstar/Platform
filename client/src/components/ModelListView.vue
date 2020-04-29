@@ -56,8 +56,8 @@
                 :search="search"
                 @click:row="handleClick"
             >
-                <template v-slot:item.thumbnail="{value}">
-                    <img :src="value" class="thumbnail" />
+                <template v-slot:item.thumbnail="{item}">
+                    <img :src="backend.getThumbURL(item.modelid)" class="thumbnail" onerror="this.style.display='none'"/>
                 </template>
                 <template v-slot:item.status="{value}">
                     {{backend.messageFromStatus(value)}}

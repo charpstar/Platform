@@ -141,9 +141,6 @@ export default {
                     vm.file = false;
                 });
             }
-        },
-        emptyObj(obj) {
-            return Object.keys(obj).length === 0;
         }
     },
     mounted() {

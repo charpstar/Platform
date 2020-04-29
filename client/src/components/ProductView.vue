@@ -7,7 +7,7 @@
                 </v-btn>
 
                 <model-viewer
-                    :src="product.androidmodel"
+                    :src="'http://' + product.androidlink"
                     auto-rotate
                     camera-controls
                     id="modelViewer"
@@ -121,18 +121,18 @@ export default {
             androidUploadFun: backend.uploadAndroidModel,
             iosUploadFun: backend.uploadIosModel,
             commentsTab: "",
-            hideMv: false
+            hideMv: true
         };
     },
     methods: {
         uploadedAndroid(values) {
-            this.product.androidmodel = values[0];
+            this.product.androidlink = values[0].new.androidlink;
             if (values[1] != null) {
                 this.model.thumbnail = values[1];
             }
         },
         uploadedIos(values) {
-            this.product.iosmodel = values[0];
+            this.product.iosmodel = values[0].new.ioslink;
             if (values[1] != null) {
                 this.model.thumbnail = values[1];
             }
@@ -155,6 +155,10 @@ export default {
                 vm.hideMv = false;
             });
         }
+    },
+    mounted() {
+        var vm = this;
+        setTimeout(() => { vm.hideMv = false; }, 500);
     }
 };
 </script>
