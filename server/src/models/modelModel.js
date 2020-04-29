@@ -165,18 +165,64 @@ export async function getModellerModels(id) {
 
 export async function getProducts(id) {
   return knexPool('products')
-    .select('products.productid',
+    .select(
+      'products.productid',
       'products.modelid',
       'products.color',
       'products.link',
       'products.broken',
-      { androidtime: 'androidversions.time' },
-      'androidversions.androidlink',
-      { androiduser: 'androidversions.userid' },
-      { iostime: 'appleversions.time' },
-      'appleversions.ioslink',
-      { iosuser: 'appleversions.userid' })
-    .leftJoin('androidversions', 'products.productid', 'androidversions.productid')
-    .leftJoin('appleversions', 'products.productid', 'appleversions.productid')
-    .where('modelid', id);
+      { newandroidlink: 't1.androidlink' },
+      { newandroidtime: 't1.time' },
+      { newandroiduser: 't1.userid' },
+      { oldandroidlink: 't2.androidlink' },
+      { oldandroidtime: 't2.time' },
+      { oldandroiduser: 't2.userid' },
+      { newioslink: 't3.ioslink' },
+      { newiostime: 't3.time' },
+      { newiosuser: 't3.userid' },
+      { oldioslink: 't4.ioslink' },
+      { oldiostime: 't4.time' },
+      { oldiosuser: 't4.userid' },
+    )
+    .leftJoin((querybuilder) => {
+      querybuilder.from('androidversions')
+        .join((querybuilder2) => {
+          querybuilder2.from('androidversions')
+            .groupBy('productid')
+            .max('time')
+            .as('t11');
+        }, 'androidversions.time', 't11.max')
+        .as('t1');
+    }, 'products.productid', 't1.productid')
+    .leftJoin((querybuilder) => {
+      querybuilder.from('androidversions')
+        .join((querybuilder2) => {
+          querybuilder2.from('androidversions')
+            .groupBy('productid')
+            .min('time')
+            .as('t22');
+        }, 'androidversions.time', 't22.min')
+        .as('t2');
+    }, 'products.productid', 't2.productid')
+    .leftJoin((querybuilder) => {
+      querybuilder.from('appleversions')
+        .join((querybuilder2) => {
+          querybuilder2.from('appleversions')
+            .groupBy('productid')
+            .max('time')
+            .as('t33');
+        }, 'appleversions.time', 't33.max')
+        .as('t3');
+    }, 'products.productid', 't3.productid')
+    .leftJoin((querybuilder) => {
+      querybuilder.from('appleversions')
+        .join((querybuilder2) => {
+          querybuilder2.from('appleversions')
+            .groupBy('productid')
+            .min('time')
+            .as('t44');
+        }, 'appleversions.time', 't44.min')
+        .as('t4');
+    }, 'products.productid', 't4.productid')
+    .where('products.modelid', id);
 }
