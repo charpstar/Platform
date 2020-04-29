@@ -57,6 +57,13 @@ export async function uploadModelFile(userid, filename, modelid) {
     .returning('*');
 }
 
+export async function deleteModelFile(data) {
+  return knexPool('modelfiles')
+    .where('modelid', data.modelid)
+    .where('filename', data.filename)
+    .del();
+}
+
 export async function uploadIos(path, id, userid) {
   await knexPool('appleversions')
     .insert({

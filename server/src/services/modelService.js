@@ -11,6 +11,7 @@ import {
   uploadIos,
   uploadAndroid,
   uploadModelFile,
+  deleteModelFile,
 } from '../models/modelModel';
 import { domain, port } from '../config/config';
 
@@ -53,6 +54,32 @@ export async function modelUploadService(req, data) {
 
 export async function modelFileDownloadService(data) {
   return `./private/${data.modelid}/${data.filename}`;
+}
+
+export async function modelFileDeleteService(data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const unlink = promisify(fs.unlink);
+
+  const deletionPath = path.resolve(`./private/${data.modelid}/${data.filename}`);
+
+  try {
+    await unlink(deletionPath);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    responseObject.error = 'No such file';
+    return responseObject;
+  }
+
+  deleteModelFile(data);
+
+  responseObject.status = 'File deleted';
+  return responseObject;
 }
 
 export async function listModelFilesService(data) {
