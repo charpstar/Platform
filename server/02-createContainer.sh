@@ -1,2 +1,2 @@
 docker stop backend || true && docker rm backend || true
-docker create --name backend --restart unless-stopped --network host charpstar/backend
+docker create --name backend --restart unless-stopped --network host -v /charpstarfiles/public:/app/public -v /charpstarfiles/private:/app/private charpstar/backend
