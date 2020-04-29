@@ -37,7 +37,13 @@ app.use(cors({
 }));
 app.use('/public', express.static('./public/'));
 app.use('/public', (req, res) => {
- res.send('The file you requested does not exist on the server!'); 
+  const data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+  let img = Buffer.from(data, 'base64');
+  res.writeHead(200, {
+    'Content-Type': 'image/png',
+    'Content-Length': img.length,
+  });
+  res.end(img);
 });
 
 const pgSession = connectPgSimple(session);
