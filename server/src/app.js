@@ -99,6 +99,7 @@ app.get('/modeller/models', router);
 app.post('/modeller/listmodelfiles', router);
 app.post('/modeller/uploadmodelfile', router);
 app.post('/modeller/downloadmodelfile', router);
+app.post('/modeller/deletemodelfile', router);
 
 // Client routes
 app.post('/client/createorder', router);
