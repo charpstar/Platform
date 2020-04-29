@@ -43,6 +43,11 @@ export async function getAllModels() {
 }
 
 export async function uploadModelFile(userid, filename, modelid) {
+  await knexPool('modelfiles')
+    .where('modelid', modelid)
+    .where('filename', filename)
+    .del();
+
   return knexPool('modelfiles')
     .insert({
       modelid,
