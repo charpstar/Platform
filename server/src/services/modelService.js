@@ -1,6 +1,7 @@
 import { promisify } from 'util';
 import path from 'path';
 import fs from 'fs';
+import mv from 'mv';
 import {
   getModelers,
   getModels,
@@ -24,7 +25,6 @@ export async function modelUploadService(req, data) {
   };
 
   const mkdir = promisify(fs.mkdir);
-  const rename = promisify(fs.rename);
 
   if (typeof req.file === 'undefined') {
     responseObject.error = 'No file uploaded';
@@ -34,7 +34,7 @@ export async function modelUploadService(req, data) {
   try {
     const dest = path.resolve(`./private/${data.modelid}/`);
     await mkdir(dest, { recursive: true });
-    await rename(req.file.path, `${dest}/${req.file.originalname}`);
+    await mv(req.file.path, `${dest}/${req.file.originalname}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -91,14 +91,13 @@ export async function thumbUploadService(req, data) {
   };
 
   const mkdir = promisify(fs.mkdir);
-  const rename = promisify(fs.rename);
 
   const thumbsFolder = path.resolve('./public/thumbs/');
   const fileExt = path.extname(req.file.originalname);
 
   try {
     await mkdir(thumbsFolder, { recursive: true });
-    rename(req.file.path, `${thumbsFolder}/${data.modelid}${fileExt}`);
+    mv(req.file.path, `${thumbsFolder}/${data.modelid}${fileExt}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -137,7 +136,6 @@ export async function iosUploadService(req, data) {
   };
 
   const mkdir = promisify(fs.mkdir);
-  const rename = promisify(fs.rename);
   const readdir = promisify(fs.readdir);
   const unlink = promisify(fs.unlink);
 
@@ -162,10 +160,10 @@ export async function iosUploadService(req, data) {
     const oldFiles = await readdir(destNew);
 
     for (const file of oldFiles) {
-      await rename(`${destNew}/${file}`, `${destOld}/${file}`);
+      await mv(`${destNew}/${file}`, `${destOld}/${file}`);
     }
 
-    await rename(req.file.path, `${destNew}/${req.file.originalname}`);
+    await mv(req.file.path, `${destNew}/${req.file.originalname}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -198,7 +196,6 @@ export async function androidUploadService(req, data) {
   };
 
   const mkdir = promisify(fs.mkdir);
-  const rename = promisify(fs.rename);
   const readdir = promisify(fs.readdir);
   const unlink = promisify(fs.unlink);
 
@@ -223,10 +220,10 @@ export async function androidUploadService(req, data) {
     const oldFiles = await readdir(destNew);
 
     for (const file of oldFiles) {
-      await rename(`${destNew}/${file}`, `${destOld}/${file}`);
+      await mv(`${destNew}/${file}`, `${destOld}/${file}`);
     }
 
-    await rename(req.file.path, `${destNew}/${req.file.originalname}`);
+    await mv(req.file.path, `${destNew}/${req.file.originalname}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
