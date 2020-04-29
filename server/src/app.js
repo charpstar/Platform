@@ -93,6 +93,7 @@ app.post('/qa/claimorder', router);
 app.post('/qa/assignmodeler', router);
 app.post('/qa/uploadios', router);
 app.post('/qa/uploadandroid', router);
+app.post('/qa/uploadthumb', router);
 
 // Modeller routes
 app.get('/modeller/models', router);

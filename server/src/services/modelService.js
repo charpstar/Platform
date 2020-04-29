@@ -82,6 +82,34 @@ export async function modelFileDeleteService(data) {
   return responseObject;
 }
 
+export async function thumbUploadService(req, data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const mkdir = promisify(fs.mkdir);
+  const rename = promisify(fs.rename);
+
+  const thumbsFolder = path.resolve('./public/thumbs/');
+  const fileExt = path.extname(req.file.originalname);
+
+  try {
+    await mkdir(thumbsFolder, { recursive: true });
+    rename(req.file.path, `${thumbsFolder}/${data.modelid}${fileExt}`);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    responseObject.error = 'Something went wrong';
+    return responseObject;
+  }
+
+  responseObject.status = 'Thumbnail uploaded';
+
+  return responseObject;
+}
+
 export async function listModelFilesService(data) {
   const responseObject = {
     status: '',

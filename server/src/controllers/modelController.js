@@ -12,6 +12,7 @@ import {
   iosUploadService,
   androidUploadService,
   modelFileDeleteService,
+  thumbUploadService,
 } from '../services/modelService';
 
 const orderIdParser = Joi.object({
@@ -124,6 +125,25 @@ export async function deletemodelfile(req, res) {
       return res.send(responseObject);
     }
     return modelFileDeleteService(value).then((result) => res.send(result));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function uploadthumb(req, res) {
+  try {
+    const { error, value } = modelFileParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return thumbUploadService(req, value).then((result) => res.send(result));
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
