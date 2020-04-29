@@ -1,4 +1,3 @@
-import firebase from "firebase/app"
 import Axios from 'axios'
 Axios.defaults.withCredentials = true
 
@@ -46,13 +45,57 @@ function dbGet(url) {
     return p
 }
 
-function databaseUpload(ref, data) {
-    return new Promise((resolve) => {
-        firebase.storage().ref(ref).putString(data, 'data_url')
-            .then(snapshot => snapshot.ref.getDownloadURL()).then((url) => {
-                resolve(url)
-            })
+function dbUpload(url, file, filename, obj) {
+    //eslint-disable-next-line no-console
+    console.log(file)
+    var formData = new FormData()
+    formData.append(filename, file);
+    for (var key in obj) {
+        formData.append(key, obj[key])
+    }
+    var p = new Promise((resolve, reject) => {
+        Axios.post(backend + url, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }).then((res) => {
+            if (res.data.error == '') {
+                resolve(res.data.data)
+            } else {
+                reject(res.data.error)
+            }
+        })
     })
+    p.then(e => {
+        //eslint-disable-next-line no-console
+        console.log(e)
+    }).catch(e => {
+        //eslint-disable-next-line no-console
+        console.log(e)
+    })
+    return p
+}
+
+function dbDownload(url, data) {
+    var p = new Promise((resolve, reject) => {
+        Axios.post(backend + url, data).then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', data.filename); //or any other extension
+            document.body.appendChild(link);
+            link.click();
+            resolve();
+        }).catch(error => {
+            reject(error)
+        });
+    })
+    p.then(e => {
+        //eslint-disable-next-line no-console
+        console.log(e)
+    }).catch(e => {
+        //eslint-disable-next-line no-console
+        console.log(e)
+    })
+    return p
 }
 
 const StatusIcons = {
@@ -109,8 +152,6 @@ const ClientMessages = {
     Error: "Error"
 }
 
-
-
 export default {
 
     promiseHandler(fun) {
@@ -143,10 +184,6 @@ export default {
 
     iconFromStatus(status) {
         return StatusIcons[status]
-    },
-
-    emptyObj(obj) {
-        return Object.keys(obj).length === 0
     },
 
     randomid(length) {
@@ -266,54 +303,28 @@ export default {
         return dbPost('/gen/getproducts', { modelid: modelid })
     },
 
-    uploadAndroidModel(model, product, file) {
-        return new Promise((resolve) => {
-            databaseUpload('android/' + model.modelid + product.id + '.glb', file).then((url) => {
-                resolve(url)
-            })
-        })
+    uploadAndroidModel(product, file) {
+        return dbUpload('/qa/uploadandroid', file, 'modelfile', {productid: product.productid})
     },
 
-    uploadIosModel(model, product, file) {
-        return new Promise((resolve) => {
-            databaseUpload('ios/' + model.modelid + product.id + '.glb', file).then((url) => {
-                resolve(url)
-            })
-        })
+    uploadIosModel(product, file) {
+        return dbUpload('/qa/uploadios', file, 'modelfile', {productid: product.productid})
     },
 
-    uploadThumbnail(model, thumbnail) {
-        return new Promise((resolve) => {
-            databaseUpload('thumbnails/' + model.modelid + '.png', thumbnail).then((url) => {
-                resolve(url)
-            })
-        })
-    },
-
-    uploadBlenderModel(model, product, blender) {
-        return new Promise((resolve) => {
-            databaseUpload('blender/' + model.modelid + product.id + '.blend', blender).then((url) => {
-                resolve(url)
-            })
-        })
+    uploadThumbnail(model, file) {
+        return dbUpload('/qa/uploadthumb', file, 'thumb', {modelid: model.modelid})
     },
 
     uploadModelFile(model, file) {
-        return new Promise((resolve) => {
-            var id = this.randomid(10)
-            var reader = new FileReader();
-            reader.onload = e => {
-                databaseUpload('files/' + model.modelid + id, e.target.result).then((url) => {
-                    var fileObj = {
-                        name: file.name,
-                        link: url,
-                        id: id
-                    }
-                    resolve(fileObj)
-                })
-            };
-            reader.readAsDataURL(file)
-        })
+        return dbUpload('/modeller/uploadmodelfile', file, 'modelfile', {modelid: model.modelid})
+    },
+
+    downloadModelFile(model, filename) {
+        return dbDownload('/modeller/downloadmodelfile', {modelid: model.modelid, filename: filename})
+    },
+
+    getThumbURL(modelid) {
+        return backend + '/public/thumbs/' + modelid
     },
 
     newUser(userObj) {
@@ -332,19 +343,7 @@ export default {
     },
 
     createOrder(file) {
-        var formData = new FormData()
-        formData.append("orderdata", file);
-        return new Promise((resolve, reject) => {
-            Axios.post(backend + '/client/createorder', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            }).then((res) => {
-                if (res.data.error == '') {
-                    resolve(res.data.data)
-                } else {
-                    reject(res.data.error)
-                }
-            })
-        })
+        return dbUpload('/client/createorder', file, 'orderdata')
     },
 
     assignQA(orderid) {

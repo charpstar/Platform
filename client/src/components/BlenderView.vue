@@ -41,14 +41,19 @@
                     </v-btn>
                 </div>
                 <table class="fileList">
-                    <tr v-for="(file, id) in model.files" :key="id">
+                    <tr v-if="$emptyObj(files)">
                         <td>
-                            <div class="fileName">{{file.name}}</div>
+                            <p class="emptyFiles">No files uploaded</p>
+                        </td>
+                    </tr>
+                    <tr v-for="(file, time) in files" :key="time">
+                        <td>
+                            <div class="fileName">{{file}}</div>
                         </td>
                         <td>
-                            <a :href="file.link" target="_blank">
+                            <v-btn icon @click="downloadModel(file)">
                                 <v-icon>mdi-cloud-download</v-icon>
-                            </a>
+                            </v-btn>
                         </td>
                         <td>
                             <v-btn icon @click="() => {deleteFile(id)}">
@@ -108,7 +113,8 @@ export default {
             selectedFile: false,
             modelers: [],
             modeler: false,
-            file: ""
+            file: "",
+            files: {}
         };
     },
     methods: {
@@ -126,9 +132,13 @@ export default {
         uploadModel() {
             var vm = this;
             return backend.uploadModelFile(vm.model, vm.file).then(newFile => {
-                vm.model.files[newFile.id] = newFile;
+                Vue.set(vm.files, newFile.time, newFile.filename);
                 vm.file = false;
             });
+        },
+        downloadModel(filename) {
+            var vm = this
+            backend.downloadModelFile(vm.model, filename)
         },
         deleteFile(id) {
             this.deleteHandler.modal = true;
@@ -139,7 +149,7 @@ export default {
             return backend
                 .deleteModelFile(vm.model.modelid, vm.selectedFile)
                 .then(() => {
-                    Vue.delete(vm.model.files, vm.selectedFile);
+                    Vue.delete(vm.files, vm.selectedFile);
                     vm.selectedFile = false;
                 });
         }
@@ -148,7 +158,7 @@ export default {
         var vm = this;
         backend.getModelFiles(vm.model.modelid).then(files => {
             vm.files = files
-        })
+        });
         backend.getModelers().then(modelers => {
             vm.modelers = Object.values(modelers);
         });
@@ -205,6 +215,13 @@ export default {
     width: 300px;
     padding-left: 10px;
 }
+
+.emptyFiles {
+    width: 300px;
+    padding-left: 10px;
+    font-style: italic;
+}
+
 .buttons {
     margin-top: 10px;
 }

@@ -45,7 +45,7 @@ export default {
             vm.model = model;
             backend.getProducts(vm.model.modelid).then(products => {
                 Vue.set(vm, "products", products);
-            });
+            })
         });
     }
 };

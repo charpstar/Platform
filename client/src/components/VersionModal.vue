@@ -8,12 +8,12 @@
             <div class="flexrow card">
                 <div class="flexcol">
                     <h2>Current Version</h2>
-                    <model-viewer :src="product.androidmodel" camera-controls class="mv"></model-viewer>
+                    <model-viewer :src="'http://' + product.androidlink" camera-controls class="mv"></model-viewer>
                 </div>
                 <div class="flexcol">
                     <h2>Previous Version</h2>
                     <!-- this model will be replaced by previous version-->
-                    <model-viewer :src="product.androidmodel " camera-controls class="mv"></model-viewer>
+                    <model-viewer :src="'http://' + product.ioslink " camera-controls class="mv"></model-viewer>
                 </div>
             </div>
         </v-dialog>
