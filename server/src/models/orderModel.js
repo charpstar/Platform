@@ -113,3 +113,37 @@ export async function getClientOrders(id) {
   return knexPool('orders')
     .where('clientid', id);
 }
+
+export async function getExcel(orderid) {
+  console.log(orderid);
+  return knexPool('models')
+    .select(
+      'models.name',
+      'products.link',
+      'products.color',
+      { androidlink: 't1.androidlink' },
+      { ioslink: 't2.ioslink' },
+    )
+    .where('orderid', orderid)
+    .join('products', 'models.modelid', 'products.modelid')
+    .leftJoin((querybuilder) => {
+      querybuilder.from('androidversions')
+        .join((querybuilder2) => {
+          querybuilder2.from('androidversions')
+            .groupBy('productid')
+            .max('time')
+            .as('t11');
+        }, 'androidversions.time', 't11.max')
+        .as('t1');
+    }, 'products.productid', 't1.productid')
+    .leftJoin((querybuilder) => {
+      querybuilder.from('appleversions')
+        .join((querybuilder2) => {
+          querybuilder2.from('appleversions')
+            .groupBy('productid')
+            .max('time')
+            .as('t22');
+        }, 'appleversions.time', 't22.max')
+        .as('t2');
+    }, 'products.productid', 't2.productid');
+}

@@ -28,6 +28,7 @@ import {
   getorders,
   claimorder,
   getclientorders,
+  getexcel,
 } from '../controllers/orderController';
 import { comment, getComments, getLogin } from '../controllers/genericController';
 
@@ -44,6 +45,7 @@ router.get('/', (req, res) => {
 router.get('/gen/login', getLogin);
 router.post('/gen/comment', comment);
 router.post('/gen/getComments', getComments);
+router.post('/gen/getexcel', getexcel);
 
 // User related
 router.get('/logout', logout);

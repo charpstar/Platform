@@ -4,6 +4,7 @@ import {
   getOrdersService,
   claimOrderService,
   getClientOrdersService,
+  getExcelService,
 } from '../services/orderService';
 
 const idParser = Joi.object({
@@ -71,6 +72,27 @@ export async function getclientorders(req, res) {
     }
     return getClientOrdersService(value).then((result) => {
       res.send(result);
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function getexcel(req, res) {
+  try {
+    const { error, value } = idParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return getExcelService(value).then((result) => {
+      res.download(result);
     });
   } catch (e) {
     // eslint-disable-next-line no-console

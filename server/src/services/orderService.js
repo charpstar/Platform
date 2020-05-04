@@ -1,10 +1,12 @@
 import xlsx from 'xlsx';
 import fs from 'fs';
+import path from 'path';
 import {
   createOrder,
   getOrders,
   claimOrder,
   getClientOrders,
+  getExcel,
 } from '../models/orderModel';
 
 export async function orderCreationService(req) {
@@ -131,4 +133,29 @@ export async function getClientOrdersService(client) {
   responseObject.status = 'Orders fetched';
 
   return responseObject;
+}
+
+export async function getExcelService(data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const tempRes = await getExcel(data.id);
+  const wb = xlsx.utils.book_new();
+  const ws = xlsx.utils.json_to_sheet(tempRes);
+  xlsx.utils.book_append_sheet(wb, ws, 'Products');
+  try {
+    xlsx.writeFile(wb, `./private/${data.id}.xlsx`);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    responseObject.error = "Coudn't create excel file";
+    return responseObject;
+  }
+
+  const filePath = path.resolve(`./private/${data.id}.xlsx`);
+
+  return filePath;
 }
