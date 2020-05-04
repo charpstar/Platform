@@ -14,6 +14,7 @@ import {
   uploadModelFile,
   deleteModelFile,
   listModelFiles,
+  getModel,
 } from '../models/modelModel';
 import { domain, port } from '../config/config';
 
@@ -291,6 +292,23 @@ export async function getModelsService(data) {
   });
 
   responseObject.status = 'Models fetched';
+
+  return responseObject;
+}
+
+export async function getModelService(data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = await getModel(data.modelid);
+  for (const model of result) {
+    responseObject.data[model.modelid] = model;
+  }
+
+  responseObject.status = 'Model fetched';
 
   return responseObject;
 }

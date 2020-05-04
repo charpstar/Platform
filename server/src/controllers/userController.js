@@ -6,6 +6,7 @@ import {
   logoutService,
   editUserService,
   deleteUserService,
+  getUserService,
 } from '../services/userService';
 
 const loginParser = Joi.object({
@@ -46,6 +47,7 @@ const userParser = Joi.object({
 
 const editUserParser = Joi.object({
   userid: Joi.number()
+    .min(0)
     .required(),
 
   name: Joi.string()
@@ -67,6 +69,12 @@ const editUserParser = Joi.object({
   active: Joi.boolean(),
 })
   .with('password', 'repeatPassword');
+
+const idParser = Joi.object({
+  id: Joi.number()
+    .min(0)
+    .required(),
+});
 
 export async function login(req, res) {
   try {
@@ -130,6 +138,27 @@ export async function logout(req, res) {
 export async function getusers(req, res) {
   try {
     return getUsersService().then((result) => {
+      res.send(result);
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function getuser(req, res) {
+  try {
+    const { error, value } = idParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return getUserService(value).then((result) => {
       res.send(result);
     });
   } catch (e) {

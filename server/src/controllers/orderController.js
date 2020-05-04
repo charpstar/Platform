@@ -4,6 +4,8 @@ import {
   getOrdersService,
   claimOrderService,
   getClientOrdersService,
+  getExcelService,
+  getOrderService,
 } from '../services/orderService';
 
 const idParser = Joi.object({
@@ -28,6 +30,27 @@ export async function createorder(req, res) {
 export async function getorders(req, res) {
   try {
     return getOrdersService().then((result) => {
+      res.send(result);
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function getorder(req, res) {
+  try {
+    const { error, value } = idParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return getOrderService(value).then((result) => {
       res.send(result);
     });
   } catch (e) {
@@ -71,6 +94,27 @@ export async function getclientorders(req, res) {
     }
     return getClientOrdersService(value).then((result) => {
       res.send(result);
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function getexcel(req, res) {
+  try {
+    const { error, value } = idParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return getExcelService(value).then((result) => {
+      res.download(result);
     });
   } catch (e) {
     // eslint-disable-next-line no-console

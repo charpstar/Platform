@@ -21,7 +21,7 @@ const knexPool = knex({
 export async function comment(data) {
   return knexPool('comments')
     .insert(data)
-    .returning(['comment', 'time']);
+    .returning(['comment', 'time', 'internal']);
 }
 
 export async function getComments(data) {

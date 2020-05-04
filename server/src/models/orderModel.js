@@ -85,6 +85,25 @@ export async function getOrders() {
     .groupBy(['orders.orderid', 'users.name', 'users2.name', 'orders.qaowner', 'orders.clientid']);
 }
 
+export async function getOrder(id) {
+  return knexPool
+    .select([
+      'orders.orderid',
+      'orders.clientid',
+      'orders.qaowner',
+      'orders.time',
+      'users.name as clientname',
+      'users2.name as qaownername',
+    ])
+    .count('orders.orderid as models')
+    .from('orders')
+    .innerJoin('users', 'orders.clientid', 'users.userid')
+    .leftJoin('users as users2', 'orders.qaowner', 'users2.userid')
+    .innerJoin('models', 'orders.orderid', 'models.orderid')
+    .groupBy(['orders.orderid', 'users.name', 'users2.name', 'orders.qaowner', 'orders.clientid'])
+    .where('orders.orderid', id);
+}
+
 export async function claimOrder(orderId, userId) {
   try {
     await knexPool.transaction(async (trx) => {
@@ -112,4 +131,38 @@ export async function claimOrder(orderId, userId) {
 export async function getClientOrders(id) {
   return knexPool('orders')
     .where('clientid', id);
+}
+
+export async function getExcel(orderid) {
+  console.log(orderid);
+  return knexPool('models')
+    .select(
+      'models.name',
+      'products.link',
+      'products.color',
+      { androidlink: 't1.androidlink' },
+      { ioslink: 't2.ioslink' },
+    )
+    .where('orderid', orderid)
+    .join('products', 'models.modelid', 'products.modelid')
+    .leftJoin((querybuilder) => {
+      querybuilder.from('androidversions')
+        .join((querybuilder2) => {
+          querybuilder2.from('androidversions')
+            .groupBy('productid')
+            .max('time')
+            .as('t11');
+        }, 'androidversions.time', 't11.max')
+        .as('t1');
+    }, 'products.productid', 't1.productid')
+    .leftJoin((querybuilder) => {
+      querybuilder.from('appleversions')
+        .join((querybuilder2) => {
+          querybuilder2.from('appleversions')
+            .groupBy('productid')
+            .max('time')
+            .as('t22');
+        }, 'appleversions.time', 't22.max')
+        .as('t2');
+    }, 'products.productid', 't2.productid');
 }

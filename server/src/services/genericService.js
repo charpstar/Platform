@@ -16,6 +16,7 @@ export async function commentService(data, userid) {
     responseObject.error = result.error;
     return responseObject;
   }
+
   [responseObject.data] = result;
   responseObject.status = 'Comment made';
   return responseObject;

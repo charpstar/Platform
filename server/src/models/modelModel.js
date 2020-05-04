@@ -37,6 +37,12 @@ export async function getModels(orderid) {
     .where('orderid', orderid);
 }
 
+export async function getModel(modelid) {
+  return knexPool('models')
+    .select(['modelid', 'modelowner', 'name'])
+    .where('modelid', modelid);
+}
+
 export async function getAllModels() {
   return knexPool('models')
     .select(['modelid', 'modelowner', 'name']);
