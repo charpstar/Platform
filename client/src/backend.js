@@ -2,11 +2,12 @@ import Axios from 'axios'
 Axios.defaults.withCredentials = true
 
 const backend = 'http://46.101.115.253:8081'
-var account = false
 
-function dbPost(url, data) {
-    var p = new Promise((resolve, reject) => {
-        Axios.post(backend + url, data).then((res) => {
+function parseResponse(axios) {
+    return new Promise((resolve, reject) => {
+        axios.then((res) => {
+            //eslint-disable-next-line no-console
+            console.log(res.data)
             if (res.data.error == '') {
                 resolve(res.data.data)
             } else {
@@ -14,88 +15,46 @@ function dbPost(url, data) {
             }
         })
     })
-    p.then(e => {
-        //eslint-disable-next-line no-console
-        console.log(e)
-    }).catch(e => {
-        //eslint-disable-next-line no-console
-        console.log(e)
-    })
-    return p
+}
 
+function dbPost(url, data) {
+    return parseResponse(Axios.post(backend + url, data))
 }
 
 function dbGet(url) {
-    var p = new Promise((resolve, reject) => {
-        Axios.get(backend + url).then((res) => {
-            if (res.data.error == '') {
-                resolve(res.data.data)
-            } else {
-                reject(res.data.error)
-            }
-        })
-    })
-    p.then(e => {
-        //eslint-disable-next-line no-console
-        console.log(e)
-    }).catch(e => {
-        //eslint-disable-next-line no-console
-        console.log(e)
-    })
-    return p
+    return parseResponse(Axios.get(backend + url))
 }
 
-function dbUpload(url, file, filename, obj) {
-    //eslint-disable-next-line no-console
-    console.log(file)
+function dbUpload(url, file, filename, data) {
     var formData = new FormData()
     formData.append(filename, file);
-    for (var key in obj) {
-        formData.append(key, obj[key])
+    for (var key in data) {
+        formData.append(key, data[key])
     }
-    var p = new Promise((resolve, reject) => {
-        Axios.post(backend + url, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        }).then((res) => {
-            if (res.data.error == '') {
-                resolve(res.data.data)
-            } else {
-                reject(res.data.error)
-            }
-        })
-    })
-    p.then(e => {
-        //eslint-disable-next-line no-console
-        console.log(e)
-    }).catch(e => {
-        //eslint-disable-next-line no-console
-        console.log(e)
-    })
-    return p
+    var header = { headers: { 'Content-Type': 'multipart/form-data' } }
+    return parseResponse(Axios.post(backend + url, formData, header))
 }
 
 function dbDownload(url, data) {
-    var p = new Promise((resolve, reject) => {
-        Axios.post(backend + url, data).then((response) => {
+    var name = data.name;
+    delete(data.name);
+    return new Promise((resolve, reject) => {
+        Axios.post(backend + url, data, {responseType: 'blob'}).then((response) => {
+            //eslint-disable-next-line no-console
+            console.log(response)
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', data.filename); //or any other extension
+            link.setAttribute('download', name);
             document.body.appendChild(link);
             link.click();
             resolve();
         }).catch(error => {
+            //eslint-disable-next-line no-console
+            console.log(error)
             reject(error)
         });
     })
-    p.then(e => {
-        //eslint-disable-next-line no-console
-        console.log(e)
-    }).catch(e => {
-        //eslint-disable-next-line no-console
-        console.log(e)
-    })
-    return p
 }
 
 const StatusIcons = {
@@ -196,37 +155,51 @@ export default {
         return result;
     },
 
+    //login
+
     login(email, password) {
-        var promise = dbPost('/login', { email: email, password: password })
-        promise.then((data) => {
-            account = data;
-        })
-        return promise
+        return dbPost('/login', { email: email, password: password })
     },
 
     relogin() {
-        var promise = dbGet('/gen/login')
-        promise.then((data) => {
-            account = data;
-        })
-        return promise
+        return dbGet('/gen/login')
     },
 
     logout() {
-        var promise = dbGet('/logout')
-        promise.then(() => {
-            account = false;
-        })
-        return promise
+        return dbGet('/logout')
     },
+
+    //users
 
     getUsers() {
         return dbGet('/admin/getusers')
     },
 
+    getUser(userid) {
+        return dbPost('/admin/getuser', { id: userid })
+    },
+
     getModelers() {
         return dbGet('/qa/getmodelers')
     },
+
+    newUser(userObj) {
+        var password = this.randomid(10)
+        userObj.password = password
+        userObj.repeatPassword = password
+        userObj.active = true
+        return dbPost('/admin/createuser', userObj)
+    },
+
+    deleteUser(userid) {
+        return dbPost('/admin/deleteuser', { userid: userid })
+    },
+
+    resetPassword(userid, password) {
+        return dbPost('/admin/edituser', { userid: userid, password: password, repeatPassword: password })
+    },
+
+    //orders
 
     getOrders(clientid) {
         return dbPost('/gen/getclientorders', { id: clientid })
@@ -237,20 +210,22 @@ export default {
     },
 
     getOrder(orderid) {
-        return new Promise((resolve, reject) => {
-            if (!account) {
-                reject('Not logged in')
-            } else if (account.usertype == 'Client') {
-                this.getOrders(account.userid).then(data => {
-                    resolve(data[orderid])
-                })
-            } else {
-                this.getAllOrders().then(data => {
-                    resolve(data[orderid])
-                })
-            }
-        })
+        return dbPost('/gen/getorder', { id: orderid })
     },
+
+    createOrder(file) {
+        return dbUpload('/client/createorder', file, 'orderdata')
+    },
+
+    assignQA(orderid) {
+        return dbPost('/qa/claimorder', { id: orderid })
+    },
+
+    downloadExcel(orderid) {
+        return dbDownload('/gen/getexcel', {id: orderid, name: '' + orderid + '.xlsx'})
+    },
+
+    //comments
 
     getComments(idobj) {
         return dbPost('/gen/getComments', idobj)
@@ -259,6 +234,8 @@ export default {
     sendComment(comment) {
         return dbPost('/gen/comment', comment)
     },
+
+    //models
 
     getModels(orderid) {
         return dbPost('/gen/getmodels', { orderid: orderid })
@@ -273,66 +250,23 @@ export default {
     },
 
     getModel(modelid) {
-        return new Promise((resolve, reject) => {
-            if (!account) {
-                reject('Not logged in')
-            } else if (account.usertype == 'Client') {
-                this.getOrders(account.userid).then(orders => {
-                    Object.keys(orders).forEach(orderid => {
-                        this.getModels(orderid).then(models => {
-                            if (models[modelid] != null) {
-                                resolve(models[modelid])
-                            }
-                        })
-                    });
-                })
-
-            } else if (account.usertype == 'Modeller') {
-                this.getModellerModels().then(data => {
-                    resolve(data[modelid])
-                })
-            } else {
-                this.getAllModels().then(data => {
-                    resolve(data[modelid])
-                })
-            }
-        })
+        return dbPost('/gen/getmodel', { modelid: modelid })
     },
 
-    getProducts(modelid) {
-        return dbPost('/gen/getproducts', { modelid: modelid })
-    },
-
-    uploadAndroidModel(product, file) {
-        return dbUpload('/qa/uploadandroid', file, 'modelfile', {productid: product.productid})
-    },
-
-    uploadIosModel(product, file) {
-        return dbUpload('/qa/uploadios', file, 'modelfile', {productid: product.productid})
-    },
-
-    uploadThumbnail(model, file) {
-        return dbUpload('/qa/uploadthumb', file, 'thumb', {modelid: model.modelid})
-    },
-
-    uploadModelFile(model, file) {
-        return dbUpload('/modeller/uploadmodelfile', file, 'modelfile', {modelid: model.modelid})
-    },
-
-    downloadModelFile(model, filename) {
-        return dbDownload('/modeller/downloadmodelfile', {modelid: model.modelid, filename: filename})
+    uploadThumbnail(modelid, file) {
+        return dbUpload('/qa/uploadthumb', file, 'thumb', { modelid: modelid })
     },
 
     getThumbURL(modelid) {
         return backend + '/public/thumbs/' + modelid
     },
 
-    newUser(userObj) {
-        var password = this.randomid(10)
-        userObj.password = password
-        userObj.repeatPassword = password
-        userObj.active = true
-        return dbPost('/admin/createuser', userObj)
+    assignModeler(modelid, userid) {
+        return dbPost('/qa/assignmodeler', { modelid: modelid, modelerid: userid })
+    },
+
+    getModelFiles(modelid) {
+        return dbPost('/modeller/listmodelfiles', { modelid: modelid })
     },
 
     //eslint-disable-next-line no-unused-vars
@@ -342,20 +276,26 @@ export default {
         })
     },
 
-    createOrder(file) {
-        return dbUpload('/client/createorder', file, 'orderdata')
+    //products
+
+    getProducts(modelid) {
+        return dbPost('/gen/getproducts', { modelid: modelid })
     },
 
-    assignQA(orderid) {
-        return dbPost('/qa/claimorder', { id: orderid })
+    uploadAndroidModel(product, file) {
+        return dbUpload('/qa/uploadandroid', file, 'modelfile', { productid: product.productid })
     },
 
-    assignModeler(modelid, modeler) {
-        return dbPost('/qa/assignmodeler', { modelid: modelid, modelerid: modeler.userid })
+    uploadIosModel(product, file) {
+        return dbUpload('/qa/uploadios', file, 'modelfile', { productid: product.productid })
     },
 
-    getModelFiles(modelid) {
-        return dbPost('/modeller/listmodelfiles', { modelid: modelid })
+    uploadModelFile(modelid, file) {
+        return dbUpload('/modeller/uploadmodelfile', file, 'modelfile', { modelid: modelid })
+    },
+
+    downloadModelFile(modelid, filename) {
+        return dbDownload('/modeller/downloadmodelfile', { modelid: modelid, filename: filename, name: filename})
     },
 
     //eslint-disable-next-line no-unused-vars
@@ -363,18 +303,6 @@ export default {
         return new Promise(resolve => {
             resolve({});
         })
-    },
-
-    deleteUser(userid) {
-        return dbPost('/admin/deleteuser', { userid: userid })
-    },
-
-    resetPassword(userid, password) {
-        return dbPost('/admin/edituser', { userid: userid, password: password, repeatPassword: password })
-    },
-
-    getKeyByValue(object, value) {
-        return Object.keys(object).find(key => object[key] === value);
     },
 }
 

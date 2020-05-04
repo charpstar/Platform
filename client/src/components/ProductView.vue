@@ -7,7 +7,7 @@
                 </v-btn>
 
                 <model-viewer
-                    :src="'http://' + product.androidlink"
+                    :src="'http://' + product.newandroidlink"
                     auto-rotate
                     camera-controls
                     id="modelViewer"
@@ -30,9 +30,9 @@
                         <td>Android link</td>
                         <td>
                             <v-btn
-                                @click="() => {toClipboard(product.androidlink)}"
+                                @click="() => {toClipboard(product.newandroidlink)}"
                                 icon
-                                v-if="product.androidlink"
+                                v-if="product.newandroidlink"
                             >
                                 <v-icon class="iconColor">mdi-clipboard-text-outline</v-icon>
                             </v-btn>
@@ -50,9 +50,9 @@
                         <td>iOS link</td>
                         <td>
                             <v-btn
-                                @click="() => {toClipboard(product.ioslink)}"
+                                @click="() => {toClipboard(product.newioslink)}"
                                 icon
-                                v-if="product.ioslink"
+                                v-if="product.newioslink"
                             >
                                 <v-icon class="iconColor">mdi-clipboard-text-outline</v-icon>
                             </v-btn>
@@ -68,7 +68,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <modelversions :product="product" @opened="hideMv = $event"></modelversions>
+                            <modelversions :product="product" @opened="hideMv = $event" v-if="product.oldandroidlink"></modelversions>
                         </td>
                     </tr>
                 </table>
@@ -126,13 +126,13 @@ export default {
     },
     methods: {
         uploadedAndroid(values) {
-            this.product.androidlink = values[0].new.androidlink;
+            this.product.newandroidlink = values[0].new.androidlink;
             if (values[1] != null) {
                 this.model.thumbnail = values[1];
             }
         },
         uploadedIos(values) {
-            this.product.iosmodel = values[0].new.ioslink;
+            this.product.newioslink = values[0].new.ioslink;
             if (values[1] != null) {
                 this.model.thumbnail = values[1];
             }

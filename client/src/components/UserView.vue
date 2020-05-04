@@ -1,21 +1,5 @@
 <template>
     <div class="view">
-        <v-dialog v-model="deleteHandler.modal" width="250px">
-            <div class="card flexcol">
-                <h2>Confirm Delete</h2>
-                <v-btn :loading="resetHandler.loading" @click="deleteHandler.execute">Confirm</v-btn>
-                <v-btn @click="deleteHandler.modal = false">Cancel</v-btn>
-                <p class="error-text" v-if="deleteHandler.error">{{deleteHandler.error}}</p>
-            </div>
-        </v-dialog>
-        <v-dialog v-model="resetHandler.modal" width="250px">
-            <div class="card flexcol">
-                <h2>Confirm Reset</h2>
-                <v-btn :loading="resetHandler.loading" @click="resetHandler.execute">Confirm</v-btn>
-                <v-btn @click="resetHandler.modal = false">Cancel</v-btn>
-                <p class="error-text" v-if="resetHandler.error">{{resetHandler.error}}</p>
-            </div>
-        </v-dialog>
         <div class="flexrow" id="topRow">
             <div class="flexrow">
                 <v-btn icon class="hidden-xs-only">
@@ -51,7 +35,7 @@
             </table>
             <div class="flexcol" id="buttons">
                 <div class="flexrow">
-                    <v-btn @click="resetHandler.modal=true">Reset Password</v-btn>
+                    <confirmmodal :handler="resetHandler" :title="'Confirm password reset'" :buttonText="'Reset password'" />
                     <v-text-field
                         outlined
                         readonly
@@ -63,7 +47,7 @@
                     ></v-text-field>
                 </div>
                 <v-btn :loading="viewLoading" @click="viewOrders">View Orders</v-btn>
-                <v-btn @click="deleteHandler.modal = true">Delete</v-btn>
+                <confirmmodal :handler="deleteHandler" :title="'Confirm user delete'" :buttonText="'Delete'" />
             </div>
         </div>
         <v-snackbar v-model="snackbar" :timeout="3000">Password copied to clipboard</v-snackbar>
@@ -72,8 +56,12 @@
 
 <script>
 import backend from "../backend";
+import confirmmodal from './ConfirmModal';
 
 export default {
+    components: {
+        confirmmodal
+    },
     data() {
         return {
             user: {},
@@ -117,8 +105,9 @@ export default {
     },
     mounted() {
         var vm = this;
-        backend.getUsers().then(users => {
-            vm.user = users[vm.$route.params.id];
+        var userid = vm.$route.params.id;
+        backend.getUser(userid).then(data => {
+            vm.user = data[userid];
         });
     }
 };

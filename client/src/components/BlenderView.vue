@@ -124,21 +124,21 @@ export default {
         assignModeler() {
             var vm = this;
             return backend
-                .assignModeler(vm.model.modelid, vm.modeler)
+                .assignModeler(vm.model.modelid, vm.modeler.userid)
                 .then(data => {
                     vm.model.assignedmodeler = data;
                 });
         },
         uploadModel() {
             var vm = this;
-            return backend.uploadModelFile(vm.model, vm.file).then(newFile => {
+            return backend.uploadModelFile(vm.model.modelid, vm.file).then(newFile => {
                 Vue.set(vm.files, newFile.time, newFile.filename);
                 vm.file = false;
             });
         },
         downloadModel(filename) {
             var vm = this
-            backend.downloadModelFile(vm.model, filename)
+            backend.downloadModelFile(vm.model.modelid, filename)
         },
         deleteFile(id) {
             this.deleteHandler.modal = true;

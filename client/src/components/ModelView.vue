@@ -41,8 +41,9 @@ export default {
     },
     mounted() {
         var vm = this;
-        backend.getModel(vm.$route.params.id).then(model => {
-            vm.model = model;
+        var modelid = vm.$route.params.id;
+        backend.getModel(modelid).then(data => {
+            vm.model = data[modelid];
             backend.getProducts(vm.model.modelid).then(products => {
                 Vue.set(vm, "products", products);
             })

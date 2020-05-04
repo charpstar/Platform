@@ -56,7 +56,7 @@
                 </table>
                 <div class="flexcol" id="buttons">
                     <v-btn @click="viewModels">View Models</v-btn>
-                    <v-btn>
+                    <v-btn @click="downloadExcel">
                         Export Models
                         <v-icon right>mdi-microsoft-excel</v-icon>
                     </v-btn>
@@ -91,6 +91,9 @@ export default {
         viewModels() {
             this.$router.push("/order/" + this.order.orderid + "/models");
         },
+        downloadExcel(){
+            backend.downloadExcel(this.order.orderid);
+        },
         assignQA() {
             var vm = this;
             vm.assignLoading = true;
@@ -102,8 +105,9 @@ export default {
     },
     mounted() {
         var vm = this;
-        backend.getOrder(vm.$route.params.id).then(order => {
-            vm.order = order;
+        var orderid = vm.$route.params.id;
+        backend.getOrder(orderid).then(data => {
+            vm.order = data[orderid];
         });
     }
 };

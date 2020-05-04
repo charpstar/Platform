@@ -70,7 +70,7 @@ export default {
             );
             if (vm.thumbnail) {
                 promises.push(
-                    backend.uploadThumbnail(vm.model, vm.modelFile.image)
+                    backend.uploadThumbnail(vm.model.modelid, vm.modelFile.image)
                 );
             }
             return Promise.all(promises).then(values => {
