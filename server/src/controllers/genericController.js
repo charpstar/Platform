@@ -32,7 +32,11 @@ const commentParser = Joi.object({
   productid: Joi.number()
     .integer()
     .min(0),
+
   comment: Joi.string()
+    .required(),
+
+  internal: Joi.boolean()
     .required(),
 
 }).xor('orderid', 'modelid', 'productid');
