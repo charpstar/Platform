@@ -85,6 +85,25 @@ export async function getOrders() {
     .groupBy(['orders.orderid', 'users.name', 'users2.name', 'orders.qaowner', 'orders.clientid']);
 }
 
+export async function getOrder(id) {
+  return knexPool
+    .select([
+      'orders.orderid',
+      'orders.clientid',
+      'orders.qaowner',
+      'orders.time',
+      'users.name as clientname',
+      'users2.name as qaownername',
+    ])
+    .count('orders.orderid as models')
+    .from('orders')
+    .innerJoin('users', 'orders.clientid', 'users.userid')
+    .leftJoin('users as users2', 'orders.qaowner', 'users2.userid')
+    .innerJoin('models', 'orders.orderid', 'models.orderid')
+    .groupBy(['orders.orderid', 'users.name', 'users2.name', 'orders.qaowner', 'orders.clientid'])
+    .where('orders.orderid', id);
+}
+
 export async function claimOrder(orderId, userId) {
   try {
     await knexPool.transaction(async (trx) => {

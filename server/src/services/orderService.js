@@ -7,6 +7,7 @@ import {
   claimOrder,
   getClientOrders,
   getExcel,
+  getOrder,
 } from '../models/orderModel';
 
 export async function orderCreationService(req) {
@@ -96,6 +97,21 @@ export async function getOrdersService() {
     responseObject.data[order.orderid] = order;
   });
   responseObject.status = 'Orders fetched';
+  return responseObject;
+}
+
+export async function getOrderService(data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = await getOrder(data.id);
+  for (const order of result) {
+    responseObject.data[order.orderid] = order;
+  }
+  responseObject.status = 'Order fetched';
   return responseObject;
 }
 

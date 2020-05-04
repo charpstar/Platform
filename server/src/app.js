@@ -88,12 +88,15 @@ app.post('/gen/getComments', router);
 app.post('/gen/getclientorders', router);
 app.post('/gen/getmodels', router);
 app.post('/gen/getexcel', router);
+app.post('/gen/getorder', router);
+app.post('/gen/getmodel', router);
 
 // Admin routes
 app.get('/admin/getusers', router);
 app.post('/admin/createUser', router);
 app.post('/admin/edituser', router);
 app.post('/admin/deleteuser', router);
+app.post('/admin/getuser', router);
 
 // QA routes
 app.get('/qa/getorders', router);

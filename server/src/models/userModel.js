@@ -32,10 +32,6 @@ export async function createUser(userdata) {
   }).returning(['userid', 'name', 'usertype', 'active', 'email']);
 }
 
-export async function getUser(id) {
-  return knexPool('users').where('userid', id);
-}
-
 export async function getNameUsingId(id) {
   try {
     return knexPool
@@ -52,7 +48,14 @@ export async function getUserAmount() {
 }
 
 export async function getUsers() {
-  return knexPool.from('users').select('userid', 'name', 'email', 'usertype', 'active');
+  return knexPool('users')
+    .select('userid', 'name', 'email', 'usertype', 'active');
+}
+
+export async function getUser(id) {
+  return knexPool('users')
+    .select('userid', 'name', 'email', 'usertype', 'active')
+    .where('userid', id);
 }
 
 export async function editUser(edit) {

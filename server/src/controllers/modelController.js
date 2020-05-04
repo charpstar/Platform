@@ -13,6 +13,7 @@ import {
   androidUploadService,
   modelFileDeleteService,
   thumbUploadService,
+  getModelService,
 } from '../services/modelService';
 
 const orderIdParser = Joi.object({
@@ -253,6 +254,27 @@ export async function getmodels(req, res) {
       return res.send(responseObject);
     }
     return getModelsService(value).then((result) => {
+      res.send(result);
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function getmodel(req, res) {
+  try {
+    const { error, value } = modelIdParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return getModelService(value).then((result) => {
       res.send(result);
     });
   } catch (e) {
