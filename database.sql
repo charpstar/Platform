@@ -44,6 +44,21 @@ CREATE TYPE public.comment AS ENUM (
 ALTER TYPE public.comment OWNER TO postgres;
 
 --
+-- Name: commentclass; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.commentclass AS ENUM (
+    'Comment',
+    'Reject',
+    'Approve',
+    'Done',
+    'Info'
+);
+
+
+ALTER TYPE public.commentclass OWNER TO postgres;
+
+--
 -- Name: modelstate; Type: TYPE; Schema: public; Owner: postgres
 --
 
@@ -57,7 +72,8 @@ CREATE TYPE public.modelstate AS ENUM (
     'ClientFeedback',
     'Done',
     'Pause',
-    'Error'
+    'Error',
+    'ModelInit'
 );
 
 
@@ -96,15 +112,14 @@ CREATE TYPE public.productstate AS ENUM (
     'Done',
     'Pause',
     'Error',
-    'ProductInit',
-    'ModelInit'
+    'ProductInit'
 );
 
 
 ALTER TYPE public.productstate OWNER TO postgres;
 
 --
--- Name: usertype; Type: TYPE; Schema: public; Owner: charpstar
+-- Name: usertype; Type: TYPE; Schema: public; Owner: postgres
 --
 
 CREATE TYPE public.usertype AS ENUM (
@@ -115,7 +130,7 @@ CREATE TYPE public.usertype AS ENUM (
 );
 
 
-ALTER TYPE public.usertype OWNER TO charpstar;
+ALTER TYPE public.usertype OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -162,7 +177,9 @@ CREATE TABLE public.comments (
     userid integer,
     "time" timestamp with time zone DEFAULT now() NOT NULL,
     comment character varying NOT NULL,
-    internal boolean
+    internal boolean,
+    editcomment timestamp with time zone,
+    commentclass public.commentclass DEFAULT 'Comment'::public.commentclass
 );
 
 
