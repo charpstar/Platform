@@ -122,13 +122,14 @@ export async function claimOrderService(orderid, userid) {
     data: {},
   };
 
-  const success = await claimOrder(orderid, userid);
-  if (!success) {
+  const tempRes = await claimOrder(orderid, userid);
+  if (tempRes.status === 'f') {
     responseObject.error = 'No such order';
     return responseObject;
   }
 
   responseObject.status = 'Claim successful';
+  [responseObject.data] = tempRes.data;
 
   return responseObject;
 }

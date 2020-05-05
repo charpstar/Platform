@@ -106,25 +106,50 @@ export async function getOrder(id) {
 
 export async function claimOrder(orderId, userId) {
   try {
+    let temp;
     await knexPool.transaction(async (trx) => {
-      await trx('orders')
+      const [orderExists] = await trx('orders')
         .where('orderid', orderId.id)
         .update({
           qaowner: userId,
-        });
-      await trx('orderstates')
-        .insert({
-          orderid: orderId.id,
-          userid: userId,
-          statebefore: 'OrderReceived',
-          stateafter: 'OrderReview',
-        });
+        })
+        .returning('orderid');
+
+      if (typeof orderExists === 'undefined' || orderExists === null) {
+        throw new Error('No such order');
+      }
+
+      const [tempRes] = await trx('orderstates')
+        .select('stateafter')
+        .join((querybuilder) => {
+          querybuilder.from('orderstates')
+            .where('orderid', orderId.id)
+            .max('time')
+            .groupBy('orderid')
+            .as('t1');
+        }, 'orderstates.time', 't1.max')
+        .where('orderid', orderId.id);
+
+      if (typeof tempRes !== 'undefined' && typeof tempRes.stateafter !== 'undefined' && tempRes.stateafter === 'OrderReceived') {
+        await trx('orderstates')
+          .insert({
+            orderid: orderId.id,
+            userid: userId,
+            statebefore: 'OrderReceived',
+            stateafter: 'OrderReview',
+          });
+      }
+
+      temp = await trx('users')
+        .where('userid', userId)
+        .select('userid', 'name');
     });
-    return { status: 'Claim successful' };
+
+    return { status: 't', data: temp };
   } catch (e) {
     // eslint-disable-next-line
     console.log(e);
-    return { status: 'Claim failed' };
+    return { status: 'f' };
   }
 }
 
