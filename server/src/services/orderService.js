@@ -8,6 +8,8 @@ import {
   getClientOrders,
   getExcel,
   getOrder,
+  setOrderMissing,
+  resolveOrderMissing,
 } from '../models/orderModel';
 
 export async function orderCreationService(req) {
@@ -175,4 +177,42 @@ export async function getExcelService(data) {
   const filePath = path.resolve(`./private/${data.id}.xlsx`);
 
   return filePath;
+}
+
+export async function setOrderMissingService(data, req) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const tempRes = await setOrderMissing(data.id, req.session.userid);
+  if (tempRes.status === 'f') {
+    responseObject.error = 'Something went wrong';
+    return responseObject;
+  }
+
+  responseObject.status = 'Status updated';
+  responseObject.data = tempRes;
+
+  return responseObject;
+}
+
+export async function resolveOrderMissingService(data, req) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const tempRes = await resolveOrderMissing(data.id, req.session.userid);
+  if (tempRes.status === 'f') {
+    responseObject.error = 'Something went wrong';
+    return responseObject;
+  }
+
+  responseObject.status = 'Status updated';
+  responseObject.data[data.id] = tempRes.orderstatus;
+
+  return responseObject;
 }

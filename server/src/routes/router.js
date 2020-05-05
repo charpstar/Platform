@@ -32,6 +32,8 @@ import {
   getclientorders,
   getexcel,
   getorder,
+  setordermissing,
+  resolveordermissing,
 } from '../controllers/orderController';
 import {
   comment,
@@ -69,6 +71,8 @@ router.post('/client/createorder', upload.single('orderdata'), createorder);
 router.post('/qa/claimorder', claimorder);
 router.post('/gen/getclientorders', getclientorders);
 router.post('/gen/getorder', getorder);
+router.post('/qa/setordermissing', setordermissing);
+router.post('/qa/resolveordermissing', resolveordermissing);
 
 // Model related
 router.get('/qa/getmodelers', getmodelers);

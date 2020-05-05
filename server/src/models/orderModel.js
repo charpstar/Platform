@@ -195,3 +195,131 @@ export async function getExcel(orderid) {
         .as('t2');
     }, 'products.productid', 't2.productid');
 }
+
+export async function setOrderMissing(orderid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [orderExists] = await trx('orders')
+        .where('orderid', orderid);
+
+      if (typeof orderExists === 'undefined' || orderExists === null) {
+        throw new Error('No such order');
+      }
+
+      const [tempRes] = await trx('orderstates')
+        .select('stateafter')
+        .join((querybuilder) => {
+          querybuilder.from('orderstates')
+            .where('orderid', orderid)
+            .max('time')
+            .groupBy('orderid')
+            .as('t1');
+        }, 'orderstates.time', 't1.max')
+        .where('orderid', orderid);
+
+      if (
+        typeof tempRes !== 'undefined'
+        && typeof tempRes.stateafter !== 'undefined'
+        && (
+          tempRes.stateafter === 'OrderReview'
+          || tempRes.stateafter === 'OrderDev'
+        )
+      ) {
+        await trx('orderstates')
+          .insert({
+            orderid,
+            userid,
+            statebefore: tempRes.stateafter,
+            stateafter: 'OrderMissing',
+          });
+      }
+    });
+
+    return { orderid, orderstatus: 'OrderMissing' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function resolveOrderMissing(orderid, userid) {
+  try {
+    let temp;
+    await knexPool.transaction(async (trx) => {
+      const [orderExists] = await trx('orders')
+        .where('orderid', orderid);
+
+      if (typeof orderExists === 'undefined' || orderExists === null) {
+        throw new Error('No such order');
+      }
+
+      const [tempRes] = await trx('orderstates')
+        .select('stateafter')
+        .join((querybuilder) => {
+          querybuilder.from('orderstates')
+            .where('orderid', orderid)
+            .max('time')
+            .groupBy('orderid')
+            .as('t1');
+        }, 'orderstates.time', 't1.max')
+        .where('orderid', orderid);
+
+      if (typeof tempRes === 'undefined' || tempRes === null || tempRes.stateafter !== 'OrderMissing') {
+        throw new Error('Nothing to resolve');
+      }
+
+      if (
+        typeof tempRes !== 'undefined'
+        && typeof tempRes.stateafter !== 'undefined'
+        && tempRes.stateafter === 'OrderMissing'
+      ) {
+        const [inDev] = await trx('models')
+          .select('stateafter')
+          .where('orderid', orderid)
+          .join('products', 'models.modelid', 'products.modelid')
+          .join((querybuilder) => {
+            querybuilder.from('productstates')
+              .join((querybuilder2) => {
+                querybuilder2.from('productstates')
+                  .where('stateafter', 'ProductDev')
+                  .max('time')
+                  .groupBy('productid')
+                  .as('t11');
+              }, 'productstates.time', 't11.max')
+              .as('t1');
+          }, 'products.productid', 't1.productid');
+
+        if (
+          typeof inDev !== 'undefined'
+          && typeof inDev.stateafter !== 'undefined'
+          && inDev.stateafter === 'ProductDev'
+        ) {
+          [temp] = await trx('orderstates')
+            .insert({
+              orderid,
+              userid,
+              statebefore: 'OrderMissing',
+              stateafter: 'OrderDev',
+            })
+            .returning('stateafter');
+        } else {
+          [temp] = await trx('orderstates')
+            .insert({
+              orderid,
+              userid,
+              statebefore: 'OrderMissing',
+              stateafter: 'OrderReview',
+            })
+            .returning('stateafter');
+        }
+      }
+    });
+
+    return { orderid, orderstatus: temp };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
