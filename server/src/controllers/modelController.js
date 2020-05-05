@@ -220,7 +220,7 @@ export async function assignmodeler(req, res) {
       };
       res.send(responseObject);
     }
-    return assignModelerService(value).then((result) => {
+    return assignModelerService(value, req).then((result) => {
       res.send(result);
     });
   } catch (e) {

@@ -24,11 +24,55 @@ export async function getModelers() {
     .where('usertype', 'Modeller');
 }
 
-export async function assignModeler(data) {
-  return knexPool('models')
-    .where('modelid', data.modelid)
-    .update('modelowner', data.modelerid)
-    .returning(['modelid', 'name', 'modelowner']);
+export async function assignModeler(data, userid) {
+  try {
+    let temp;
+    await knexPool.transaction(async (trx) => {
+      const [modelExists] = await trx('models')
+        .where('modelid', data.modelid)
+        .update('modelowner', data.modelerid)
+        .returning(['modelid', 'name', 'modelowner', 'orderid']);
+
+      if (typeof modelExists === 'undefined' || modelExists === null) {
+        throw new Error('No such model');
+      }
+
+      const [tempRes] = await trx('orderstates')
+        .select('stateafter')
+        .join((querybuilder) => {
+          querybuilder.from('orderstates')
+            .where('orderid', modelExists.orderid)
+            .max('time')
+            .groupBy('orderid')
+            .as('t1');
+        }, 'orderstates.time', 't1.max')
+        .where('orderid', modelExists.orderid);
+
+      if (
+        typeof tempRes !== 'undefined'
+        && typeof tempRes.stateafter !== 'undefined'
+        && tempRes.stateafter === 'OrderReview'
+      ) {
+        await trx('orderstates')
+          .insert({
+            orderid: modelExists.orderid,
+            userid,
+            statebefore: 'OrderReview',
+            stateafter: 'OrderDev',
+          });
+      }
+
+      temp = await trx('users')
+        .where('userid', data.modelerid)
+        .select('userid', 'name');
+    });
+
+    return { status: 't', data: temp };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
 }
 
 export async function getModels(orderid) {

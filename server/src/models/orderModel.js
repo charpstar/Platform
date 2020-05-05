@@ -130,7 +130,11 @@ export async function claimOrder(orderId, userId) {
         }, 'orderstates.time', 't1.max')
         .where('orderid', orderId.id);
 
-      if (typeof tempRes !== 'undefined' && typeof tempRes.stateafter !== 'undefined' && tempRes.stateafter === 'OrderReceived') {
+      if (
+        typeof tempRes !== 'undefined'
+        && typeof tempRes.stateafter !== 'undefined'
+        && tempRes.stateafter === 'OrderReceived'
+      ) {
         await trx('orderstates')
           .insert({
             orderid: orderId.id,

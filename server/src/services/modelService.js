@@ -247,15 +247,19 @@ export async function androidUploadService(req, data) {
   return responseObject;
 }
 
-export async function assignModelerService(data) {
+export async function assignModelerService(data, req) {
   const responseObject = {
     status: '',
     error: '',
     data: {},
   };
 
-  const result = await assignModeler(data);
-  [responseObject.data] = result;
+  const result = await assignModeler(data, req.session.userid);
+  if (result.status === 'f') {
+    responseObject.error = 'Something went wrong';
+    return responseObject;
+  }
+  [responseObject.data] = result.data;
   responseObject.status = 'Modeller assigned';
 
   return responseObject;
