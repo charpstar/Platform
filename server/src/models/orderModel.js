@@ -48,8 +48,27 @@ export async function createOrder(orderData) {
           });
         });
       });
-      await trx('products')
-        .insert(products);
+      const insertedProducts = await trx('products')
+        .insert(products)
+        .returning(['productid']);
+      const modelstates = [];
+      for (const model of models) {
+        modelstates.push({
+          modelid: model.modelid,
+          userid: orderData.clientid,
+          statebefore: 'ModelInit',
+          stateafter: 'ModelReceived',
+        });
+      }
+      const productstates = [];
+      for (const product of insertedProducts) {
+        productstates.push({
+          productid: product.productid,
+          userid: orderData.clientid,
+          statebefore: 'ProductInit',
+          stateafter: 'ProductReceived',
+        });
+      }
       await trx('orderstates')
         .insert({
           orderid: orderId,
@@ -57,6 +76,10 @@ export async function createOrder(orderData) {
           statebefore: 'OrderInit',
           stateafter: 'OrderReceived',
         });
+      await trx('modelstates')
+        .insert(modelstates);
+      await trx('productstates')
+        .insert(productstates);
     });
     return knexPool('orders')
       .where('orderid', createdOrderID);
