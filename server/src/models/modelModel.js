@@ -538,3 +538,255 @@ export async function resolveProductMissing(productid, userid) {
     return { status: 'f' };
   }
 }
+
+export async function approveModelQA(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const allowedStates = ['ProductReview'];
+      for (const productstate of productstates) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready to be approved');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ClientProductReceived',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'ClientProductReceived' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function setModelDoneModeller(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const allowedStates = ['ProductDev', 'ProductRefine', 'ClientFeedback'];
+      for (const productstate of productstates) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductReview',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'ModelDev' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function approveModelClient(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const allowedStates = ['ClientProductReceived'];
+      for (const productstate of productstates) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready to be approved');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'Done',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'Done' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function rejectModelQA(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const allowedStates = ['ProductReview'];
+      for (const productstate of productstates) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready to be rejected');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductRefine',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'ProductRefine' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function rejectModelClient(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const allowedStates = ['ClientProductReceived'];
+      for (const productstate of productstates) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready to be rejected');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ClientFeedback',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'ClientFeedback' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function setModelMissing(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const disallowedStates = ['Done'];
+      for (const productstate of productstates) {
+        if (disallowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductMissing',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'ModelMissing' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function resolveModelMissing(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const allowedStates = ['ProductMissing'];
+      for (const productstate of productstates) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductDev',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'ModelDev' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
