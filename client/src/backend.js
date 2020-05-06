@@ -59,6 +59,7 @@ function dbDownload(url, data) {
 
 const StatusIcons = {
     OrderReceived: "",
+    ProductReceived: "",
     OrderReview: "",
     OrderMissing: "mdi-information",
     OrderDev: "",
@@ -77,6 +78,7 @@ const StatusIcons = {
 
 const Messages = {
     OrderReceived: "Order received",
+    ProductReceived: "Order received",
     OrderReview: "Under development",
     OrderMissing: "Information missing",
     OrderDev: "Under development",
@@ -84,6 +86,7 @@ const Messages = {
     ModelReceived: "Model received",
     ModelDev: "Under development",
     ModelMissing: "Information missing",
+    ProductMissing: "Information missing",
     ModelReview: "QA Review",
     ModelRefine: "Redoing model",
     ClientModelReceived: "Client review",
@@ -95,6 +98,7 @@ const Messages = {
 
 const ClientMessages = {
     OrderReceived: "Order received",
+    ProductReceived: "Order received",
     OrderReview: "Under development",
     OrderMissing: "Information missing",
     OrderDev: "Under development",
@@ -102,6 +106,7 @@ const ClientMessages = {
     ModelReceived: "Model received",
     ModelDev: "Under development",
     ModelMissing: "Information missing",
+    ProductMissing: "Information missing",
     ModelReview: "Under development",
     ModelRefine: "Under development",
     ClientModelReceived: "Awaiting review",
@@ -296,6 +301,13 @@ export default {
 
     downloadModelFile(modelid, filename) {
         return dbDownload('/modeller/downloadmodelfile', { modelid: modelid, filename: filename, name: filename})
+    },
+
+    //eslint-disable-next-line no-unused-vars
+    editProductLink(productid, link) {
+        return new Promise(resolve => {
+            resolve({});
+        })
     },
 
     //eslint-disable-next-line no-unused-vars

@@ -59,7 +59,7 @@
                 <template v-slot:item.thumbnail="{item}">
                     <img :src="backend.getThumbURL(item.modelid)" class="thumbnail" onerror="this.style.display='none'"/>
                 </template>
-                <template v-slot:item.status="{value}">
+                <template v-slot:item.state="{value}">
                     {{backend.messageFromStatus(value)}}
                     <v-icon>{{backend.iconFromStatus(value)}}</v-icon>
                 </template>
@@ -85,8 +85,8 @@ export default {
                     value: "thumbnail"
                 },
                 { text: "ID", value: "modelid", align: "left" },
-                { text: "Name", value: "name", align: "left" },
-                { text: "Status", value: "status", align: "left" }
+                { text: "Name", value: "modelname", align: "left" },
+                { text: "Status", value: "state", align: "left" }
             ],
             filters: {
                 ModelMissing: "Missing information",

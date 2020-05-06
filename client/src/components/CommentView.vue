@@ -13,8 +13,8 @@
                 <v-btn
                     v-if="review"
                     block
-                    @click="() => sendComment('approve')"
-                    :loading="loading['approve']"
+                    @click="() => sendComment('Approve')"
+                    :loading="loading['Approve']"
                     class="approve"
                 >
                     Approve
@@ -23,8 +23,8 @@
                 <v-btn
                     v-if="markdone"
                     block
-                    @click="() => sendComment('done')"
-                    :loading="loading['done']"
+                    @click="() => sendComment('Done')"
+                    :loading="loading['Done']"
                     class="approve"
                 >
                     Done
@@ -33,8 +33,8 @@
                 <v-btn
                     v-if="review"
                     block
-                    @click="() => sendComment('reject')"
-                    :loading="loading['reject']"
+                    @click="() => sendComment('Reject')"
+                    :loading="loading['Reject']"
                     class="reject"
                 >
                     Reject
@@ -43,14 +43,14 @@
                 <v-btn
                     v-if="markdone"
                     block
-                    @click="() => sendComment('info')"
-                    :loading="loading['info']"
+                    @click="() => sendComment('Info')"
+                    :loading="loading['Info']"
                     class="reject"
                 >
                     Info
                     <v-icon right class="rejectIcon">mdi-information</v-icon>
                 </v-btn>
-                <v-btn block @click="() => sendComment('comment')" :loading="loading['comment']">
+                <v-btn block @click="() => sendComment('Comment')" :loading="loading['Comment']">
                     Send
                     <v-icon right>mdi-send</v-icon>
                 </v-btn>
@@ -64,8 +64,11 @@
                         :class="'name ' + (comment.usertype ? comment.usertype.toLowerCase() : 'client')"
                     >{{comment.name}}</span>
                     <span class="timestamp">{{$formatTime(comment.time)}}</span>
-                    <v-icon v-if="comment.commenttype==1" class="approve">mdi-check</v-icon>
-                    <v-icon v-if="comment.commenttype==2" class="reject rejectIcon">mdi-refresh</v-icon>
+                    <v-icon v-if="comment.commentclass=='Approve' || comment.commentclass=='Done'" class="approve">mdi-check</v-icon>
+                    <v-icon
+                        v-if="comment.commentclass=='Reject' || comment.commentclass=='Info'"
+                        class="reject rejectIcon"
+                    >mdi-refresh</v-icon>
                 </div>
                 <div>{{comment.comment}}</div>
             </div>
@@ -81,7 +84,8 @@ export default {
         type: { type: String, required: true },
         idobj: { type: Object, required: true },
         review: { type: Boolean, default: false },
-        markdone: { type: Boolean, default: false }
+        markdone: { type: Boolean, default: false },
+        internal: { type: Boolean, default: false }
     },
     data() {
         return {
@@ -90,11 +94,11 @@ export default {
             snackbar: false,
             error: "",
             loading: {
-                reject: false,
-                approve: false,
-                comment: false,
-                done: false,
-                info: false
+                Reject: false,
+                Approve: false,
+                Comment: false,
+                Done: false,
+                Info: false
             }
         };
     },
@@ -103,26 +107,45 @@ export default {
             var vm = this;
             if (
                 vm.addComment === "" &&
-                !(ctype == "done" || ctype == "approve")
+                !(ctype == "Done" || ctype == "Approve")
             ) {
                 vm.snackbar = true;
             } else {
                 var comment = {
                     comment: vm.addComment,
-                    commenttype: vm.type
+                    commenttype: vm.type,
+                    commentclass: ctype,
+                    internal: vm.internal
                 };
+                //eslint-disable-next-line no-console
+                console.log(comment)
                 comment = Object.assign(comment, vm.idobj);
                 vm.loading[ctype] = true;
                 backend
                     .sendComment(comment)
-                    .then(newComment => {
-                        vm.comments.push(newComment);
+                    .then(data => {
+                        if(!vm.$emptyObj(data.comment)) {
+                            vm.comments.push(data.comment);
+                        }
+                        vm.$emit('state', data.state.stateafter)
                         vm.addComment = "";
-                        vm.loading = [false, false, false];
+                        vm.loading = {
+                            Reject: false,
+                            Approve: false,
+                            Comment: false,
+                            Done: false,
+                            Info: false
+                        };
                     })
                     .catch(error => {
                         vm.error = error;
-                        vm.loading = [false, false, false];
+                        vm.loading = {
+                            Reject: false,
+                            Approve: false,
+                            Comment: false,
+                            Done: false,
+                            Info: false
+                        };
                     });
             }
         }

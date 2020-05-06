@@ -30,8 +30,8 @@
                     <tr>
                         <td>Status</td>
                         <td>
-                            {{backend.messageFromStatus(order.status)}}
-                            <v-icon>{{backend.iconFromStatus(order.status)}}</v-icon>
+                            {{backend.messageFromStatus(order.state)}}
+                            <v-icon>{{backend.iconFromStatus(order.state)}}</v-icon>
                         </td>
                     </tr>
                     <tr>
@@ -64,7 +64,14 @@
             </div>
             <div>
                 <h2 id="commentsLabel">Comments</h2>
-                <comments v-if="order" :idobj="{orderid: order.orderid}" :type="'Order'" />
+                <comments
+                    v-if="order"
+                    :idobj="{orderid: order.orderid}"
+                    :type="'Order'"
+                    :markdone="account.usertype == 'QA' || account.usertype == 'Admin'"
+                    :review="account.usertype == 'Client'"
+                    @state="order.state = $event"
+                />
             </div>
         </div>
     </div>
@@ -91,15 +98,16 @@ export default {
         viewModels() {
             this.$router.push("/order/" + this.order.orderid + "/models");
         },
-        downloadExcel(){
+        downloadExcel() {
             backend.downloadExcel(this.order.orderid);
         },
         assignQA() {
             var vm = this;
             vm.assignLoading = true;
-            backend.assignQA(vm.order.orderid).then(() => {
+            backend.assignQA(vm.order.orderid).then(data => {
                 vm.assignLoading = false;
-                vm.order.qaownername = vm.account.username;
+                vm.order.qaowner = data.userid;
+                vm.order.qaownername = data.name;
             });
         }
     },
