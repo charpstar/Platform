@@ -19,9 +19,21 @@ const knexPool = knex({
 });
 
 export async function comment(data) {
-  return knexPool('comments')
+  const [tempRes] = await knexPool('comments')
     .insert(data)
-    .returning(['comment', 'time', 'internal', 'commentclass']);
+    .returning(['commentid']);
+
+  return knexPool('comments')
+    .select([
+      'comments.comment',
+      'comments.time',
+      'comments.internal',
+      'comments.commentclass',
+      'users.name',
+      'users.usertype',
+    ])
+    .where('comments.commentid', tempRes.commentid)
+    .join('users', 'comments.userid', 'users.userid');
 }
 
 export async function getComments(data) {
