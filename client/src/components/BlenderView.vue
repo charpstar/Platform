@@ -66,6 +66,10 @@
             <div class="column">
                 <table id="itemTable">
                     <tr>
+                        <td>Status</td>
+                        <td>{{backend.messageFromStatus(model.state, account.usertype)}}</td>
+                    </tr>
+                    <tr>
                         <td>Assigned modeler:</td>
                         <td>
                             {{model.assignedmodeler ? model.assignedmodeler.name : 'none'}}
@@ -87,6 +91,7 @@
                     :type="'Model'"
                     :review="account.usertype != 'Modeller'"
                     :markdone="account.usertype == 'Modeller'"
+                    @state="model.state = $event"
                 />
             </div>
         </div>
@@ -114,7 +119,9 @@ export default {
             modelers: [],
             modeler: false,
             file: "",
-            files: {}
+            files: {},
+            backend: backend,
+            status: 'Under development',
         };
     },
     methods: {

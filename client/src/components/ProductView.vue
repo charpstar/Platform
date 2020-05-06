@@ -1,5 +1,20 @@
 <template>
     <div id="item">
+        <v-dialog v-model="edit.modal" width="400px">
+            <div class="card flexcol">
+                <h2>Edit product link</h2>
+                <v-text-field
+                    label="link"
+                    v-model="product.link"
+                ></v-text-field>
+                
+                <div class="flexrow editbuttons">
+                <v-btn :loading="edit.loading" @click="edit.execute">Save</v-btn>
+                <v-btn @click="edit.modal = false">Cancel</v-btn>
+                </div>
+                <p class="error-text" v-if="edit.error">{{edit.error}}</p>
+            </div>
+        </v-dialog>
         <div class="flexrow" id="itemsrow">
             <div style="position:relative;">
                 <v-btn icon @click="reload" class="reloadIcon">
@@ -19,11 +34,23 @@
             <div class="column">
                 <table id="itemTable">
                     <tr>
+                        <td>Status</td>
+                        <td>{{backend.messageFromStatus(product.state, account.usertype)}}</td>
+                    </tr>
+                    <tr>
                         <td>Product page</td>
                         <td>
                             <a :href="product.link" target="_blank">
                                 <v-icon class="iconColor">mdi-share</v-icon>
                             </a>
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on }">
+                                    <v-btn icon dark v-on="on" @click="edit.modal = true">
+                                        <v-icon class="iconColor">mdi-border-color</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Edit</span>
+                            </v-tooltip>
                         </td>
                     </tr>
                     <tr>
@@ -79,9 +106,11 @@
                     <v-tab-item :value="'qa'" class="tab">
                         <comments
                             :idobj="{productid: product.productid}"
-                            :type="'ProductQA'"
+                            :type="'Product'"
                             :review="account.usertype != 'Modeller'"
                             :markdone="account.usertype == 'Modeller'"
+                            :internal="true"
+                            @state="product.state = $event"
                         />
                     </v-tab-item>
                     <v-tab-item :value="'client'" class="tab">
@@ -90,6 +119,7 @@
                             :type="'Product'"
                             :review="account.usertype == 'Client'"
                             :markdone="account.usertype != 'Client'"
+                            @state="product.state = $event"
                         />
                     </v-tab-item>
                 </v-tabs>
@@ -108,7 +138,7 @@ export default {
     components: {
         modelupload,
         comments,
-        modelversions
+        modelversions,
     },
     props: {
         product: { type: Object, required: true },
@@ -121,10 +151,16 @@ export default {
             androidUploadFun: backend.uploadAndroidModel,
             iosUploadFun: backend.uploadIosModel,
             commentsTab: "",
-            hideMv: true
+            hideMv: true,
+            edit: backend.promiseHandler(this.editLink),
+            backend: backend
         };
     },
     methods: {
+        editLink() {
+            var vm = this
+            return backend.editProductLink(vm.product.productid, vm.product.link)
+        },
         uploadedAndroid(values) {
             this.product.newandroidlink = values[0].new.androidlink;
             if (values[1] != null) {
@@ -204,5 +240,13 @@ export default {
     .v-icon {
         color: lightgray;
     }
+}
+
+.v-input {
+    width: 350px;
+}
+
+.editbuttons > * {
+    margin-right: 10px;
 }
 </style>

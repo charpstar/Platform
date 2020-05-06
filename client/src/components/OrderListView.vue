@@ -68,15 +68,15 @@
                                 :buffer-value="100"
                                 :height="10"
                                 :rounded="true"
-                                :value="item.complete/item.amount * 100"
+                                :value="item.complete/item.models * 100"
                                 color="#2196f3"
                                 v-on="on"
                             ></v-progress-linear>
                         </template>
-                        <span>{{item.complete}}/{{item.amount}}</span>
+                        <span>{{item.complete}}/{{item.models}}</span>
                     </v-tooltip>
                 </template>
-                <template v-slot:item.status="{value}">
+                <template v-slot:item.state="{value}">
                     {{backend.messageFromStatus(value)}}
                     <v-icon>{{backend.iconFromStatus(value)}}</v-icon>
                 </template>
@@ -102,7 +102,7 @@ export default {
                 { text: "Date", value: "time", align: "left" },
                 { text: "Models", value: "models", align: "left" },
                 { text: "Progress", value: "complete", align: "left" },
-                { text: "Status", value: "status", align: "left" },
+                { text: "Status", value: "state", align: "left" },
                 { text: "Client", value: "clientname", align: "left" },
                 { text: "Assigned QA", value: "qaownername", align: "left" }
             ],
