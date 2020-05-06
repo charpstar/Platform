@@ -331,6 +331,7 @@ export async function getProducts(id) {
       { oldioslink: 't4.ioslink' },
       { oldiostime: 't4.time' },
       { oldiosuser: 't4.userid' },
+      'curstat.stateafter as state',
     )
     .leftJoin((querybuilder) => {
       querybuilder.from('androidversions')
@@ -372,6 +373,7 @@ export async function getProducts(id) {
         }, 'appleversions.time', 't44.min')
         .as('t4');
     }, 'products.productid', 't4.productid')
+    .leftJoin('curstat', 'products.productid', 'curstat.productid')
     .where('products.modelid', id);
 }
 
