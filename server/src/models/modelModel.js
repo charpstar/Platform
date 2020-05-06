@@ -96,19 +96,22 @@ export async function assignModeler(data, userid) {
 
 export async function getModels(orderid) {
   return knexPool('models')
-    .select(['modelid', 'modelowner', 'name'])
+    .select(['modelid', 'models.name as modelname', 'users.name as modelowner'])
+    .leftJoin('users', 'models.modelowner', 'users.userid')
     .where('orderid', orderid);
 }
 
 export async function getModel(modelid) {
   return knexPool('models')
-    .select(['modelid', 'modelowner', 'name'])
+    .select(['modelid', 'users.name as modelowner', 'models.name as modelname'])
+    .leftJoin('users', 'models.modelowner', 'users.userid')
     .where('modelid', modelid);
 }
 
 export async function getAllModels() {
   return knexPool('models')
-    .select(['modelid', 'modelowner', 'name']);
+    .select(['modelid', 'users.name as modelowner', 'models.name as modelname'])
+    .leftJoin('users', 'models.modelowner', 'users.userid');
 }
 
 export async function uploadModelFile(userid, filename, modelid) {
