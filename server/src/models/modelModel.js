@@ -77,6 +77,8 @@ export async function assignModeler(data, userid) {
             statebefore: 'OrderReview',
             stateafter: 'OrderDev',
           });
+      } else {
+        throw new Error('Previous order state is wrong');
       }
 
       temp = await trx('users')

@@ -242,11 +242,11 @@ export async function commentService(data, req) {
 
     case (
       data.commenttype === 'Product'
-      && data.commentclass === 'Reject'
-      && req.session.usertype === 'Modeller'
+      && data.commentclass === 'Info'
+      && req.session.usertype === ('Modeller' || 'QA')
     ): {
       if (data.comment === '') {
-        responseObject.error = 'Rejection rejected, need a comment';
+        responseObject.error = 'Request rejected, need a comment';
         return responseObject;
       }
 
@@ -433,11 +433,11 @@ export async function commentService(data, req) {
 
     case (
       data.commenttype === 'Model'
-      && data.commentclass === 'Reject'
-      && req.session.usertype === 'Modeller'
+      && data.commentclass === 'Info'
+      && req.session.usertype === ('Modeller' || 'QA')
     ): {
       if (data.comment === '') {
-        responseObject.error = 'Rejection rejected, need a comment';
+        responseObject.error = 'Request rejected, need a comment';
         return responseObject;
       }
 
