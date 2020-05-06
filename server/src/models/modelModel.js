@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import knex from 'knex';
+import { statePriority } from '../config/config';
 
 const envFetch = dotenv.config();
 
@@ -95,23 +96,98 @@ export async function assignModeler(data, userid) {
 }
 
 export async function getModels(orderid) {
-  return knexPool('models')
+  const states = await knexPool
+    .raw('select modelid, array_to_json(array_agg(stateafter)) as states from curstat where orderid = ? group by modelid', [orderid]);
+
+  const modelStates = {};
+
+  for (const model of states.rows) {
+    let i = 8;
+    for (const state of model.states) {
+      if (statePriority.indexOf(state) < i) {
+        i = statePriority.indexOf(state);
+      }
+    }
+    modelStates[model.modelid] = {
+      modelid: model.modelid,
+      state: statePriority[i],
+    };
+  }
+
+  const models = await knexPool('models')
     .select(['modelid', 'models.name as modelname', 'users.name as modelowner'])
     .leftJoin('users', 'models.modelowner', 'users.userid')
     .where('orderid', orderid);
+
+  for (const model of models) {
+    modelStates[model.modelid].modelname = model.modelname;
+    modelStates[model.modelid].modelowner = model.modelowner;
+  }
+
+  return modelStates;
 }
 
 export async function getModel(modelid) {
-  return knexPool('models')
-    .select(['modelid', 'users.name as modelowner', 'models.name as modelname'])
+  const states = await knexPool
+    .raw('select modelid, array_to_json(array_agg(stateafter)) as states from curstat where modelid = ? group by modelid', [modelid]);
+
+  const modelStates = {};
+
+  for (const model of states.rows) {
+    let i = 8;
+    for (const state of model.states) {
+      if (statePriority.indexOf(state) < i) {
+        i = statePriority.indexOf(state);
+      }
+    }
+    modelStates[model.modelid] = {
+      modelid: model.modelid,
+      state: statePriority[i],
+    };
+  }
+
+  const models = await knexPool('models')
+    .select(['modelid', 'models.name as modelname', 'users.name as modelowner'])
     .leftJoin('users', 'models.modelowner', 'users.userid')
     .where('modelid', modelid);
+
+  for (const model of models) {
+    modelStates[model.modelid].modelname = model.modelname;
+    modelStates[model.modelid].modelowner = model.modelowner;
+  }
+
+  return modelStates;
 }
 
 export async function getAllModels() {
-  return knexPool('models')
-    .select(['modelid', 'users.name as modelowner', 'models.name as modelname'])
+  const states = await knexPool
+    .raw('select modelid, array_to_json(array_agg(stateafter)) as states from curstat group by modelid');
+
+  const modelStates = {};
+
+  for (const model of states.rows) {
+    let i = 8;
+    for (const state of model.states) {
+      if (statePriority.indexOf(state) < i) {
+        i = statePriority.indexOf(state);
+      }
+    }
+    modelStates[model.modelid] = {
+      modelid: model.modelid,
+      state: statePriority[i],
+    };
+  }
+
+  const models = await knexPool('models')
+    .select(['modelid', 'models.name as modelname', 'users.name as modelowner'])
     .leftJoin('users', 'models.modelowner', 'users.userid');
+
+  for (const model of models) {
+    modelStates[model.modelid].modelname = model.modelname;
+    modelStates[model.modelid].modelowner = model.modelowner;
+  }
+
+  return modelStates;
 }
 
 export async function uploadModelFile(userid, filename, modelid) {
