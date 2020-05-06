@@ -328,3 +328,213 @@ export async function setProductDoneModeller(productid, userid) {
     return { status: 'f' };
   }
 }
+
+export async function approveProductQA(productid, userid) {
+  let newState;
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [productstate] = await trx('productstates')
+        .join((querybuilder) => {
+          querybuilder.from('productstates')
+            .where('productid', productid)
+            .max('time')
+            .groupBy('productid')
+            .as('t1');
+        }, 'productstates.time', 't1.max');
+
+      const allowedStates = ['ProductReview'];
+      if (typeof productstate === 'undefined' || !allowedStates.includes(productstate.stateafter)) {
+        throw new Error('Product does not exist or does not have allowed previous state');
+      }
+
+      [newState] = await trx('productstates')
+        .insert({
+          productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ClientProductReceived',
+        })
+        .returning(['productid', 'stateafter']);
+    });
+    return newState;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function approveProductClient(productid, userid) {
+  let newState;
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [productstate] = await trx('productstates')
+        .join((querybuilder) => {
+          querybuilder.from('productstates')
+            .where('productid', productid)
+            .max('time')
+            .groupBy('productid')
+            .as('t1');
+        }, 'productstates.time', 't1.max');
+
+      const allowedStates = ['ClientProductReceived'];
+      if (typeof productstate === 'undefined' || !allowedStates.includes(productstate.stateafter)) {
+        throw new Error('Product does not exist or does not have allowed previous state');
+      }
+
+      [newState] = await trx('productstates')
+        .insert({
+          productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductDone',
+        })
+        .returning(['productid', 'stateafter']);
+    });
+    return newState;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function rejectProductQA(productid, userid) {
+  let newState;
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [productstate] = await trx('productstates')
+        .join((querybuilder) => {
+          querybuilder.from('productstates')
+            .where('productid', productid)
+            .max('time')
+            .groupBy('productid')
+            .as('t1');
+        }, 'productstates.time', 't1.max');
+
+      const allowedStates = ['ProductReview'];
+      if (typeof productstate === 'undefined' || !allowedStates.includes(productstate.stateafter)) {
+        throw new Error('Product does not exist or does not have allowed previous state');
+      }
+
+      [newState] = await trx('productstates')
+        .insert({
+          productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductRefine',
+        })
+        .returning(['productid', 'stateafter']);
+    });
+    return newState;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function rejectProductClient(productid, userid) {
+  let newState;
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [productstate] = await trx('productstates')
+        .join((querybuilder) => {
+          querybuilder.from('productstates')
+            .where('productid', productid)
+            .max('time')
+            .groupBy('productid')
+            .as('t1');
+        }, 'productstates.time', 't1.max');
+
+      const allowedStates = ['ClientProductReceived'];
+      if (typeof productstate === 'undefined' || !allowedStates.includes(productstate.stateafter)) {
+        throw new Error('Product does not exist or does not have allowed previous state');
+      }
+
+      [newState] = await trx('productstates')
+        .insert({
+          productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ClientFeedback',
+        })
+        .returning(['productid', 'stateafter']);
+    });
+    return newState;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function setProductMissing(productid, userid) {
+  let newState;
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [productstate] = await trx('productstates')
+        .join((querybuilder) => {
+          querybuilder.from('productstates')
+            .where('productid', productid)
+            .max('time')
+            .groupBy('productid')
+            .as('t1');
+        }, 'productstates.time', 't1.max');
+
+      const disallowedStates = ['ProductDone'];
+      if (typeof productstate === 'undefined' || disallowedStates.includes(productstate.stateafter)) {
+        throw new Error('Product does not exist or does not have allowed previous state');
+      }
+
+      [newState] = await trx('productstates')
+        .insert({
+          productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductMissing',
+        })
+        .returning(['productid', 'stateafter']);
+    });
+    return newState;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function resolveProductMissing(productid, userid) {
+  let newState;
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [productstate] = await trx('productstates')
+        .join((querybuilder) => {
+          querybuilder.from('productstates')
+            .where('productid', productid)
+            .max('time')
+            .groupBy('productid')
+            .as('t1');
+        }, 'productstates.time', 't1.max');
+
+      const allowedStates = ['ProductMissing'];
+      if (typeof productstate === 'undefined' || !allowedStates.includes(productstate.stateafter)) {
+        throw new Error('Product does not exist or does not have allowed previous state');
+      }
+
+      [newState] = await trx('productstates')
+        .insert({
+          productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductDev',
+        })
+        .returning(['productid', 'stateafter']);
+    });
+    return newState;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
