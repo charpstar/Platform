@@ -387,7 +387,7 @@ export async function approveProductClient(productid, userid) {
           productid,
           userid,
           statebefore: productstate.stateafter,
-          stateafter: 'ProductDone',
+          stateafter: 'Done',
         })
         .returning(['productid', 'stateafter']);
     });
@@ -482,7 +482,7 @@ export async function setProductMissing(productid, userid) {
             .as('t1');
         }, 'productstates.time', 't1.max');
 
-      const disallowedStates = ['ProductDone'];
+      const disallowedStates = ['Done'];
       if (typeof productstate === 'undefined' || disallowedStates.includes(productstate.stateafter)) {
         throw new Error('Product does not exist or does not have allowed previous state');
       }
