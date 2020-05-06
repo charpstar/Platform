@@ -34,9 +34,14 @@ const commentParser = Joi.object({
     .min(0),
 
   comment: Joi.string()
+    .allow('')
     .required(),
 
   internal: Joi.boolean()
+    .required(),
+
+  commentclass: Joi.string()
+    .valid(['Comment', 'Reject', 'Resolve', 'Approve', 'Done', 'Info'])
     .required(),
 
 }).xor('orderid', 'modelid', 'productid');
@@ -52,7 +57,7 @@ export async function comment(req, res) {
       };
       return res.send(responseObject);
     }
-    return commentService(value, req.session.userid).then((result) => {
+    return commentService(value, req).then((result) => {
       res.send(result);
     });
   } catch (e) {

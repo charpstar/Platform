@@ -107,8 +107,6 @@ app.post('/qa/assignmodeler', router);
 app.post('/qa/uploadios', router);
 app.post('/qa/uploadandroid', router);
 app.post('/qa/uploadthumb', router);
-app.post('/qa/setordermissing', router);
-app.post('/qa/resolveordermissing', router);
 
 // Modeller routes
 app.get('/modeller/models', router);

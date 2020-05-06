@@ -37,6 +37,23 @@ export async function assignModeler(data, userid) {
         throw new Error('No such model');
       }
 
+      const products = await trx('products')
+        .select('productid')
+        .where('modelid', data.modelid);
+
+      const productStates = [];
+      for (const product of products) {
+        productStates.push({
+          productid: product.productid,
+          userid,
+          statebefore: 'ProductReceived',
+          stateafter: 'ProductDev',
+        });
+      }
+
+      await trx('productstates')
+        .insert(productStates);
+
       const [tempRes] = await trx('orderstates')
         .select('stateafter')
         .join((querybuilder) => {
@@ -275,4 +292,39 @@ export async function getProducts(id) {
         .as('t4');
     }, 'products.productid', 't4.productid')
     .where('products.modelid', id);
+}
+
+export async function setProductDoneModeller(productid, userid) {
+  let newState;
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [productstate] = await trx('productstates')
+        .join((querybuilder) => {
+          querybuilder.from('productstates')
+            .where('productid', productid)
+            .max('time')
+            .groupBy('productid')
+            .as('t1');
+        }, 'productstates.time', 't1.max');
+
+      const allowedStates = ['ProductDev', 'ProductRefine', 'ClientFeedback'];
+      if (typeof productstate === 'undefined' || !allowedStates.includes(productstate.stateafter)) {
+        throw new Error('Product does not exist or does not have allowed previous state');
+      }
+
+      [newState] = await trx('productstates')
+        .insert({
+          productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductReview',
+        })
+        .returning(['productid', 'stateafter']);
+    });
+    return newState;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
 }

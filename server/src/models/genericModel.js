@@ -21,14 +21,14 @@ const knexPool = knex({
 export async function comment(data) {
   return knexPool('comments')
     .insert(data)
-    .returning(['comment', 'time', 'internal']);
+    .returning(['comment', 'time', 'internal', 'commentclass']);
 }
 
 export async function getComments(data) {
   return knexPool('comments')
     .where(data)
     .innerJoin('users', 'comments.userid', 'users.userid')
-    .select('time', 'comment', 'usertype', 'name', 'internal')
+    .select('time', 'comment', 'usertype', 'name', 'internal', 'editcomment', 'commentclass')
     .orderBy('time');
 }
 

@@ -186,7 +186,6 @@ export async function getClientOrders(id) {
 }
 
 export async function getExcel(orderid) {
-  console.log(orderid);
   return knexPool('models')
     .select(
       'models.name',
