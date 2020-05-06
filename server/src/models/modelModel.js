@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import knex from 'knex';
+import { statePriority } from '../config/config';
 
 const envFetch = dotenv.config();
 
@@ -77,6 +78,8 @@ export async function assignModeler(data, userid) {
             statebefore: 'OrderReview',
             stateafter: 'OrderDev',
           });
+      } else {
+        throw new Error('Previous order state is wrong');
       }
 
       temp = await trx('users')
@@ -93,20 +96,98 @@ export async function assignModeler(data, userid) {
 }
 
 export async function getModels(orderid) {
-  return knexPool('models')
-    .select(['modelid', 'modelowner', 'name'])
+  const states = await knexPool
+    .raw('select modelid, array_to_json(array_agg(stateafter)) as states from curstat where orderid = ? group by modelid', [orderid]);
+
+  const modelStates = {};
+
+  for (const model of states.rows) {
+    let i = 8;
+    for (const state of model.states) {
+      if (statePriority.indexOf(state) < i) {
+        i = statePriority.indexOf(state);
+      }
+    }
+    modelStates[model.modelid] = {
+      modelid: model.modelid,
+      state: statePriority[i],
+    };
+  }
+
+  const models = await knexPool('models')
+    .select(['modelid', 'models.name as modelname', 'users.name as modelowner'])
+    .leftJoin('users', 'models.modelowner', 'users.userid')
     .where('orderid', orderid);
+
+  for (const model of models) {
+    modelStates[model.modelid].modelname = model.modelname;
+    modelStates[model.modelid].modelowner = model.modelowner;
+  }
+
+  return modelStates;
 }
 
 export async function getModel(modelid) {
-  return knexPool('models')
-    .select(['modelid', 'modelowner', 'name'])
+  const states = await knexPool
+    .raw('select modelid, array_to_json(array_agg(stateafter)) as states from curstat where modelid = ? group by modelid', [modelid]);
+
+  const modelStates = {};
+
+  for (const model of states.rows) {
+    let i = 8;
+    for (const state of model.states) {
+      if (statePriority.indexOf(state) < i) {
+        i = statePriority.indexOf(state);
+      }
+    }
+    modelStates[model.modelid] = {
+      modelid: model.modelid,
+      state: statePriority[i],
+    };
+  }
+
+  const models = await knexPool('models')
+    .select(['modelid', 'models.name as modelname', 'users.name as modelowner'])
+    .leftJoin('users', 'models.modelowner', 'users.userid')
     .where('modelid', modelid);
+
+  for (const model of models) {
+    modelStates[model.modelid].modelname = model.modelname;
+    modelStates[model.modelid].modelowner = model.modelowner;
+  }
+
+  return modelStates;
 }
 
 export async function getAllModels() {
-  return knexPool('models')
-    .select(['modelid', 'modelowner', 'name']);
+  const states = await knexPool
+    .raw('select modelid, array_to_json(array_agg(stateafter)) as states from curstat group by modelid');
+
+  const modelStates = {};
+
+  for (const model of states.rows) {
+    let i = 8;
+    for (const state of model.states) {
+      if (statePriority.indexOf(state) < i) {
+        i = statePriority.indexOf(state);
+      }
+    }
+    modelStates[model.modelid] = {
+      modelid: model.modelid,
+      state: statePriority[i],
+    };
+  }
+
+  const models = await knexPool('models')
+    .select(['modelid', 'models.name as modelname', 'users.name as modelowner'])
+    .leftJoin('users', 'models.modelowner', 'users.userid');
+
+  for (const model of models) {
+    modelStates[model.modelid].modelname = model.modelname;
+    modelStates[model.modelid].modelowner = model.modelowner;
+  }
+
+  return modelStates;
 }
 
 export async function uploadModelFile(userid, filename, modelid) {
@@ -250,6 +331,7 @@ export async function getProducts(id) {
       { oldioslink: 't4.ioslink' },
       { oldiostime: 't4.time' },
       { oldiosuser: 't4.userid' },
+      'curstat.stateafter as state',
     )
     .leftJoin((querybuilder) => {
       querybuilder.from('androidversions')
@@ -291,6 +373,7 @@ export async function getProducts(id) {
         }, 'appleversions.time', 't44.min')
         .as('t4');
     }, 'products.productid', 't4.productid')
+    .leftJoin('curstat', 'products.productid', 'curstat.productid')
     .where('products.modelid', id);
 }
 
@@ -532,6 +615,258 @@ export async function resolveProductMissing(productid, userid) {
         .returning(['productid', 'stateafter']);
     });
     return newState;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function approveModelQA(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const allowedStates = ['ProductReview'];
+      for (const productstate of productstates) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready to be approved');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ClientProductReceived',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'ClientProductReceived' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function setModelDoneModeller(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const allowedStates = ['ProductDev', 'ProductRefine', 'ClientFeedback'];
+      for (const productstate of productstates) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductReview',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'ModelDev' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function approveModelClient(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const allowedStates = ['ClientProductReceived'];
+      for (const productstate of productstates) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready to be approved');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'Done',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'Done' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function rejectModelQA(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const allowedStates = ['ProductReview'];
+      for (const productstate of productstates) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready to be rejected');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductRefine',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'ProductRefine' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function rejectModelClient(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const allowedStates = ['ClientProductReceived'];
+      for (const productstate of productstates) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready to be rejected');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ClientFeedback',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'ClientFeedback' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function setModelMissing(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const disallowedStates = ['Done'];
+      for (const productstate of productstates) {
+        if (disallowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductMissing',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'ModelMissing' };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function resolveModelMissing(modelid, userid) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      const allowedStates = ['ProductMissing'];
+      for (const productstate of productstates) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error('Not all products are ready');
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: 'ProductDev',
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: 'ModelDev' };
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);

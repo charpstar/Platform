@@ -291,10 +291,8 @@ export async function getModelsService(data) {
   };
 
   const result = await getModels(data.orderid);
-  result.forEach((model) => {
-    responseObject.data[model.modelid] = model;
-  });
 
+  responseObject.data = result;
   responseObject.status = 'Models fetched';
 
   return responseObject;
@@ -308,10 +306,8 @@ export async function getModelService(data) {
   };
 
   const result = await getModel(data.modelid);
-  for (const model of result) {
-    responseObject.data[model.modelid] = model;
-  }
 
+  responseObject.data = result;
   responseObject.status = 'Model fetched';
 
   return responseObject;
@@ -325,10 +321,8 @@ export async function getAllModelsService() {
   };
 
   const result = await getAllModels();
-  result.forEach((model) => {
-    responseObject.data[model.modelid] = model;
-  });
 
+  responseObject.data = result;
   responseObject.status = 'Models fetched';
 
   return responseObject;
