@@ -51,7 +51,7 @@ export async function commentService(data, req) {
 
     case (
       data.commenttype === 'Order'
-      && data.commentclass === 'Reject'
+      && data.commentclass === 'Info'
       && req.session.usertype === 'QA'
     ): {
       if (data.comment === '') {
@@ -81,7 +81,7 @@ export async function commentService(data, req) {
     case (
       data.commenttype === 'Order'
       && data.commentclass === 'Resolve'
-      && req.session.usertype === 'QA'
+      && req.session.usertype === ('QA' || 'Client')
     ): {
       const tempRes1 = await resolveOrderMissing(data.orderid, req.session.userid);
       if (tempRes1.status === 'f') {
