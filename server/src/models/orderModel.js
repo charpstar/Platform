@@ -196,6 +196,17 @@ export async function getExcel(orderid) {
     )
     .where('orderid', orderid)
     .join('products', 'models.modelid', 'products.modelid')
+    .join((querybuilder) => {
+      querybuilder.from('productstates')
+        .join((querybuilder2) => {
+          querybuilder2.from('productstates')
+            .max('time')
+            .groupBy('productid')
+            .as('t33');
+        }, 'productstates.time', 't33.max')
+        .where('productstates.stateafter', 'Done')
+        .as('t3');
+    }, 'products.productid', 't3.productid')
     .leftJoin((querybuilder) => {
       querybuilder.from('androidversions')
         .join((querybuilder2) => {
