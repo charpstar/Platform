@@ -8,11 +8,11 @@ import {
   edituser,
   deleteuser,
   getuser,
+  getmodelers,
 } from '../controllers/userController';
 import {
   uploadmodelfile,
   assignmodeler,
-  getmodelers,
   getmodels,
   getmodellermodels,
   getallmodels,

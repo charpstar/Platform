@@ -136,8 +136,7 @@ export async function orderCreationService(req) {
     return responseObject;
   }
 
-  [responseObject.data] = res;
-  responseObject.status = 'Order successful';
+  responseObject.orderid = res.orderid;
 
   return responseObject;
 }

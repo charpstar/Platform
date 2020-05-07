@@ -6,7 +6,6 @@ import {
   logoutService,
   editUserService,
   deleteUserService,
-  getUserService,
 } from '../services/userService';
 
 const loginParser = Joi.object({
@@ -137,7 +136,7 @@ export async function logout(req, res) {
 
 export async function getusers(req, res) {
   try {
-    return getUsersService().then((result) => {
+    return getUsersService({}).then((result) => {
       res.send(result);
     });
   } catch (e) {
@@ -158,7 +157,19 @@ export async function getuser(req, res) {
       };
       return res.send(responseObject);
     }
-    return getUserService(value).then((result) => {
+    return getUsersService({ userid: value.id }).then((result) => {
+      res.send(result);
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
+}
+
+export async function getmodelers(req, res) {
+  try {
+    return getUsersService({ usertype: 'Modeller' }).then((result) => {
       res.send(result);
     });
   } catch (e) {

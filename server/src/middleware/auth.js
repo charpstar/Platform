@@ -1,4 +1,4 @@
-import { getUser } from '../models/userModel';
+
 
 export async function genericAuth(req, res, next) {
   const responseObject = {

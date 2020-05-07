@@ -2,10 +2,7 @@ import Joi from 'joi';
 import {
   modelUploadService,
   assignModelerService,
-  getModelersService,
   getModelsService,
-  getModellerModelsService,
-  getAllModelsService,
   getProductsService,
   modelFileDownloadService,
   listModelFilesService,
@@ -13,7 +10,6 @@ import {
   androidUploadService,
   modelFileDeleteService,
   thumbUploadService,
-  getModelService,
 } from '../services/modelService';
 
 const orderIdParser = Joi.object({
@@ -230,18 +226,6 @@ export async function assignmodeler(req, res) {
   }
 }
 
-export async function getmodelers(req, res) {
-  try {
-    return getModelersService().then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
-}
-
 export async function getmodels(req, res) {
   try {
     const { error, value } = orderIdParser.validate(req.body);
@@ -253,7 +237,7 @@ export async function getmodels(req, res) {
       };
       return res.send(responseObject);
     }
-    return getModelsService(value).then((result) => {
+    return getModelsService({ orderid: value.orderid }).then((result) => {
       res.send(result);
     });
   } catch (e) {
@@ -274,7 +258,7 @@ export async function getmodel(req, res) {
       };
       return res.send(responseObject);
     }
-    return getModelService(value).then((result) => {
+    return getModelsService({ modelid: value.modelid }).then((result) => {
       res.send(result);
     });
   } catch (e) {
@@ -286,7 +270,7 @@ export async function getmodel(req, res) {
 
 export async function getallmodels(req, res) {
   try {
-    return getAllModelsService().then((result) => {
+    return getModelsService({}).then((result) => {
       res.send(result);
     });
   } catch (e) {
@@ -298,7 +282,7 @@ export async function getallmodels(req, res) {
 
 export async function getmodellermodels(req, res) {
   try {
-    return getModellerModelsService(req.session.userid).then((result) => {
+    return getModelsService({ modelowner: req.session.userid }).then((result) => {
       res.send(result);
     });
   } catch (e) {

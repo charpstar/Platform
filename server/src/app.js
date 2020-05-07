@@ -76,47 +76,7 @@ app.use('/modeller', modellerAuth); // Signed into Modeler, Admin, or QA account
 app.use('/client', clientAuth); // Signed into client account
 
 // General routes (no login required)
-app.get('/', router);
-app.get('/logout', router);
-app.post('/login', router);
-
-// Generic routes (requires being logged in)
-app.get('/gen/login', router);
-app.post('/gen/getproducts', router);
-app.post('/gen/comment', router);
-app.post('/gen/getComments', router);
-app.post('/gen/getclientorders', router);
-app.post('/gen/getmodels', router);
-app.post('/gen/getexcel', router);
-app.post('/gen/getorder', router);
-app.post('/gen/getmodel', router);
-
-// Admin routes
-app.get('/admin/getusers', router);
-app.post('/admin/createUser', router);
-app.post('/admin/edituser', router);
-app.post('/admin/deleteuser', router);
-app.post('/admin/getuser', router);
-
-// QA routes
-app.get('/qa/getorders', router);
-app.get('/qa/getmodelers', router);
-app.get('/qa/getallmodels', router);
-app.post('/qa/claimorder', router);
-app.post('/qa/assignmodeler', router);
-app.post('/qa/uploadios', router);
-app.post('/qa/uploadandroid', router);
-app.post('/qa/uploadthumb', router);
-
-// Modeller routes
-app.get('/modeller/models', router);
-app.post('/modeller/listmodelfiles', router);
-app.post('/modeller/uploadmodelfile', router);
-app.post('/modeller/downloadmodelfile', router);
-app.post('/modeller/deletemodelfile', router);
-
-// Client routes
-app.post('/client/createorder', router);
+app.use(router);
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console

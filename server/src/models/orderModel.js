@@ -81,17 +81,13 @@ export async function createOrder(orderData) {
       await trx('productstates')
         .insert(productstates);
     });
-    return knexPool('orders')
-      .where('orderid', createdOrderID);
+    return { orderid: createdOrderID };
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
     return { error: 'Order failed' };
   }
 }
-
-// {'orders.clientid', id}
-// {'orders.orderid', id}
 
 export async function getOrders(filter) {
   return knexPool

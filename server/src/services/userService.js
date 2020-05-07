@@ -6,7 +6,6 @@ import {
   createUser,
   editUser,
   deleteUser,
-  getUser,
 } from '../models/userModel';
 
 const saltRounds = 10;
@@ -128,38 +127,20 @@ export async function initUserCreationService() {
   return insertResult;
 }
 
-export async function getUsersService() {
+export async function getUsersService(filter) {
   const responsObject = {
     status: '',
     error: '',
     data: {},
   };
 
-  const users = await getUsers();
+  const users = await getUsers(filter);
 
   users.forEach((user) => {
     responsObject.data[user.userid] = user;
   });
 
   responsObject.status = 'Users fetched';
-
-  return responsObject;
-}
-
-export async function getUserService(data) {
-  const responsObject = {
-    status: '',
-    error: '',
-    data: {},
-  };
-
-  const users = await getUser(data.id);
-
-  for (const user of users) {
-    responsObject.data[user.userid] = user;
-  }
-
-  responsObject.status = 'User fetched';
 
   return responsObject;
 }

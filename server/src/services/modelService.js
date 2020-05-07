@@ -3,18 +3,14 @@ import path from 'path';
 import fs from 'fs';
 import mv from 'mv';
 import {
-  getModelers,
   getModels,
   assignModeler,
-  getModellerModels,
-  getAllModels,
   getProducts,
   uploadIos,
   uploadAndroid,
   uploadModelFile,
   deleteModelFile,
   listModelFiles,
-  getModel,
 } from '../models/modelModel';
 import { domain, port } from '../config/config';
 
@@ -265,82 +261,16 @@ export async function assignModelerService(data, req) {
   return responseObject;
 }
 
-export async function getModelersService() {
+export async function getModelsService(filter) {
   const responseObject = {
     status: '',
     error: '',
     data: {},
   };
 
-  const result = await getModelers();
-
-  result.forEach((modeler) => {
-    responseObject.data[modeler.userid] = modeler;
-  });
-
-  responseObject.status = 'Modellers fetched';
-
-  return responseObject;
-}
-
-export async function getModelsService(data) {
-  const responseObject = {
-    status: '',
-    error: '',
-    data: {},
-  };
-
-  const result = await getModels(data.orderid);
+  const result = await getModels(filter);
 
   responseObject.data = result;
-  responseObject.status = 'Models fetched';
-
-  return responseObject;
-}
-
-export async function getModelService(data) {
-  const responseObject = {
-    status: '',
-    error: '',
-    data: {},
-  };
-
-  const result = await getModel(data.modelid);
-
-  responseObject.data = result;
-  responseObject.status = 'Model fetched';
-
-  return responseObject;
-}
-
-export async function getAllModelsService() {
-  const responseObject = {
-    status: '',
-    error: '',
-    data: {},
-  };
-
-  const result = await getAllModels();
-
-  responseObject.data = result;
-  responseObject.status = 'Models fetched';
-
-  return responseObject;
-}
-
-export async function getModellerModelsService(id) {
-  const responseObject = {
-    status: '',
-    error: '',
-    data: {},
-  };
-
-  const result = await getModellerModels(id);
-
-  result.forEach((model) => {
-    responseObject.data[model.modelid] = model;
-  });
-
   responseObject.status = 'Models fetched';
 
   return responseObject;

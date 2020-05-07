@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import { commentService, getCommentsService, getLoginService } from '../services/genericService';
+import { getUsers } from '../models/userModel';
 
 const commentIdParser = Joi.object({
   orderid: Joi.number()
@@ -91,7 +92,14 @@ export async function getComments(req, res) {
 export async function getLogin(req, res) {
   try {
     return getLoginService(req).then((result) => {
-      res.send(result);
+      if (typeof result.error !== 'undefined' && result.error !== null && result.error !== '') {
+        res.send(result);
+      } else {
+        getUsers({ userid: result.data.userid }).then((users) => {
+          [result.data] = users;
+          res.send(result);
+        });
+      }
     });
   } catch (e) {
     // eslint-disable-next-line no-console

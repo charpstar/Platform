@@ -36,7 +36,7 @@ export async function getorder(req, res) {
       };
       return res.send(responseObject);
     }
-    return getOrdersService({ 'order.orderid': value.id }).then((result) => {
+    return getOrdersService({ 'orders.orderid': value.id }).then((result) => {
       res.send(result);
     });
   } catch (e) {
@@ -57,7 +57,7 @@ export async function getclientorders(req, res) {
       };
       return res.send(responseObject);
     }
-    return getOrdersService({ 'order.clientid': value.id }).then((result) => {
+    return getOrdersService({ 'orders.clientid': value.id }).then((result) => {
       res.send(result);
     });
   } catch (e) {
@@ -112,7 +112,13 @@ export async function getexcel(req, res) {
 export async function createorder(req, res) {
   try {
     return orderCreationService(req).then((result) => {
-      res.send(result);
+      if (typeof result.error !== 'undefined' && result.error !== null && result.error !== '') {
+        res.send(result);
+      } else {
+        getOrdersService({ 'orders.orderid': result.orderid }).then((order) => {
+          res.send(order);
+        });
+      }
     });
   } catch (e) {
     // eslint-disable-next-line no-console
