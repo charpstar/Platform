@@ -5,9 +5,7 @@ import {
   createOrder,
   getOrders,
   claimOrder,
-  getClientOrders,
   getExcel,
-  getOrder,
 } from '../models/orderModel';
 
 export async function getOrdersService(filter) {
@@ -22,39 +20,6 @@ export async function getOrdersService(filter) {
     responseObject.data[order.orderid] = order;
   });
   responseObject.status = 'Orders fetched';
-  return responseObject;
-}
-
-export async function getOrderService(data) {
-  const responseObject = {
-    status: '',
-    error: '',
-    data: {},
-  };
-
-  const result = await getOrders({'order.orderid': data.id});
-  for (const order of result) {
-    responseObject.data[order.orderid] = order;
-  }
-  responseObject.status = 'Order fetched';
-  return responseObject;
-}
-
-export async function getClientOrdersService(client) {
-  const responseObject = {
-    status: '',
-    error: '',
-    data: {},
-  };
-
-  const result = await getOrders({'order.clientid': client.id});
-
-  result.forEach((order) => {
-    responseObject.data[order.orderid] = order;
-  });
-
-  responseObject.status = 'Orders fetched';
-
   return responseObject;
 }
 

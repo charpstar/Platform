@@ -90,8 +90,8 @@ export async function createOrder(orderData) {
   }
 }
 
-//'orders.clientid', id
-//'orders.orderid', id
+// {'orders.clientid', id}
+// {'orders.orderid', id}
 
 export async function getOrders(filter) {
   return knexPool

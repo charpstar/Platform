@@ -36,7 +36,7 @@ export async function getorder(req, res) {
       };
       return res.send(responseObject);
     }
-    return getOrdersService({'order.orderid': value.id}).then((result) => {
+    return getOrdersService({ 'order.orderid': value.id }).then((result) => {
       res.send(result);
     });
   } catch (e) {
@@ -57,7 +57,7 @@ export async function getclientorders(req, res) {
       };
       return res.send(responseObject);
     }
-    return getOrdersService({'order.clientid': value.id}).then((result) => {
+    return getOrdersService({ 'order.clientid': value.id }).then((result) => {
       res.send(result);
     });
   } catch (e) {

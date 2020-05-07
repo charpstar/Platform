@@ -15,7 +15,7 @@ import {
   clientAuth,
   genericAuth,
 } from './middleware/auth';
-import { initUserCreationService } from './services/userService.js';
+import { initUserCreationService } from './services/userService';
 
 const envFetch = dotenv.config();
 
@@ -31,14 +31,14 @@ app.use(express.urlencoded({
 app.use(morgan('combined'));
 app.use(helmet());
 app.use(cors({
-  origin:true,
-  methods:['GET', 'POST'],
+  origin: true,
+  methods: ['GET', 'POST'],
   credentials: true,
 }));
 app.use('/public', express.static('./public/'));
 app.use('/public', (req, res) => {
   const data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
-  let img = Buffer.from(data, 'base64');
+  const img = Buffer.from(data, 'base64');
   res.writeHead(200, {
     'Content-Type': 'image/png',
     'Content-Length': img.length,
@@ -46,7 +46,7 @@ app.use('/public', (req, res) => {
   res.end(img);
 });
 
-const pgSession = connectPgSimple(session);
+const PgSession = connectPgSimple(session);
 const pgPool = new pg.Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
@@ -56,7 +56,7 @@ const pgPool = new pg.Pool({
 });
 
 app.use(session({
-  store: new pgSession({
+  store: new PgSession({
     pool: pgPool,
   }),
   secret: process.env.SESSION_SECRET,
