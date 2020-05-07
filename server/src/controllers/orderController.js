@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import { runServiceWithData } from './controllerFunctions';
 import {
   orderCreationService,
   getOrdersService,
@@ -14,15 +15,7 @@ const idParser = Joi.object({
 });
 
 export async function getorders(req, res) {
-  try {
-    return getOrdersService({}).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  runServiceWithData(getOrdersService, {}, req, res);
 }
 
 export async function getorder(req, res) {

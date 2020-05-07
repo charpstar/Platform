@@ -16,7 +16,7 @@ import { domain, port } from '../config/config';
 
 const mvp = promisify(mv);
 
-export async function modelUploadService(req, data) {
+export async function modelUploadService(data, req) {
   const responseObject = {
     status: '',
     error: '',
@@ -82,7 +82,7 @@ export async function modelFileDeleteService(data) {
   return responseObject;
 }
 
-export async function thumbUploadService(req, data) {
+export async function thumbUploadService(data, req) {
   const responseObject = {
     status: '',
     error: '',
@@ -127,7 +127,7 @@ export async function listModelFilesService(data) {
   return responseObject;
 }
 
-export async function iosUploadService(req, data) {
+export async function iosUploadService(data, req) {
   const responseObject = {
     status: '',
     error: '',
@@ -187,7 +187,7 @@ export async function iosUploadService(req, data) {
   return responseObject;
 }
 
-export async function androidUploadService(req, data) {
+export async function androidUploadService(data, req) {
   const responseObject = {
     status: '',
     error: '',

@@ -1,4 +1,4 @@
-import { comment, getComments, getLogin } from '../models/genericModel';
+import { comment, getComments } from '../models/genericModel';
 import { setOrderMissing, resolveOrderMissing } from '../models/orderModel';
 import {
   setProductDoneModeller,
@@ -501,19 +501,6 @@ export async function getCommentsService(data) {
 
   responseObject.data = await getComments(data);
   responseObject.status = 'Comments fetched';
-
-  return responseObject;
-}
-
-export async function getLoginService(req) {
-  const responseObject = {
-    status: '',
-    error: '',
-    data: {},
-  };
-
-  [responseObject.data] = await getLogin(req.session.userid);
-  responseObject.status = 'Login fetched';
 
   return responseObject;
 }

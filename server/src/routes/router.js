@@ -62,6 +62,7 @@ router.post('/admin/createuser', createuser);
 router.post('/admin/edituser', edituser);
 router.post('/admin/deleteuser', deleteuser);
 router.post('/admin/getuser', getuser);
+router.get('/qa/getmodelers', getmodelers);
 
 // Order related
 router.get('/qa/getorders', getorders);
@@ -71,7 +72,6 @@ router.post('/gen/getclientorders', getclientorders);
 router.post('/gen/getorder', getorder);
 
 // Model related
-router.get('/qa/getmodelers', getmodelers);
 router.get('/modeller/models', getmodellermodels);
 router.get('/qa/getallmodels', getallmodels);
 router.post('/modeller/listmodelfiles', listmodelfiles);

@@ -1,6 +1,7 @@
 import Joi from 'joi';
-import { commentService, getCommentsService, getLoginService } from '../services/genericService';
-import { getUsers } from '../models/userModel';
+import { validateAndRunService, runServiceWithData } from './controllerFunctions';
+import { commentService, getCommentsService } from '../services/genericService';
+import { getUsersService } from '../services/userService';
 
 const commentIdParser = Joi.object({
   orderid: Joi.number()
@@ -48,62 +49,13 @@ const commentParser = Joi.object({
 }).xor('orderid', 'modelid', 'productid');
 
 export async function comment(req, res) {
-  try {
-    const { error, value } = commentParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return commentService(value, req).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(commentParser, commentService, req, res);
 }
 
 export async function getComments(req, res) {
-  try {
-    const { error, value } = commentIdParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return getCommentsService(value).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(commentIdParser, getCommentsService, req, res);
 }
 
 export async function getLogin(req, res) {
-  try {
-    return getLoginService(req).then((result) => {
-      if (typeof result.error !== 'undefined' && result.error !== null && result.error !== '') {
-        res.send(result);
-      } else {
-        getUsers({ userid: result.data.userid }).then((users) => {
-          [result.data] = users;
-          res.send(result);
-        });
-      }
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return runServiceWithData(getUsersService, { userid: req.session.userid }, req, res);
 }
