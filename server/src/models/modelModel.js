@@ -305,6 +305,105 @@ export async function getProducts(id) {
     .where('products.modelid', id);
 }
 
+export async function changeProductState(
+  productid,
+  userid,
+  newProductState,
+  allowedStates,
+  disallowedStates,
+) {
+  let newState;
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [productstate] = await trx('productstates')
+        .join((querybuilder) => {
+          querybuilder.from('productstates')
+            .where('productid', productid)
+            .max('time')
+            .groupBy('productid')
+            .as('t1');
+        }, 'productstates.time', 't1.max');
+
+      if (typeof productstate === 'undefined') {
+        throw new Error('Product does not exist');
+      }
+      if (allowedStates != null) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error(`Disallowed state: ${productstate.stateafter}`);
+        }
+      }
+      if (disallowedStates != null) {
+        if (disallowedStates.includes(productstate.stateafter)) {
+          throw new Error(`Disallowed state: ${productstate.stateafter}`);
+        }
+      }
+
+      [newState] = await trx('productstates')
+        .insert({
+          productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: newProductState,
+        })
+        .returning(['productid', 'stateafter']);
+    });
+    return newState;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
+export async function changeModelState(
+  modelid,
+  userid,
+  newProductState,
+  newModelState,
+  allowedStates,
+  disallowedStates,
+) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('modelid', modelid);
+
+      for (const productstate of productstates) {
+        if (allowedStates != null) {
+          if (!allowedStates.includes(productstate.stateafter)) {
+            throw new Error(`Disallowed state: ${productstate.stateafter}`);
+          }
+        }
+        if (disallowedStates != null) {
+          if (disallowedStates.includes(productstate.stateafter)) {
+            throw new Error(`Disallowed state: ${productstate.stateafter}`);
+          }
+        }
+      }
+
+      const newStates = [];
+
+      for (const productstate of productstates) {
+        newStates.push({
+          productid: productstate.productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: newProductState,
+        });
+      }
+
+      await trx('productstates')
+        .insert(newStates);
+    });
+    return { modelid, stateafter: newModelState };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
+}
+
 export async function setProductDoneModeller(productid, userid) {
   return changeProductState(productid, userid, 'ProductReview', ['ProductDev', 'ProductRefine', 'ClientFeedback']);
 }
@@ -359,90 +458,4 @@ export async function setModelMissing(modelid, userid) {
 
 export async function resolveModelMissing(modelid, userid) {
   return changeModelState(modelid, userid, 'ProductDev', 'ModelDev', ['ProductMissing']);
-}
-
-export async function changeProductState(productid, userid, newProductState, allowedStates, disallowedStates) {
-  let newState;
-  try {
-    await knexPool.transaction(async (trx) => {
-      const [productstate] = await trx('productstates')
-        .join((querybuilder) => {
-          querybuilder.from('productstates')
-            .where('productid', productid)
-            .max('time')
-            .groupBy('productid')
-            .as('t1');
-        }, 'productstates.time', 't1.max');
-
-      if (typeof productstate === 'undefined') {
-        throw new Error('Product does not exist');
-      }
-      if (allowedStates != null) {
-        if (!allowedStates.includes(productstate.stateafter)) {
-          throw new Error('Disallowed state: ' + productstate.stateafter);
-        }
-      }
-      if (disallowedStates != null) {
-        if (disallowedStates.includes(productstate.stateafter)) {
-          throw new Error('Disallowed state: ' + productstate.stateafter);
-        }
-      }
-
-      [newState] = await trx('productstates')
-        .insert({
-          productid,
-          userid,
-          statebefore: productstate.stateafter,
-          stateafter: newProductState,
-        })
-        .returning(['productid', 'stateafter']);
-    });
-    return newState;
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return { status: 'f' };
-  }
-}
-
-export async function changeModelState(modelid, userid, newProductState, newModelState, allowedStates, disallowedStates) {
-  try {
-    await knexPool.transaction(async (trx) => {
-      const productstates = await trx('curstat')
-        .select(['productid', 'stateafter'])
-        .where('modelid', modelid);
-
-      for (const productstate of productstates) {
-        if (allowedStates != null) {
-          if (!allowedStates.includes(productstate.stateafter)) {
-            throw new Error('Disallowed state: ' + productstate.stateafter);
-          }
-        }
-        if (disallowedStates != null) {
-          if (disallowedStates.includes(productstate.stateafter)) {
-            throw new Error('Disallowed state: ' + productstate.stateafter);
-          }
-        }
-      }
-
-      const newStates = [];
-
-      for (const productstate of productstates) {
-        newStates.push({
-          productid: productstate.productid,
-          userid,
-          statebefore: productstate.stateafter,
-          stateafter: newProductState,
-        });
-      }
-
-      await trx('productstates')
-        .insert(newStates);
-    });
-    return { modelid, stateafter: newModelState };
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return { status: 'f' };
-  }
 }
