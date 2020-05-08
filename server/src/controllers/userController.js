@@ -2,6 +2,7 @@ import Joi from 'joi';
 import { validateAndRunService, runServiceWithData } from './controllerFunctions';
 import {
   getUsersService,
+  getUserService,
   loginService,
   userCreationService,
   logoutService,
@@ -70,8 +71,8 @@ const editUserParser = Joi.object({
 })
   .with('password', 'repeatPassword');
 
-const idParser = Joi.object({
-  id: Joi.number()
+const useridParser = Joi.object({
+  userid: Joi.number()
     .min(0)
     .required(),
 });
@@ -87,19 +88,15 @@ export async function login(req, res) {
       };
       return res.send(responseObject);
     }
-    return loginService(value).then((result) => {
-      const temp = result;
-      if (result.error === '') {
-        req.session.userid = result.data.userid;
-        req.session.usertype = result.data.usertype;
-        getUsersService({ userid: result.data.userid }).then((serviceResult) => {
-          temp.data = serviceResult.data[result.data.userid];
-          res.send(temp);
-        });
-      } else {
-        res.send(temp);
-      }
-    });
+    const result = await loginService(value);
+    if (result.error !== '') {
+      return res.send(result);
+    }
+    req.session.userid = result.data.userid;
+    req.session.usertype = result.data.usertype;
+    const user = await getUserService({ userid: result.data.userid });
+    result.data = user.data;
+    return res.send(result);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);
@@ -108,7 +105,28 @@ export async function login(req, res) {
 }
 
 export async function createuser(req, res) {
-  return validateAndRunService(userParser, userCreationService, req, res);
+  try {
+    const { error, value } = userParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    const result = await userCreationService(value);
+    if (result.error !== '') {
+      return res.send(result);
+    }
+    const user = await getUserService({ userid: result.data.userid });
+    result.data = user.data;
+    return res.send(result);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    return res.send('Failed');
+  }
 }
 
 export async function logout(req, res) {
@@ -120,24 +138,7 @@ export async function getusers(req, res) {
 }
 
 export async function getuser(req, res) {
-  try {
-    const { error, value } = idParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return getUsersService({ userid: value.id }).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(useridParser, getUserService, req, res);
 }
 
 export async function getmodelers(req, res) {

@@ -4,6 +4,7 @@ import {
   modelUploadService,
   assignModelerService,
   getModelsService,
+  getModelService,
   getProductsService,
   modelFileDownloadService,
   listModelFilesService,
@@ -110,7 +111,7 @@ export async function getmodels(req, res) {
 }
 
 export async function getmodel(req, res) {
-  return validateAndRunService(modelIdParser, getModelsService, req, res);
+  return validateAndRunService(modelIdParser, getModelService, req, res);
 }
 
 export async function getallmodels(req, res) {

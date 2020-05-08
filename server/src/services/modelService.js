@@ -276,6 +276,21 @@ export async function getModelsService(filter) {
   return responseObject;
 }
 
+export async function getModelService(filter) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = await getModels(filter);
+
+  [responseObject.data] = Object.values(result);
+  responseObject.status = 'Models fetched';
+
+  return responseObject;
+}
+
 export async function getProductsService(data) {
   const responseObject = {
     status: '',

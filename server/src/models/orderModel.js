@@ -89,7 +89,14 @@ export async function createOrder(orderData) {
   }
 }
 
-export async function getOrders(filter) {
+export async function getOrders(data) {
+  const filter = {};
+  if (typeof data.orderid !== 'undefined' && data.orderid !== null) {
+    filter['orders.orderid'] = data.orderid;
+  }
+  if (typeof data.userid !== 'undefined' && data.userid !== null) {
+    filter['orders.clientid'] = data.userid;
+  }
   return knexPool
     .select([
       'orders.orderid',
@@ -124,7 +131,7 @@ export async function claimOrder(orderId, userId) {
     let temp;
     await knexPool.transaction(async (trx) => {
       const [orderExists] = await trx('orders')
-        .where('orderid', orderId.id)
+        .where('orderid', orderId)
         .update({
           qaowner: userId,
         })
@@ -138,12 +145,12 @@ export async function claimOrder(orderId, userId) {
         .select('stateafter')
         .join((querybuilder) => {
           querybuilder.from('orderstates')
-            .where('orderid', orderId.id)
+            .where('orderid', orderId)
             .max('time')
             .groupBy('orderid')
             .as('t1');
         }, 'orderstates.time', 't1.max')
-        .where('orderid', orderId.id);
+        .where('orderid', orderId);
 
       if (
         typeof tempRes !== 'undefined'
@@ -152,7 +159,7 @@ export async function claimOrder(orderId, userId) {
       ) {
         await trx('orderstates')
           .insert({
-            orderid: orderId.id,
+            orderid: orderId,
             userid: userId,
             statebefore: 'OrderReceived',
             stateafter: 'OrderReview',

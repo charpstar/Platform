@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import { validateAndRunService, runServiceWithData } from './controllerFunctions';
 import { commentService, getCommentsService } from '../services/genericService';
-import { getUsersService } from '../services/userService';
+import { getUserService } from '../services/userService';
 
 const commentIdParser = Joi.object({
   orderid: Joi.number()
@@ -57,5 +57,5 @@ export async function getComments(req, res) {
 }
 
 export async function getLogin(req, res) {
-  return runServiceWithData(getUsersService, { userid: req.session.userid }, req, res);
+  return runServiceWithData(getUserService, { userid: req.session.userid }, req, res);
 }

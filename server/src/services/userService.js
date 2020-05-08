@@ -145,6 +145,20 @@ export async function getUsersService(filter) {
   return responsObject;
 }
 
+export async function getUserService(filter) {
+  const responsObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const user = await getUsers(filter);
+  [responsObject.data] = user;
+  responsObject.status = 'User fetched';
+
+  return responsObject;
+}
+
 export async function editUserService(userModification) {
   const responsObject = {
     status: '',

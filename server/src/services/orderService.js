@@ -23,6 +23,19 @@ export async function getOrdersService(filter) {
   return responseObject;
 }
 
+export async function getOrderService(filter) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = await getOrders(filter);
+  [responseObject.data] = result;
+  responseObject.status = 'Order fetched';
+  return responseObject;
+}
+
 export async function claimOrderService(orderid, userid) {
   const responseObject = {
     status: '',

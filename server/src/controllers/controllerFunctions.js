@@ -1,4 +1,4 @@
-export function validateAndRunService(parser, service, req, res) {
+export async function validateAndRunService(parser, service, req, res) {
   try {
     const { error, value } = parser.validate(req.body);
     if (typeof error !== 'undefined' && error !== null) {
@@ -9,7 +9,8 @@ export function validateAndRunService(parser, service, req, res) {
       };
       return res.send(responseObject);
     }
-    return service(value, req).then((result) => res.send(result));
+    const result = await service(value, req);
+    return res.send(result);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -17,11 +18,10 @@ export function validateAndRunService(parser, service, req, res) {
   }
 }
 
-export function runServiceWithData(service, data, req, res) {
+export async function runServiceWithData(service, data, req, res) {
   try {
-    return service(data).then((result) => {
-      res.send(result);
-    });
+    const result = await service(data);
+    return res.send(result);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
