@@ -41,12 +41,12 @@
                     </v-btn>
                 </div>
                 <table class="fileList">
-                    <tr v-if="$emptyObj(files)">
+                    <tr v-if="files.length == 0">
                         <td>
                             <p class="emptyFiles">No files uploaded</p>
                         </td>
                     </tr>
-                    <tr v-for="(file, time) in files" :key="time">
+                    <tr v-for="(file, index) in files" :key="file">
                         <td>
                             <div class="fileName">{{file}}</div>
                         </td>
@@ -56,7 +56,7 @@
                             </v-btn>
                         </td>
                         <td>
-                            <v-btn icon @click="() => {deleteFile(id)}">
+                            <v-btn icon @click="() => {deleteFile(index)}">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </td>
@@ -134,12 +134,13 @@ export default {
                 .assignModeler(vm.model.modelid, vm.modeler.userid)
                 .then(data => {
                     vm.model.assignedmodeler = data;
+                    vm.modeler = false;
                 });
         },
         uploadModel() {
             var vm = this;
             return backend.uploadModelFile(vm.model.modelid, vm.file).then(newFile => {
-                Vue.set(vm.files, newFile.time, newFile.filename);
+                vm.files.push(newFile.filename);
                 vm.file = false;
             });
         },
@@ -147,14 +148,14 @@ export default {
             var vm = this
             backend.downloadModelFile(vm.model.modelid, filename)
         },
-        deleteFile(id) {
+        deleteFile(file) {
             this.deleteHandler.modal = true;
-            this.selectedFile = id;
+            this.selectedFile = file;
         },
         deleteFileConfirmed() {
             var vm = this;
             return backend
-                .deleteModelFile(vm.model.modelid, vm.selectedFile)
+                .deleteModelFile(vm.model.modelid, vm.files[vm.selectedFile])
                 .then(() => {
                     Vue.delete(vm.files, vm.selectedFile);
                     vm.selectedFile = false;
@@ -164,7 +165,7 @@ export default {
     mounted() {
         var vm = this;
         backend.getModelFiles(vm.model.modelid).then(files => {
-            vm.files = files
+            vm.files = Object.values(files)
         });
         backend.getModelers().then(modelers => {
             vm.modelers = Object.values(modelers);

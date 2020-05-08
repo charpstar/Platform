@@ -177,11 +177,11 @@ export default {
     //users
 
     getUsers() {
-        return dbGet('/admin/getusers')
+        return dbGet('/qa/getusers')
     },
 
     getUser(userid) {
-        return dbPost('/admin/getuser', { id: userid })
+        return dbPost('/qa/getuser', { userid: userid })
     },
 
     getModelers() {
@@ -207,7 +207,7 @@ export default {
     //orders
 
     getOrders(clientid) {
-        return dbPost('/gen/getclientorders', { id: clientid })
+        return dbPost('/gen/getclientorders', { userid: clientid })
     },
 
     getAllOrders() {
@@ -215,7 +215,7 @@ export default {
     },
 
     getOrder(orderid) {
-        return dbPost('/gen/getorder', { id: orderid })
+        return dbPost('/gen/getorder', { orderid: orderid })
     },
 
     createOrder(file) {
@@ -224,6 +224,10 @@ export default {
 
     assignQA(orderid) {
         return dbPost('/qa/claimorder', { id: orderid })
+    },
+
+    adminAssignQA(orderid, userid) {
+        return dbPost('/admin/assignorder', { orderid: orderid, userid: userid })
     },
 
     downloadExcel(orderid) {
@@ -310,11 +314,8 @@ export default {
         })
     },
 
-    //eslint-disable-next-line no-unused-vars
-    deleteModelFile(modelid, fileid) {
-        return new Promise(resolve => {
-            resolve({});
-        })
+    deleteModelFile(modelid, filename) {
+        return dbPost('/modeller/deletemodelfile', {modelid: modelid, filename: filename})
     },
 }
 
