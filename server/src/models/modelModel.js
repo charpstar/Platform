@@ -216,21 +216,21 @@ export async function editProductLink(data) {
   return knexPool('products')
     .where('productid', data.productid)
     .update('link', data.newlink)
-    .returning('productid', 'link');
+    .returning(['productid', 'link']);
 }
 
 export async function editProductModelId(data) {
   return knexPool('products')
     .where('productid', data.productid)
     .update('modelid', data.newmodelid)
-    .returning('productid', 'modelid');
+    .returning(['productid', 'modelid']);
 }
 
 export async function editModelName(data) {
   return knexPool('models')
     .where('modelid', data.modelid)
     .update('name', data.newname)
-    .returning('modelid', 'name');
+    .returning(['modelid', 'name']);
 }
 
 export async function listModelFiles(modelid) {
