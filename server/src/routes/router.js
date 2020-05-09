@@ -1,5 +1,6 @@
 import express from 'express';
 import multer from 'multer';
+import path from 'path';
 import {
   login,
   createuser,
@@ -47,6 +48,66 @@ import {
   editcomment,
 } from '../controllers/genericController';
 
+const uploadXlsx = multer({
+  dest: './private/',
+  fileFilter: (req, file, cb) => {
+    const allowedExtNames = /xlsx/;
+    const allowedMimeTypes = /application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/;
+    const mimeType = allowedMimeTypes.test(file.mimetype);
+    const extName = allowedExtNames.test(path.extname(file.originalname).toLowerCase());
+
+    if (mimeType && extName) {
+      return cb(null, true);
+    }
+    return cb(`Error: File upload only support the following filetypes - ${allowedExtNames}`, false);
+  },
+});
+
+const uploadGlb = multer({
+  dest: './private/',
+  fileFilter: (req, file, cb) => {
+    const allowedExtNames = /glb/;
+    const allowedMimeTypes = /model\/gltf-binary/;
+    const mimeType = allowedMimeTypes.test(file.mimetype);
+    const extName = allowedExtNames.test(path.extname(file.originalname).toLowerCase());
+
+    if (mimeType && extName) {
+      return cb(null, true);
+    }
+    return cb(`Error: File upload only support the following filetypes - ${allowedExtNames}`, false);
+  },
+});
+
+const uploadUsdz = multer({
+  dest: './private/',
+  fileFilter: (req, file, cb) => {
+    const allowedExtNames = /usdz/;
+    const allowedMimeTypes = /model\/vnd\.usdz\+zip/;
+    const mimeType = allowedMimeTypes.test(file.mimetype);
+    const extName = allowedExtNames.test(path.extname(file.originalname).toLowerCase());
+
+    if (mimeType && extName) {
+      return cb(null, true);
+    }
+    return cb(`Error: File upload only support the following filetypes - ${allowedExtNames}`, false);
+  },
+});
+
+const uploadImage = multer({
+  dest: './private/',
+  fileFilter: (req, file, cb) => {
+    const allowedExtNames = /png/;
+    const allowedMimeTypes = /image\/png/;
+    const mimeType = allowedMimeTypes.test(file.mimetype);
+    const extName = allowedExtNames.test(path.extname(file.originalname).toLowerCase());
+
+    if (mimeType && extName) {
+      return cb(null, true);
+    }
+    return cb(`Error: File upload only support the following filetypes - ${allowedExtNames}`, false);
+  },
+});
+
 const upload = multer({ dest: './private/' });
 
 const router = express.Router();
@@ -75,7 +136,7 @@ router.post('/admin/deleteuser', deleteuser);
 
 // Order related
 router.get('/qa/getorders', getorders);
-router.post('/client/createorder', upload.single('orderdata'), createorder);
+router.post('/client/createorder', uploadXlsx.single('orderdata'), createorder);
 router.post('/qa/claimorder', claimorder);
 router.post('/admin/assignorder', assignorder);
 router.post('/gen/getclientorders', getclientorders);
@@ -91,10 +152,10 @@ router.post('/gen/getmodels', getmodels);
 router.post('/modeller/uploadmodelfile', upload.single('modelfile'), uploadmodelfile);
 router.post('/gen/getproducts', getproducts);
 router.post('/modeller/downloadmodelfile', downloadmodelfile);
-router.post('/qa/uploadios', upload.single('modelfile'), uploadios);
-router.post('/qa/uploadandroid', upload.single('modelfile'), uploadandroid);
+router.post('/qa/uploadios', uploadUsdz.single('modelfile'), uploadios);
+router.post('/qa/uploadandroid', uploadGlb.single('modelfile'), uploadandroid);
 router.post('/modeller/deletemodelfile', deletemodelfile);
-router.post('/qa/uploadthumb', upload.single('thumb'), uploadthumb);
+router.post('/qa/uploadthumb', uploadImage.single('thumb'), uploadthumb);
 router.post('/gen/getmodel', getmodel);
 router.post('/qa/deletemodel', deletemodel);
 router.post('/qa/deleteproduct', deleteproduct);
