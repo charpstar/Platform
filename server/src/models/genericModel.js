@@ -25,6 +25,7 @@ export async function comment(data) {
 
   return knexPool('comments')
     .select([
+      'comments.commentid',
       'comments.comment',
       'comments.time',
       'comments.internal',
@@ -40,6 +41,6 @@ export async function getComments(data) {
   return knexPool('comments')
     .where(data)
     .innerJoin('users', 'comments.userid', 'users.userid')
-    .select('time', 'comment', 'usertype', 'name', 'internal', 'editcomment', 'commentclass')
+    .select('commentid', 'time', 'comment', 'usertype', 'name', 'internal', 'editcomment as edittime', 'commentclass')
     .orderBy('time');
 }

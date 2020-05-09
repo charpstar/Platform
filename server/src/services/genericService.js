@@ -100,9 +100,7 @@ export async function createCommentService(data, req) {
   const responseObject = {
     status: '',
     error: '',
-    data: {
-      comment: {},
-    },
+    data: {},
   };
 
   const tempData = data;
@@ -115,8 +113,12 @@ export async function createCommentService(data, req) {
     return responseObject;
   }
 
-  [responseObject.data.comment] = result;
+  for (const tempComment of result) {
+    responseObject.data[tempComment.commentid] = tempComment;
+  }
+
   responseObject.status = 'Comment made';
+
   return responseObject;
 }
 
@@ -127,7 +129,12 @@ export async function getCommentsService(data) {
     data: {},
   };
 
-  responseObject.data = await getComments(data);
+  const result = await getComments(data);
+
+  for (const tempComment of result) {
+    responseObject.data[tempComment.commentid] = tempComment;
+  }
+
   responseObject.status = 'Comments fetched';
 
   return responseObject;
