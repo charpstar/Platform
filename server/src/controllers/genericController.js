@@ -4,6 +4,7 @@ import {
   getCommentsService,
   createCommentService,
   changeStateService,
+  editCommentService,
 } from '../services/genericService';
 import { getUserService } from '../services/userService';
 
@@ -51,6 +52,16 @@ const commentParser = Joi.object({
 
 }).xor('orderid', 'modelid', 'productid');
 
+const editCommentParser = Joi.object({
+  commentid: Joi.number()
+    .integer()
+    .min(0),
+
+  newcomment: Joi.string()
+    .required(),
+
+});
+
 export async function comment(req, res) {
   try {
     const { error, value } = commentParser.validate(req.body);
@@ -85,10 +96,14 @@ export async function comment(req, res) {
   }
 }
 
-export async function getComments(req, res) {
+export async function getcomments(req, res) {
   return validateAndRunService(commentIdParser, getCommentsService, req, res);
 }
 
-export async function getLogin(req, res) {
+export async function getlogin(req, res) {
   return runServiceWithData(getUserService, { userid: req.session.userid }, req, res);
+}
+
+export async function editcomment(req, res) {
+  return validateAndRunService(editCommentParser, editCommentService, req, res);
 }

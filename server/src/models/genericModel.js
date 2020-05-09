@@ -37,6 +37,33 @@ export async function comment(data) {
     .join('users', 'comments.userid', 'users.userid');
 }
 
+export async function editComment(data) {
+  const [tempRes] = await knexPool('comments')
+    .where('commentid', data.commentid)
+    .where('userid', data.userid)
+    .update('comment', data.newcomment)
+    .update('editcomment', knexPool.fn.now())
+    .returning(['commentid']);
+
+  if (typeof tempRes === 'undefined' || tempRes === null) {
+    return { error: 'Comment either doesn\'t exist or isn\'t yours' };
+  }
+
+  return knexPool('comments')
+    .select([
+      'comments.commentid',
+      'comments.comment',
+      'comments.time',
+      'comments.internal',
+      'comments.commentclass',
+      'comments.editcomment as edittime',
+      'users.name',
+      'users.usertype',
+    ])
+    .where('comments.commentid', tempRes.commentid)
+    .join('users', 'comments.userid', 'users.userid');
+}
+
 export async function getComments(data) {
   return knexPool('comments')
     .where(data)

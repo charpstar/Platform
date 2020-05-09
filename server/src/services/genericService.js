@@ -1,4 +1,4 @@
-import { comment, getComments } from '../models/genericModel';
+import { comment, getComments, editComment } from '../models/genericModel';
 import { setOrderMissing, resolveOrderMissing } from '../models/orderModel';
 import {
   setProductDoneModeller,
@@ -118,6 +118,32 @@ export async function createCommentService(data, req) {
   }
 
   responseObject.status = 'Comment made';
+
+  return responseObject;
+}
+
+export async function editCommentService(data, req) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const tempData = data;
+  tempData.userid = req.session.userid;
+
+  const result = await editComment(tempData);
+
+  if (typeof result.error !== 'undefined' && result.error !== '') {
+    responseObject.error = result.error;
+    return responseObject;
+  }
+
+  for (const tempComment of result) {
+    responseObject.data[tempComment.commentid] = tempComment;
+  }
+
+  responseObject.status = 'Comment edited';
 
   return responseObject;
 }

@@ -42,8 +42,9 @@ import {
 } from '../controllers/orderController';
 import {
   comment,
-  getComments,
-  getLogin,
+  getcomments,
+  getlogin,
+  editcomment,
 } from '../controllers/genericController';
 
 const upload = multer({ dest: './private/' });
@@ -56,9 +57,10 @@ router.get('/', (req, res) => {
 });
 
 // Generic/Multi-use
-router.get('/gen/login', getLogin);
+router.get('/gen/login', getlogin);
 router.post('/gen/comment', comment);
-router.post('/gen/getComments', getComments);
+router.post('/gen/getcomments', getcomments);
+router.post('/gen/editcomment', editcomment);
 router.post('/gen/getexcel', getexcel);
 
 // User related
