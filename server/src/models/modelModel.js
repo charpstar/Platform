@@ -33,7 +33,7 @@ export async function assignModeler(data, userid) {
       }
 
       const products = await trx('products')
-        .select('productid')
+        .select('products.productid')
         .join('productstates', 'products.productid', 'productstates.productid')
         .where('modelid', data.modelid);
 
