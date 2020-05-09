@@ -368,7 +368,7 @@ export async function editProductLinkService(data) {
     data: {},
   };
 
-  const result = editProductLink(data);
+  const result = await editProductLink(data);
 
   for (const product of result) {
     responseObject.data[product.productid] = product;
@@ -386,7 +386,7 @@ export async function editProductModelIdService(data) {
     data: {},
   };
 
-  const result = editProductModelId(data);
+  const result = await editProductModelId(data);
 
   for (const product of result) {
     responseObject.data[product.productid] = product;
@@ -404,7 +404,7 @@ export async function editModelNameService(data) {
     data: {},
   };
 
-  const result = editModelName(data);
+  const result = await editModelName(data);
 
   for (const model of result) {
     responseObject.data[model.modelid] = model;
