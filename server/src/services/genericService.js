@@ -52,7 +52,7 @@ const stateChangeFunctions = {
       Resolve: resolveProductMissing,
       Info: setProductMissing,
     },
-    Modeler: {
+    Modeller: {
       Done: setProductDoneModeller,
       Info: setProductMissing,
     },

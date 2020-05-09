@@ -86,6 +86,9 @@ export async function comment(req, res) {
 
     if (value.commentclass === 'Comment') {
       const result = await createCommentService(value, req);
+      if (result.error === '') {
+        result.data = { comments: result.data };
+      }
       return res.send(result);
     }
 
@@ -97,7 +100,7 @@ export async function comment(req, res) {
     if (commentResult.error !== '') {
       return res.send(commentResult);
     }
-    stateResult.data.comment = commentResult.data.comment;
+    stateResult.data.comments = commentResult.data;
     return res.send(stateResult);
   } catch (e) {
     // eslint-disable-next-line no-console
