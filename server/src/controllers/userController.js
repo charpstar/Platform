@@ -1,12 +1,13 @@
 import Joi from 'joi';
+import { validateAndRunService, runServiceWithData } from './controllerFunctions';
 import {
   getUsersService,
+  getUserService,
   loginService,
   userCreationService,
   logoutService,
   editUserService,
   deleteUserService,
-  getUserService,
 } from '../services/userService';
 
 const loginParser = Joi.object({
@@ -70,8 +71,8 @@ const editUserParser = Joi.object({
 })
   .with('password', 'repeatPassword');
 
-const idParser = Joi.object({
-  id: Joi.number()
+const useridParser = Joi.object({
+  userid: Joi.number()
     .min(0)
     .required(),
 });
@@ -87,14 +88,15 @@ export async function login(req, res) {
       };
       return res.send(responseObject);
     }
-    return loginService(value).then((result) => {
-      const temp = result;
-      if (result.error === '') {
-        req.session.userid = result.data.userid;
-        req.session.usertype = result.data.usertype;
-      }
-      res.send(temp);
-    });
+    const result = await loginService(value);
+    if (result.error !== '') {
+      return res.send(result);
+    }
+    req.session.userid = result.data.userid;
+    req.session.usertype = result.data.usertype;
+    const user = await getUserService({ userid: result.data.userid });
+    result.data = user.data;
+    return res.send(result);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);
@@ -113,99 +115,40 @@ export async function createuser(req, res) {
       };
       return res.send(responseObject);
     }
-    return userCreationService(value).then((result) => {
-      res.send(result);
-    });
+    const result = await userCreationService(value);
+    if (result.error !== '') {
+      return res.send(result);
+    }
+    const user = await getUserService({ userid: result.data.userid });
+    result.data = user.data;
+    return res.send(result);
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.log(e);
+    console.error(e);
     return res.send('Failed');
   }
 }
 
 export async function logout(req, res) {
-  try {
-    return logoutService(req.session).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return runServiceWithData(logoutService, req.session, req, res);
 }
 
 export async function getusers(req, res) {
-  try {
-    return getUsersService().then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return runServiceWithData(getUsersService, {}, req, res);
 }
 
 export async function getuser(req, res) {
-  try {
-    const { error, value } = idParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return getUserService(value).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(useridParser, getUserService, req, res);
+}
+
+export async function getmodelers(req, res) {
+  return runServiceWithData(getUsersService, { usertype: 'Modeller' }, req, res);
 }
 
 export async function edituser(req, res) {
-  try {
-    const { error, value } = editUserParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return editUserService(value).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(editUserParser, editUserService, req, res);
 }
 
 export async function deleteuser(req, res) {
-  try {
-    const { error, value } = editUserParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return deleteUserService(value).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(editUserParser, deleteUserService, req, res);
 }

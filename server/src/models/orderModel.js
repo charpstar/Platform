@@ -81,8 +81,7 @@ export async function createOrder(orderData) {
       await trx('productstates')
         .insert(productstates);
     });
-    return knexPool('orders')
-      .where('orderid', createdOrderID);
+    return { orderid: createdOrderID };
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -90,7 +89,14 @@ export async function createOrder(orderData) {
   }
 }
 
-export async function getOrders() {
+export async function getOrders(data) {
+  const filter = {};
+  if (typeof data.orderid !== 'undefined' && data.orderid !== null) {
+    filter['orders.orderid'] = data.orderid;
+  }
+  if (typeof data.userid !== 'undefined' && data.userid !== null) {
+    filter['orders.clientid'] = data.userid;
+  }
   return knexPool
     .select([
       'orders.orderid',
@@ -110,36 +116,6 @@ export async function getOrders() {
       querybuilder.from('orderstates')
         .join((querybuilder2) => {
           querybuilder2.from('orderstates')
-            .max('time')
-            .groupBy('orderid')
-            .as('t11');
-        }, 'orderstates.time', 't11.max')
-        .as('t1');
-    }, 'orders.orderid', 't1.orderid')
-    .groupBy(['orders.orderid', 'users.name', 'users2.name', 'orders.qaowner', 'orders.clientid', 't1.stateafter']);
-}
-
-export async function getOrder(id) {
-  return knexPool
-    .select([
-      'orders.orderid',
-      'orders.clientid',
-      'orders.qaowner',
-      'orders.time',
-      'users.name as clientname',
-      'users2.name as qaownername',
-      't1.stateafter as state',
-    ])
-    .count('orders.orderid as models')
-    .from('orders')
-    .innerJoin('users', 'orders.clientid', 'users.userid')
-    .leftJoin('users as users2', 'orders.qaowner', 'users2.userid')
-    .innerJoin('models', 'orders.orderid', 'models.orderid')
-    .join((querybuilder) => {
-      querybuilder.from('orderstates')
-        .join((querybuilder2) => {
-          querybuilder2.from('orderstates')
-            .where('orderid', id)
             .max('time')
             .groupBy('orderid')
             .as('t11');
@@ -147,7 +123,7 @@ export async function getOrder(id) {
         .as('t1');
     }, 'orders.orderid', 't1.orderid')
     .groupBy(['orders.orderid', 'users.name', 'users2.name', 'orders.qaowner', 'orders.clientid', 't1.stateafter'])
-    .where('orders.orderid', id);
+    .where(filter);
 }
 
 export async function claimOrder(orderId, userId) {
@@ -155,7 +131,7 @@ export async function claimOrder(orderId, userId) {
     let temp;
     await knexPool.transaction(async (trx) => {
       const [orderExists] = await trx('orders')
-        .where('orderid', orderId.id)
+        .where('orderid', orderId)
         .update({
           qaowner: userId,
         })
@@ -169,12 +145,12 @@ export async function claimOrder(orderId, userId) {
         .select('stateafter')
         .join((querybuilder) => {
           querybuilder.from('orderstates')
-            .where('orderid', orderId.id)
+            .where('orderid', orderId)
             .max('time')
             .groupBy('orderid')
             .as('t1');
         }, 'orderstates.time', 't1.max')
-        .where('orderid', orderId.id);
+        .where('orderid', orderId);
 
       if (
         typeof tempRes !== 'undefined'
@@ -183,7 +159,7 @@ export async function claimOrder(orderId, userId) {
       ) {
         await trx('orderstates')
           .insert({
-            orderid: orderId.id,
+            orderid: orderId,
             userid: userId,
             statebefore: 'OrderReceived',
             stateafter: 'OrderReview',
@@ -201,36 +177,6 @@ export async function claimOrder(orderId, userId) {
     console.log(e);
     return { status: 'f' };
   }
-}
-
-export async function getClientOrders(id) {
-  return knexPool
-    .select([
-      'orders.orderid',
-      'orders.clientid',
-      'orders.qaowner',
-      'orders.time',
-      'users.name as clientname',
-      'users2.name as qaownername',
-      't1.stateafter as state',
-    ])
-    .count('orders.orderid as models')
-    .from('orders')
-    .innerJoin('users', 'orders.clientid', 'users.userid')
-    .leftJoin('users as users2', 'orders.qaowner', 'users2.userid')
-    .innerJoin('models', 'orders.orderid', 'models.orderid')
-    .join((querybuilder) => {
-      querybuilder.from('orderstates')
-        .join((querybuilder2) => {
-          querybuilder2.from('orderstates')
-            .max('time')
-            .groupBy('orderid')
-            .as('t11');
-        }, 'orderstates.time', 't11.max')
-        .as('t1');
-    }, 'orders.orderid', 't1.orderid')
-    .groupBy(['orders.orderid', 'users.name', 'users2.name', 'orders.qaowner', 'orders.clientid', 't1.stateafter'])
-    .where('orders.clientid', id);
 }
 
 export async function getExcel(orderid) {

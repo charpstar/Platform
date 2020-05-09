@@ -1,5 +1,19 @@
 <template>
     <div class="view">
+        <v-dialog v-model="assign.modal" width="500">
+            <div class="card">
+                <v-select :items="qas" label="QA" v-model="qa">
+                    <template v-slot:item="{item}">
+                        <span>{{item.name}}</span>
+                    </template>
+                    <template v-slot:selection="{item}">
+                        <span>{{item.name}}</span>
+                    </template>
+                </v-select>
+                <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!qa">Assign</v-btn>
+                <p class="error-text" v-if="assign.error">{{assign.error}}</p>
+            </div>
+        </v-dialog>
         <div class="flexrow" id="topRow">
             <div class="flexrow">
                 <v-btn icon class="hidden-xs-only">
@@ -38,10 +52,10 @@
                         <td>Assigned QA</td>
                         <td>
                             {{order.qaowner ? order.qaownername : 'none'}}
-                            <v-tooltip bottom>
+                            <v-tooltip bottom v-if="account.usertype == 'QA'">
                                 <template v-slot:activator="{ on }">
                                     <v-btn
-                                        v-if="account.usertype == 'QA' || account.usertype == 'Admin'"
+                                        
                                         icon
                                         @click="assignQA"
                                         v-on="on"
@@ -50,6 +64,18 @@
                                     </v-btn>
                                 </template>
                                 <span>Assign self</span>
+                            </v-tooltip>
+                            <v-tooltip bottom v-if="account.usertype == 'Admin'">
+                                <template v-slot:activator="{ on }">
+                                    <v-btn
+                                        icon
+                                        v-on="on"
+                                        @click="assign.modal = true"
+                                    >
+                                        <v-icon class="iconColor">mdi-account-plus</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Assign QA</span>
                             </v-tooltip>
                         </td>
                     </tr>
@@ -91,7 +117,10 @@ export default {
             order: false,
             addComment: "",
             assignLoading: false,
-            backend: backend
+            backend: backend,
+            qas: [],
+            qa: false,
+            assign: backend.promiseHandler(this.assignQAAdmin)
         };
     },
     methods: {
@@ -109,13 +138,30 @@ export default {
                 vm.order.qaowner = data.userid;
                 vm.order.qaownername = data.name;
             });
+        },
+        assignQAAdmin() {
+            var vm = this;
+            return backend
+                .adminAssignQA(vm.order.orderid, vm.qa.userid)
+                .then(() => {
+                    vm.order.qaowner = vm.qa.userid;
+                    vm.order.qaownername = vm.qa.name;
+                    vm.qa = false;
+                });
         }
     },
     mounted() {
         var vm = this;
         var orderid = vm.$route.params.id;
-        backend.getOrder(orderid).then(data => {
-            vm.order = data[orderid];
+        backend.getOrder(orderid).then(order => {
+            vm.order = order;
+        });
+        backend.getUsers().then(modelers => {
+            Object.values(modelers).forEach(user => {
+                if (user.usertype == "QA" || user.usertype == "Admin") {
+                    vm.qas.push(user);
+                }
+            });
         });
     }
 };

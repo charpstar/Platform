@@ -1,5 +1,11 @@
 import Joi from 'joi';
-import { commentService, getCommentsService, getLoginService } from '../services/genericService';
+import { validateAndRunService, runServiceWithData } from './controllerFunctions';
+import {
+  getCommentsService,
+  createCommentService,
+  changeStateService,
+} from '../services/genericService';
+import { getUserService } from '../services/userService';
 
 const commentIdParser = Joi.object({
   orderid: Joi.number()
@@ -34,7 +40,6 @@ const commentParser = Joi.object({
     .min(0),
 
   comment: Joi.string()
-    .allow('')
     .required(),
 
   internal: Joi.boolean()
@@ -57,9 +62,22 @@ export async function comment(req, res) {
       };
       return res.send(responseObject);
     }
-    return commentService(value, req).then((result) => {
-      res.send(result);
-    });
+
+    if (value.commentclass === 'Comment') {
+      const result = await createCommentService(value, req);
+      return res.send(result);
+    }
+
+    const stateResult = await changeStateService(value, req);
+    if (stateResult.error !== '') {
+      return res.send(stateResult);
+    }
+    const commentResult = await createCommentService(value, req);
+    if (commentResult.error !== '') {
+      return res.send(commentResult);
+    }
+    stateResult.data.comment = commentResult.data.comment;
+    return res.send(stateResult);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -68,34 +86,9 @@ export async function comment(req, res) {
 }
 
 export async function getComments(req, res) {
-  try {
-    const { error, value } = commentIdParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return getCommentsService(value).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(commentIdParser, getCommentsService, req, res);
 }
 
 export async function getLogin(req, res) {
-  try {
-    return getLoginService(req).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return runServiceWithData(getUserService, { userid: req.session.userid }, req, res);
 }

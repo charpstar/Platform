@@ -47,15 +47,10 @@ export async function getUserAmount() {
   return knexPool.from('users').count('active');
 }
 
-export async function getUsers() {
-  return knexPool('users')
-    .select('userid', 'name', 'email', 'usertype', 'active');
-}
-
-export async function getUser(id) {
+export async function getUsers(filter) {
   return knexPool('users')
     .select('userid', 'name', 'email', 'usertype', 'active')
-    .where('userid', id);
+    .where(filter);
 }
 
 export async function editUser(edit) {

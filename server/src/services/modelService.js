@@ -3,24 +3,20 @@ import path from 'path';
 import fs from 'fs';
 import mv from 'mv';
 import {
-  getModelers,
   getModels,
   assignModeler,
-  getModellerModels,
-  getAllModels,
   getProducts,
   uploadIos,
   uploadAndroid,
   uploadModelFile,
   deleteModelFile,
   listModelFiles,
-  getModel,
 } from '../models/modelModel';
 import { domain, port } from '../config/config';
 
 const mvp = promisify(mv);
 
-export async function modelUploadService(req, data) {
+export async function modelUploadService(data, req) {
   const responseObject = {
     status: '',
     error: '',
@@ -86,7 +82,7 @@ export async function modelFileDeleteService(data) {
   return responseObject;
 }
 
-export async function thumbUploadService(req, data) {
+export async function thumbUploadService(data, req) {
   const responseObject = {
     status: '',
     error: '',
@@ -131,7 +127,7 @@ export async function listModelFilesService(data) {
   return responseObject;
 }
 
-export async function iosUploadService(req, data) {
+export async function iosUploadService(data, req) {
   const responseObject = {
     status: '',
     error: '',
@@ -191,7 +187,7 @@ export async function iosUploadService(req, data) {
   return responseObject;
 }
 
-export async function androidUploadService(req, data) {
+export async function androidUploadService(data, req) {
   const responseObject = {
     status: '',
     error: '',
@@ -265,32 +261,14 @@ export async function assignModelerService(data, req) {
   return responseObject;
 }
 
-export async function getModelersService() {
+export async function getModelsService(filter) {
   const responseObject = {
     status: '',
     error: '',
     data: {},
   };
 
-  const result = await getModelers();
-
-  result.forEach((modeler) => {
-    responseObject.data[modeler.userid] = modeler;
-  });
-
-  responseObject.status = 'Modellers fetched';
-
-  return responseObject;
-}
-
-export async function getModelsService(data) {
-  const responseObject = {
-    status: '',
-    error: '',
-    data: {},
-  };
-
-  const result = await getModels(data.orderid);
+  const result = await getModels(filter);
 
   responseObject.data = result;
   responseObject.status = 'Models fetched';
@@ -298,49 +276,16 @@ export async function getModelsService(data) {
   return responseObject;
 }
 
-export async function getModelService(data) {
+export async function getModelService(filter) {
   const responseObject = {
     status: '',
     error: '',
     data: {},
   };
 
-  const result = await getModel(data.modelid);
+  const result = await getModels(filter);
 
-  responseObject.data = result;
-  responseObject.status = 'Model fetched';
-
-  return responseObject;
-}
-
-export async function getAllModelsService() {
-  const responseObject = {
-    status: '',
-    error: '',
-    data: {},
-  };
-
-  const result = await getAllModels();
-
-  responseObject.data = result;
-  responseObject.status = 'Models fetched';
-
-  return responseObject;
-}
-
-export async function getModellerModelsService(id) {
-  const responseObject = {
-    status: '',
-    error: '',
-    data: {},
-  };
-
-  const result = await getModellerModels(id);
-
-  result.forEach((model) => {
-    responseObject.data[model.modelid] = model;
-  });
-
+  [responseObject.data] = Object.values(result);
   responseObject.status = 'Models fetched';
 
   return responseObject;

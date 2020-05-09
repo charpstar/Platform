@@ -43,9 +43,3 @@ export async function getComments(data) {
     .select('time', 'comment', 'usertype', 'name', 'internal', 'editcomment', 'commentclass')
     .orderBy('time');
 }
-
-export async function getLogin(userid) {
-  return knexPool('users')
-    .where('userid', userid)
-    .select('userid', 'usertype', 'name', 'email');
-}

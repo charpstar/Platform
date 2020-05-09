@@ -1,11 +1,10 @@
 import Joi from 'joi';
+import { validateAndRunService, runServiceWithData } from './controllerFunctions';
 import {
   modelUploadService,
   assignModelerService,
-  getModelersService,
   getModelsService,
-  getModellerModelsService,
-  getAllModelsService,
+  getModelService,
   getProductsService,
   modelFileDownloadService,
   listModelFilesService,
@@ -13,7 +12,6 @@ import {
   androidUploadService,
   modelFileDeleteService,
   thumbUploadService,
-  getModelService,
 } from '../services/modelService';
 
 const orderIdParser = Joi.object({
@@ -77,254 +75,53 @@ const modelIdParser = Joi.object({
 });
 
 export async function uploadmodelfile(req, res) {
-  try {
-    const { error, value } = modelFileParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return modelUploadService(req, value).then((result) => res.send(result));
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(modelFileParser, modelUploadService, req, res);
 }
 
 export async function downloadmodelfile(req, res) {
-  try {
-    const { error, value } = modelFileDownloadParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return modelFileDownloadService(value).then((result) => res.download(result));
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(modelFileDownloadParser, modelFileDownloadService, req, res);
 }
 
 export async function deletemodelfile(req, res) {
-  try {
-    const { error, value } = deleteModelFileParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return modelFileDeleteService(value).then((result) => res.send(result));
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(deleteModelFileParser, modelFileDeleteService, req, res);
 }
 
 export async function uploadthumb(req, res) {
-  try {
-    const { error, value } = modelFileParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return thumbUploadService(req, value).then((result) => res.send(result));
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(modelFileParser, thumbUploadService, req, res);
 }
 
 export async function listmodelfiles(req, res) {
-  try {
-    const { error, value } = modelIdParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return listModelFilesService(value).then((result) => res.send(result));
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(modelIdParser, listModelFilesService, req, res);
 }
 
 export async function uploadios(req, res) {
-  try {
-    const { error, value } = productFileParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return iosUploadService(req, value).then((result) => res.send(result));
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(productFileParser, iosUploadService, req, res);
 }
 
 export async function uploadandroid(req, res) {
-  try {
-    const { error, value } = productFileParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return androidUploadService(req, value).then((result) => res.send(result));
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(productFileParser, androidUploadService, req, res);
 }
 
 export async function assignmodeler(req, res) {
-  try {
-    const { error, value } = modelAssignmentParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      res.send(responseObject);
-    }
-    return assignModelerService(value, req).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
-}
-
-export async function getmodelers(req, res) {
-  try {
-    return getModelersService().then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(modelAssignmentParser, assignModelerService, req, res);
 }
 
 export async function getmodels(req, res) {
-  try {
-    const { error, value } = orderIdParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return getModelsService(value).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(orderIdParser, getModelsService, req, res);
 }
 
 export async function getmodel(req, res) {
-  try {
-    const { error, value } = modelIdParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return getModelService(value).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(modelIdParser, getModelService, req, res);
 }
 
 export async function getallmodels(req, res) {
-  try {
-    return getAllModelsService().then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return runServiceWithData(getModelsService, {}, req, res);
 }
 
 export async function getmodellermodels(req, res) {
-  try {
-    return getModellerModelsService(req.session.userid).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return runServiceWithData(getModelsService, { modelowner: req.session.userid }, req, res);
 }
 
 export async function getproducts(req, res) {
-  try {
-    const { error, value } = modelIdParser.validate(req.body);
-    if (typeof error !== 'undefined' && error !== null) {
-      const responseObject = {
-        status: '',
-        error: error.details[0].message,
-        data: {},
-      };
-      return res.send(responseObject);
-    }
-    return getProductsService(value).then((result) => {
-      res.send(result);
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return res.send('Failed');
-  }
+  return validateAndRunService(modelIdParser, getProductsService, req, res);
 }

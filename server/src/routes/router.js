@@ -8,11 +8,11 @@ import {
   edituser,
   deleteuser,
   getuser,
+  getmodelers,
 } from '../controllers/userController';
 import {
   uploadmodelfile,
   assignmodeler,
-  getmodelers,
   getmodels,
   getmodellermodels,
   getallmodels,
@@ -32,6 +32,7 @@ import {
   getclientorders,
   getexcel,
   getorder,
+  assignorder,
 } from '../controllers/orderController';
 import {
   comment,
@@ -56,22 +57,23 @@ router.post('/gen/getexcel', getexcel);
 
 // User related
 router.get('/logout', logout);
-router.get('/admin/getusers', getusers);
 router.post('/login', login);
+router.get('/qa/getusers', getusers);
+router.post('/qa/getuser', getuser);
+router.get('/qa/getmodelers', getmodelers);
 router.post('/admin/createuser', createuser);
 router.post('/admin/edituser', edituser);
 router.post('/admin/deleteuser', deleteuser);
-router.post('/admin/getuser', getuser);
 
 // Order related
 router.get('/qa/getorders', getorders);
 router.post('/client/createorder', upload.single('orderdata'), createorder);
 router.post('/qa/claimorder', claimorder);
+router.post('/admin/assignorder', assignorder);
 router.post('/gen/getclientorders', getclientorders);
 router.post('/gen/getorder', getorder);
 
 // Model related
-router.get('/qa/getmodelers', getmodelers);
 router.get('/modeller/models', getmodellermodels);
 router.get('/qa/getallmodels', getallmodels);
 router.post('/modeller/listmodelfiles', listmodelfiles);

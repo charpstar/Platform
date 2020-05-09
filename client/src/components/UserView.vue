@@ -106,8 +106,8 @@ export default {
     mounted() {
         var vm = this;
         var userid = vm.$route.params.id;
-        backend.getUser(userid).then(data => {
-            vm.user = data[userid];
+        backend.getUser(userid).then(user => {
+            vm.user = user;
         });
     }
 };
