@@ -3,9 +3,6 @@
         <usernewmodal @newuser="newUser" :handler="newUserHandler" />
         <div class="flexrow" id="topRow">
             <div class="flexrow">
-                <v-btn icon class="hidden-xs-only">
-                    <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
-                </v-btn>
                 <h2>Users</h2>
             </div>
             <v-btn id="buttonNew" @click="newUserHandler.modal = true">

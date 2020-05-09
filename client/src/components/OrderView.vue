@@ -1,5 +1,17 @@
 <template>
     <div class="view">
+        <v-dialog v-model="add.modal" width="500">
+            <div class="card">
+                <v-file-input :label="'Select Excel Document'" @change="file = $event"></v-file-input>
+                <p v-if="add.error">{{add.error}}</p>
+                <p v-if="!fileIsExcel">Must be a .xlsx file</p>
+                <v-btn
+                    :disabled="!file || !fileIsExcel"
+                    :loading="add.loading"
+                    @click="add.execute"
+                >Upload</v-btn>
+            </div>
+        </v-dialog>
         <v-dialog v-model="assign.modal" width="500">
             <div class="card">
                 <v-select :items="qas" label="QA" v-model="qa">
@@ -16,7 +28,7 @@
         </v-dialog>
         <div class="flexrow" id="topRow">
             <div class="flexrow">
-                <v-btn icon class="hidden-xs-only">
+                <v-btn icon class="hidden-xs-only" >
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
                 <h2>Order</h2>
@@ -35,7 +47,7 @@
                     </tr>
                     <tr>
                         <td>Date</td>
-                        <td>{{order.time}}</td>
+                        <td>{{$formatTime(order.time)}}</td>
                     </tr>
                     <tr>
                         <td>Models</td>
@@ -44,8 +56,8 @@
                     <tr>
                         <td>Status</td>
                         <td>
-                            {{backend.messageFromStatus(order.state)}}
-                            <v-icon>{{backend.iconFromStatus(order.state)}}</v-icon>
+                            {{backend.messageFromStatus(order.state, account.usertype)}}
+                            <v-icon>{{backend.iconFromStatus(order.state, account.usertype)}}</v-icon>
                         </td>
                     </tr>
                     <tr>
@@ -86,6 +98,19 @@
                         Export Models
                         <v-icon right>mdi-microsoft-excel</v-icon>
                     </v-btn>
+                    <confirmmodal 
+                        v-if ="account.usertype == 'QA' || account.usertype == 'Admin'" 
+                        :handler="del" 
+                        :title="'Confirm order delete'"
+                        :text="'This will also delete all related models and products'"
+                        :buttonText="'Delete order'"
+                        :icon="'mdi-delete'"
+                        :color="'#d12300'"
+                    />
+                    <v-btn @click="add.modal=true" v-if="account.usertype == 'Client'">
+                        Add models
+                        <v-icon right>mdi-file-plus</v-icon>
+                    </v-btn>
                 </div>
             </div>
             <div>
@@ -94,9 +119,9 @@
                     v-if="order"
                     :idobj="{orderid: order.orderid}"
                     :type="'Order'"
-                    :markdone="account.usertype == 'QA' || account.usertype == 'Admin'"
-                    :review="account.usertype == 'Client'"
-                    @state="order.state = $event"
+                    :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderReview'"
+                    :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
+                    @state="order.state = $event.orderstatus"
                 />
             </div>
         </div>
@@ -105,12 +130,25 @@
 <script>
 import backend from "./../backend";
 import comments from "./CommentView";
+import confirmmodal from "./ConfirmModal";
 export default {
     components: {
-        comments
+        comments,
+        confirmmodal
     },
     props: {
         account: { type: Object, required: true }
+    },
+    computed: {
+        fileIsExcel() {
+            var vm = this;
+            if (vm.file) {
+                var arr = vm.file.name.split(".");
+                var last = arr[arr.length - 1];
+                return last == "xlsx";
+            }
+            return true;
+        }
     },
     data() {
         return {
@@ -120,15 +158,36 @@ export default {
             backend: backend,
             qas: [],
             qa: false,
-            assign: backend.promiseHandler(this.assignQAAdmin)
+            assign: backend.promiseHandler(this.assignQAAdmin),
+            del: backend.promiseHandler(this.deleteOrder),
+            add: backend.promiseHandler(this.addNewModels),
+            file: false,
         };
     },
     methods: {
+        addNewModels() {
+            var vm = this;
+            if (vm.file) {
+                return backend.createModels(vm.order.orderid, vm.file).then(() => {
+                    vm.file = false
+                    backend.getOrder(vm.order.orderid).then(order => {
+                        vm.order = order;
+                    });
+                });
+            }
+        },
+        deleteOrder() {
+            var vm = this;
+            return backend.deleteOrder(vm.order.orderid).then(() => {
+                vm.$router.go(-1);
+            });
+        },
         viewModels() {
             this.$router.push("/order/" + this.order.orderid + "/models");
         },
         downloadExcel() {
-            backend.downloadExcel(this.order.orderid);
+            var vm = this;
+            backend.downloadExcel(vm.order.orderid, `${vm.order.clientname}_order_${vm.order.orderid}.xlsx`);
         },
         assignQA() {
             var vm = this;
@@ -137,6 +196,9 @@ export default {
                 vm.assignLoading = false;
                 vm.order.qaowner = data.userid;
                 vm.order.qaownername = data.name;
+                if (vm.order.state == 'OrderReceived') {
+                    vm.order.state = 'OrderReview'
+                }
             });
         },
         assignQAAdmin() {
@@ -144,6 +206,9 @@ export default {
             return backend
                 .adminAssignQA(vm.order.orderid, vm.qa.userid)
                 .then(() => {
+                    if (vm.order.state == 'OrderReceived') {
+                        vm.order.state = 'OrderReview'
+                    }
                     vm.order.qaowner = vm.qa.userid;
                     vm.order.qaownername = vm.qa.name;
                     vm.qa = false;
@@ -156,13 +221,15 @@ export default {
         backend.getOrder(orderid).then(order => {
             vm.order = order;
         });
-        backend.getUsers().then(modelers => {
-            Object.values(modelers).forEach(user => {
-                if (user.usertype == "QA" || user.usertype == "Admin") {
-                    vm.qas.push(user);
-                }
+        if(vm.account.usertype == 'Admin') {
+            backend.getUsers().then(modelers => {
+                Object.values(modelers).forEach(user => {
+                    if (user.usertype == "QA" || user.usertype == "Admin") {
+                        vm.qas.push(user);
+                    }
+                });
             });
-        });
+        }
     }
 };
 </script>

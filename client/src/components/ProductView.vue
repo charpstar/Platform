@@ -35,7 +35,10 @@
                 <table id="itemTable">
                     <tr>
                         <td>Status</td>
-                        <td>{{backend.messageFromStatus(product.state, account.usertype)}}</td>
+                        <td>
+                            {{backend.messageFromStatus(product.state, account.usertype)}}
+                            <v-icon>{{backend.iconFromStatus(product.state, account.usertype)}}</v-icon>
+                        </td>
                     </tr>
                     <tr>
                         <td>Product page</td>
@@ -43,7 +46,7 @@
                             <a :href="product.link" target="_blank">
                                 <v-icon class="iconColor">mdi-share</v-icon>
                             </a>
-                            <v-tooltip bottom>
+                            <v-tooltip bottom v-if="account.usertype == 'Client'">
                                 <template v-slot:activator="{ on }">
                                     <v-btn icon dark v-on="on" @click="edit.modal = true">
                                         <v-icon class="iconColor">mdi-border-color</v-icon>
@@ -101,25 +104,29 @@
                 </table>
                 <v-tabs v-model="commentsTab">
                     <v-tabs-slider></v-tabs-slider>
-                    <v-tab v-if="account.usertype != 'Client'" :href="`#qa`">QA Comments</v-tab>
-                    <v-tab v-if="account.usertype != 'Modeller'" :href="`#client`">Comments</v-tab>
+                    <v-tab v-if="account.usertype != 'Client'" :href="`#qa`">Internal Comments</v-tab>
+                    <v-tab v-if="account.usertype != 'Modeller'" :href="`#client`">{{account.usertype == 'Client' ? 'Comments' : 'Client Comments'}}</v-tab>
                     <v-tab-item :value="'qa'" class="tab">
                         <comments
                             :idobj="{productid: product.productid}"
                             :type="'Product'"
-                            :review="account.usertype != 'Modeller'"
-                            :markdone="account.usertype == 'Modeller'"
+                            :review="account.usertype != 'Modeller' && product.state == 'ProductReview' && model.modelowner != null"
+                            :markdone="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(product.state)"
+                            :markdonedisabled="model.files.length == 0"
+                            :markinfo="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(product.state)"
+                            :markresolve="account.usertype != 'Modeller' && product.state == 'ProductMissing'"
                             :internal="true"
-                            @state="product.state = $event"
+                            @state="$emit('state', $event)"
                         />
                     </v-tab-item>
                     <v-tab-item :value="'client'" class="tab">
                         <comments
                             :idobj="{productid: product.productid}"
                             :type="'Product'"
-                            :review="account.usertype == 'Client'"
-                            :markdone="account.usertype != 'Client'"
-                            @state="product.state = $event"
+                            :review="account.usertype == 'Client' && product.state == 'ClientProductReceived'"
+                            :markdone="account.usertype != 'Client' && product.state == 'ProductReview'"
+                            :markresolve="account.usertype != 'Client' && product.state == 'ProductQAMissing'"
+                            @state="$emit('state', $event)"
                         />
                     </v-tab-item>
                 </v-tabs>

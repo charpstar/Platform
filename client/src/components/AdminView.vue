@@ -1,19 +1,41 @@
 <template>
     <div>
-        <div id="adminview" class="flexcol">
-            <v-btn @click="$router.push('/admin/users')">View Users</v-btn>
-            <v-btn @click="$router.push('/admin/orders')">View All Orders</v-btn>
-            <v-btn @click="$router.push('/admin/models')">View All Models</v-btn>
-        </div>
+        <v-tabs v-model="tab" >
+            <v-tabs-slider></v-tabs-slider>
+            <v-tab :href="'#orders'">Orders</v-tab>
+            <v-tab :href="'#models'">Models</v-tab>
+            <v-tab-item :value="'orders'">
+                <orderlistview :account="account" :isAdminView="true"/>
+            </v-tab-item>
+            <v-tab-item :value="'models'">
+                <userlistview />
+            </v-tab-item>
+        </v-tabs>
     </div>
 </template>
 
 <script>
-export default {};
+import orderlistview from './OrderListView'
+import userlistview from './UserListView'
+
+export default {
+    props: {
+        account: { type: Object, required: true }
+    },
+    components: {
+        orderlistview,
+        userlistview
+    },
+    data() {
+        return {
+            tab: "",
+        };
+    },
+};
 </script>
 
-<style lang="scss" scoped>
-.v-btn:not(:last-child) {
-    margin-bottom: 10px;
+<style lang="scss">
+.v-tabs-bar {
+    margin-bottom: 20px !important;
 }
 </style>

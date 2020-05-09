@@ -46,7 +46,7 @@
                         @click:append="toClipboard"
                     ></v-text-field>
                 </div>
-                <v-btn :loading="viewLoading" @click="viewOrders">View Orders</v-btn>
+                <v-btn :loading="viewLoading" @click="viewOrders" v-if="user.usertype == 'Client'">View Orders</v-btn>
                 <confirmmodal :handler="deleteHandler" :title="'Confirm user delete'" :buttonText="'Delete'" />
             </div>
         </div>

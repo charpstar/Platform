@@ -26,8 +26,19 @@
                     @click="() => sendComment('Done')"
                     :loading="loading['Done']"
                     class="approve"
+                    :disabled="markdonedisabled"
                 >
                     Done
+                    <v-icon right>mdi-check</v-icon>
+                </v-btn>
+                <v-btn
+                    v-if="markresolve"
+                    block
+                    @click="() => sendComment('Resolve')"
+                    :loading="loading['Resolve']"
+                    class="approve"
+                >
+                    Resolve
                     <v-icon right>mdi-check</v-icon>
                 </v-btn>
                 <v-btn
@@ -41,7 +52,7 @@
                     <v-icon right class="rejectIcon">mdi-refresh</v-icon>
                 </v-btn>
                 <v-btn
-                    v-if="markdone"
+                    v-if="markinfo"
                     block
                     @click="() => sendComment('Info')"
                     :loading="loading['Info']"
@@ -64,11 +75,13 @@
                         :class="'name ' + (comment.usertype ? comment.usertype.toLowerCase() : 'client')"
                     >{{comment.name}}</span>
                     <span class="timestamp">{{$formatTime(comment.time)}}</span>
-                    <v-icon v-if="comment.commentclass=='Approve' || comment.commentclass=='Done'" class="approve">mdi-check</v-icon>
                     <v-icon
-                        v-if="comment.commentclass=='Reject' || comment.commentclass=='Info'"
-                        class="reject rejectIcon"
-                    >mdi-refresh</v-icon>
+                        :class="{
+                            reject: comment.commentclass=='Reject' || comment.commentclass=='Info',
+                            approve: comment.commentclass=='Approve' || comment.commentclass=='Done' || comment.commentclass=='Resolve',
+                            rejectIcon: comment.commentclass=='Reject'
+                        }"
+                    >{{icons[comment.commentclass]}}</v-icon>
                 </div>
                 <div>{{comment.comment}}</div>
             </div>
@@ -85,6 +98,9 @@ export default {
         idobj: { type: Object, required: true },
         review: { type: Boolean, default: false },
         markdone: { type: Boolean, default: false },
+        markdonedisabled: { type: Boolean, default: false },
+        markinfo: { type: Boolean, default: false },
+        markresolve: { type: Boolean, default: false },
         internal: { type: Boolean, default: false }
     },
     data() {
@@ -98,62 +114,88 @@ export default {
                 Approve: false,
                 Comment: false,
                 Done: false,
-                Info: false
+                Info: false,
+                Resolve: false,
+            },
+            icons: {
+                Reject: 'mdi-refresh',
+                Approve : 'mdi-check',
+                Comment: '',
+                Done: 'mdi-check',
+                Info: 'mdi-information',
+                Resolve: 'mdi-check',
             }
         };
     },
     methods: {
         sendComment(ctype) {
             var vm = this;
-            if (
-                vm.addComment === "" &&
-                !(ctype == "Done" || ctype == "Approve")
-            ) {
-                vm.snackbar = true;
-            } else {
-                var comment = {
-                    comment: vm.addComment,
-                    commenttype: vm.type,
-                    commentclass: ctype,
-                    internal: vm.internal
-                };
-                //eslint-disable-next-line no-console
-                console.log(comment)
-                comment = Object.assign(comment, vm.idobj);
-                vm.loading[ctype] = true;
-                backend
-                    .sendComment(comment)
-                    .then(data => {
-                        if(!vm.$emptyObj(data.comment)) {
-                            vm.comments.push(data.comment);
-                        }
-                        vm.$emit('state', data.state.stateafter)
-                        vm.addComment = "";
-                        vm.loading = {
-                            Reject: false,
-                            Approve: false,
-                            Comment: false,
-                            Done: false,
-                            Info: false
-                        };
-                    })
-                    .catch(error => {
-                        vm.error = error;
-                        vm.loading = {
-                            Reject: false,
-                            Approve: false,
-                            Comment: false,
-                            Done: false,
-                            Info: false
-                        };
-                    });
+            if (vm.addComment === "") {
+                switch (ctype) {
+                    case ('Done'): {
+                        vm.addComment = 'Marked as done'
+                        break;
+                    }
+                    case ('Approve'): {
+                        vm.addComment = 'Approved'
+                        break;
+                    }
+                    case ('Resolve'): {
+                        vm.addComment = 'Resolved'
+                        break;
+                    }
+                    default : {
+                        vm.snackbar = true;
+                        return;
+                    }
+                }
             }
+            var comment = {
+                comment: vm.addComment,
+                commenttype: vm.type,
+                commentclass: ctype,
+                internal: vm.internal
+            };
+            comment = Object.assign(comment, vm.idobj);
+            vm.loading[ctype] = true;
+            backend
+                .sendComment(comment)
+                .then(data => {
+                    if(data.comments != null && !vm.$emptyObj(data.comments)) {
+                        Object.values(data.comments).forEach((comment) => {
+                            vm.comments.unshift(comment);
+                        })
+                    }
+                    if(data.state != null && !vm.$emptyObj(data.state)) {
+                        vm.$emit('state', data.state)
+                    }
+                    vm.addComment = "";
+                    vm.loading = {
+                        Reject: false,
+                        Approve: false,
+                        Comment: false,
+                        Done: false,
+                        Info: false,
+                        Resolve: false,
+                    };
+                })
+                .catch(error => {
+                    vm.error = error;
+                    vm.loading = {
+                        Reject: false,
+                        Approve: false,
+                        Comment: false,
+                        Done: false,
+                        Info: false,
+                        Resolve: false,
+                    };
+                });
         }
     },
     mounted() {
         var vm = this;
         backend.getComments(vm.idobj).then(comments => {
-            vm.comments = comments;
+            vm.comments = Object.values(comments).slice().reverse();
         });
     }
 };

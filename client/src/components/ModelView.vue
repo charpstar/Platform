@@ -6,15 +6,15 @@
             </v-btn>
         </div>
         <v-progress-circular v-if="!model" indeterminate></v-progress-circular>
-        <v-tabs v-model="tab" v-else>
+        <v-tabs v-model="tab" show-arrows v-else>
             <v-tabs-slider></v-tabs-slider>
             <v-tab v-if="account.usertype != 'Client'" :href="`#blendertab`">Model</v-tab>
             <v-tab v-for="(p, id) in products" :key="id" :href="`#tab-${id}`">{{p.color}}</v-tab>
             <v-tab-item :value="'blendertab'" class="tab">
-                <blenderview :model="model" :account="account" />
+                <blenderview :model="model" :account="account" @state="updateOnStateChange"/>
             </v-tab-item>
             <v-tab-item class="tab" v-for="(p, id) in products" :key="id" :value="'tab-' + id">
-                <productview :model="model" :product="p" :account="account" />
+                <productview :model="model" :product="p" :account="account" @state="updateOnStateChange"/>
             </v-tab-item>
         </v-tabs>
     </div>
@@ -39,15 +39,27 @@ export default {
             model: false
         };
     },
+    methods: {
+        updateOnStateChange() {
+            var vm = this;
+            backend.getModel(vm.model.modelid).then(model => {
+                vm.model.state = model.state;
+            });
+            backend.getProducts(vm.model.modelid).then(products => {
+                Vue.set(vm, "products", products);
+            })
+        }
+    },
     mounted() {
         var vm = this;
         var modelid = vm.$route.params.id;
         backend.getModel(modelid).then(model => {
+            model.files = [];
             vm.model = model;
-            backend.getProducts(vm.model.modelid).then(products => {
-                Vue.set(vm, "products", products);
-            })
         });
+        backend.getProducts(modelid).then(products => {
+            Vue.set(vm, "products", products);
+        })
     }
 };
 </script>

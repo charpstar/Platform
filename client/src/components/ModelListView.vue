@@ -60,8 +60,8 @@
                     <img :src="backend.getThumbURL(item.modelid)" class="thumbnail" onerror="this.style.display='none'"/>
                 </template>
                 <template v-slot:item.state="{value}">
-                    {{backend.messageFromStatus(value)}}
-                    <v-icon>{{backend.iconFromStatus(value)}}</v-icon>
+                    {{backend.messageFromStatus(value, account.usertype)}}
+                    <v-icon>{{backend.iconFromStatus(value, account.usertype)}}</v-icon>
                 </template>
             </v-data-table>
         </div>

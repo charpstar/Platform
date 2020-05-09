@@ -41,12 +41,12 @@
                     </v-btn>
                 </div>
                 <table class="fileList">
-                    <tr v-if="files.length == 0">
+                    <tr v-if="model.files.length == 0">
                         <td>
                             <p class="emptyFiles">No files uploaded</p>
                         </td>
                     </tr>
-                    <tr v-for="(file, index) in files" :key="file">
+                    <tr v-for="(file, index) in model.files" :key="file">
                         <td>
                             <div class="fileName">{{file}}</div>
                         </td>
@@ -67,12 +67,15 @@
                 <table id="itemTable">
                     <tr>
                         <td>Status</td>
-                        <td>{{backend.messageFromStatus(model.state, account.usertype)}}</td>
+                        <td>
+                            {{backend.messageFromStatus(model.state, account.usertype)}}
+                            <v-icon>{{backend.iconFromStatus(model.state, account.usertype)}}</v-icon>
+                        </td>
                     </tr>
                     <tr>
                         <td>Assigned modeler:</td>
                         <td>
-                            {{model.assignedmodeler ? model.assignedmodeler.name : 'none'}}
+                            {{model.modelowner ? model.modelowner : 'None'}}
                             <v-btn
                                 v-if="account.usertype != 'Modeller'"
                                 icon
@@ -89,9 +92,12 @@
                     v-if="model.modelid"
                     :idobj="{modelid: model.modelid}"
                     :type="'Model'"
-                    :review="account.usertype != 'Modeller'"
-                    :markdone="account.usertype == 'Modeller'"
-                    @state="model.state = $event"
+                    :review="account.usertype != 'Modeller' && model.state == 'ProductReview' && model.modelowner != null"
+                    :markdone="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(model.state)"
+                    :markdonedisabled="model.files.length == 0"
+                    :markinfo="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(model.state)"
+                    :markresolve="account.usertype != 'Modeller' && model.state == 'ProductMissing'"
+                    @state="$emit('state', $event)"
                 />
             </div>
         </div>
@@ -119,9 +125,7 @@ export default {
             modelers: [],
             modeler: false,
             file: "",
-            files: {},
             backend: backend,
-            status: 'Under development',
         };
     },
     methods: {
@@ -133,14 +137,17 @@ export default {
             return backend
                 .assignModeler(vm.model.modelid, vm.modeler.userid)
                 .then(data => {
-                    vm.model.assignedmodeler = data;
+                    if(vm.model.state == 'ProductReceived' || vm.model.state == 'ProductReview' ) {
+                        vm.model.state = 'ProductDev';
+                    }
+                    vm.model.modelowner = data.name;
                     vm.modeler = false;
                 });
         },
         uploadModel() {
             var vm = this;
             return backend.uploadModelFile(vm.model.modelid, vm.file).then(newFile => {
-                vm.files.push(newFile.filename);
+                vm.model.files.push(newFile.filename);
                 vm.file = false;
             });
         },
@@ -155,9 +162,9 @@ export default {
         deleteFileConfirmed() {
             var vm = this;
             return backend
-                .deleteModelFile(vm.model.modelid, vm.files[vm.selectedFile])
+                .deleteModelFile(vm.model.modelid, vm.model.files[vm.selectedFile])
                 .then(() => {
-                    Vue.delete(vm.files, vm.selectedFile);
+                    Vue.delete(vm.model.files, vm.selectedFile);
                     vm.selectedFile = false;
                 });
         }
@@ -165,11 +172,14 @@ export default {
     mounted() {
         var vm = this;
         backend.getModelFiles(vm.model.modelid).then(files => {
-            vm.files = Object.values(files)
+            vm.$set(vm.model, 'files', Object.values(files))
         });
-        backend.getModelers().then(modelers => {
-            vm.modelers = Object.values(modelers);
-        });
+        if(vm.account.usertype != 'Modeller') {
+            backend.getModelers().then(modelers => {
+                vm.modelers = Object.values(modelers);
+            });
+        }
+
     }
 };
 </script>

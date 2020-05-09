@@ -14,12 +14,12 @@
         </v-dialog>
         <div class="flexrow" id="topRow">
             <div class="flexrow">
-                <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Client' ">
+                <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Client' && !isAdminView">
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
                 <h2>Orders</h2>
             </div>
-            <v-btn id="buttonNew" @click="newOrderHandler.modal=true" v-if="userOrders">
+            <v-btn id="buttonNew" @click="newOrderHandler.modal=true" v-if="userOrders && account.usertype == 'Client'">
                 New Order
                 <v-icon right>mdi-file-plus</v-icon>
             </v-btn>
@@ -33,7 +33,7 @@
                     single-line
                     hide-details
                 ></v-text-field>
-                <v-menu offset-y v-model="menuOpen">
+                <v-menu offset-y v-model="menuOpen" v-if="!$emptyObj(filters)">
                     <template v-slot:activator="{ on }">
                         <v-btn v-on="on" class="filterbutton">
                             Filter
@@ -73,12 +73,12 @@
                                 v-on="on"
                             ></v-progress-linear>
                         </template>
-                        <span>{{item.complete}}/{{item.models}}</span>
+                        <span>{{item.complete}} / {{item.models}}</span>
                     </v-tooltip>
                 </template>
                 <template v-slot:item.state="{value}">
-                    {{backend.messageFromStatus(value)}}
-                    <v-icon>{{backend.iconFromStatus(value)}}</v-icon>
+                    {{backend.messageFromStatus(value, account.usertype)}}
+                    <v-icon>{{backend.iconFromStatus(value, account.usertype)}}</v-icon>
                 </template>
                 <template v-slot:item.time="{value}">{{$formatTime(value)}}</template>
             </v-data-table>
@@ -91,7 +91,8 @@ import backend from "../backend";
 
 export default {
     props: {
-        account: { required: true, type: Object }
+        account: { required: true, type: Object },
+        isAdminView : { type: Boolean, default: false}
     },
     data() {
         return {
@@ -137,7 +138,7 @@ export default {
             var vm = this;
             if (vm.file) {
                 return backend.createOrder(vm.file).then(order => {
-                    vm.orders[order.orderid] = order;
+                    vm.$set(vm.orders, order.orderid, order);
                     vm.file = false;
                 });
             }
@@ -145,11 +146,11 @@ export default {
     },
     mounted() {
         var vm = this;
-        if (vm.account.userType == "QA" || vm.account.userType == "Admin") {
+        if (vm.account.usertype == "QA" || vm.account.usertype == "Admin") {
             vm.filters[vm.account.name] = "Assigned to";
         }
 
-        if (vm.$route.path == "/admin/orders") {
+        if (vm.isAdminView) {
             backend
                 .getAllOrders()
                 .then(orders => {

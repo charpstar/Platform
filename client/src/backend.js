@@ -57,61 +57,126 @@ function dbDownload(url, data) {
     })
 }
 
-const StatusIcons = {
+const Icons = {
+    OrderInit: "",
     OrderReceived: "",
-    ProductReceived: "",
-    OrderReview: "",
+    OrderReview: "mdi-image-search",
+    OrderClientReview: "mdi-image-search",
     OrderMissing: "mdi-information",
     OrderDev: "",
-    OrderDone: "mdi-check",
+
+    ProductInit: "",
+    ProductReceived: "",
+    ProductDev: "",
+    ProductMissing: "mdi-information",
+    ProductQAMissing: "mdi-information",
+    ProductReview: "mdi-image-search",
+    ProductRefine: "",
+    ClientProductReceived: "mdi-image-search",
+    
+    ModelInit: "",
+    ModelReceived: "",
+    ModelDev: "",
+    ModelMissing: "mdi-information",
+    ModelReview: "mdi-image-search",
+    ModelRefine: "",
+    ClientModelReceived: "mdi-image-search",
+
+    ClientFeedback: "",
+    Done: "mdi-check",
+    Pause: "",
+    Error: ""
+}
+
+const ClientIcons = {
+    OrderInit: "",
+    OrderReceived: "",
+    OrderReview: "",
+    OrderClientReview: "mdi-image-search",
+    OrderMissing: "mdi-information",
+    OrderDev: "",
+
+    ProductInit: "",
+    ProductReceived: "",
+    ProductDev: "",
+    ProductMissing: "",
+    ProductQAMissing: "mdi-information",
+    ProductReview: "",
+    ProductRefine: "",
+    ClientProductReceived: "mdi-image-search",
+    
+    ModelInit: "",
     ModelReceived: "",
     ModelDev: "",
     ModelMissing: "mdi-information",
     ModelReview: "",
     ModelRefine: "",
     ClientModelReceived: "mdi-image-search",
+
     ClientFeedback: "",
-    ModelDone: "mdi-check",
+    Done: "mdi-check",
     Pause: "",
     Error: ""
 }
 
 const Messages = {
+    OrderInit: "Init state",
     OrderReceived: "Order received",
-    ProductReceived: "Order received",
-    OrderReview: "Under development",
+    OrderReview: "QA review",
+    OrderClientReview: "Awaiting client feedback",
     OrderMissing: "Information missing",
     OrderDev: "Under development",
-    OrderDone: "Complete",
+
+    ProductInit: "Init state",
+    ProductReceived: "Product received",
+    ProductDev: "Under development",
+    ProductMissing: "Information missing",
+    ProductQAMissing: "Client information missing",
+    ProductReview: "QA review",
+    ProductRefine: "Redoing model",
+    ClientProductReceived: "Client review",
+    
+    ModelInit: "Init state",
     ModelReceived: "Model received",
     ModelDev: "Under development",
     ModelMissing: "Information missing",
-    ProductMissing: "Information missing",
-    ModelReview: "QA Review",
+    ModelReview: "QA review",
     ModelRefine: "Redoing model",
     ClientModelReceived: "Client review",
-    ClientFeedback: "Redoing model",
-    ModelDone: "Complete",
+
+    ClientFeedback: "Incorporating feedback",
+    Done: "Complete",
     Pause: "Pause",
     Error: "Error"
 }
 
 const ClientMessages = {
-    OrderReceived: "Order received",
-    ProductReceived: "Order received",
-    OrderReview: "Under development",
+    OrderInit: "Init state",
+    OrderReceived: "Under review",
+    OrderReview: "Under review",
+    OrderClientReview: "Awaiting your feedback",
     OrderMissing: "Information missing",
     OrderDev: "Under development",
-    OrderDone: "Complete",
-    ModelReceived: "Model received",
+
+    ProductInit: "Init state",
+    ProductReceived: "Under development",
+    ProductDev: "Under development",
+    ProductMissing: "Under development",
+    ProductQAMissing: "Information missing",
+    ProductReview: "Under development",
+    ProductRefine: "Under development",
+    ClientProductReceived: "Awaiting your feedback",
+    
+    ModelInit: "Init state",
+    ModelReceived: "Under development",
     ModelDev: "Under development",
     ModelMissing: "Information missing",
-    ProductMissing: "Information missing",
     ModelReview: "Under development",
     ModelRefine: "Under development",
-    ClientModelReceived: "Awaiting review",
-    ClientFeedback: "Under development",
-    ModelDone: "Complete",
+    ClientModelReceived: "Awaiting your feedback",
+
+    ClientFeedback: "Incorporating feedback",
+    Done: "Complete",
     Pause: "Pause",
     Error: "Error"
 }
@@ -146,8 +211,11 @@ export default {
         return Messages[status]
     },
 
-    iconFromStatus(status) {
-        return StatusIcons[status]
+    iconFromStatus(status, usertype) {
+        if (usertype == 'Client') {
+            return ClientIcons[status]
+        }
+        return Icons[status]
     },
 
     randomid(length) {
@@ -230,8 +298,12 @@ export default {
         return dbPost('/admin/assignorder', { orderid: orderid, userid: userid })
     },
 
-    downloadExcel(orderid) {
-        return dbDownload('/gen/getexcel', {id: orderid, name: '' + orderid + '.xlsx'})
+    downloadExcel(orderid, filename) {
+        return dbDownload('/gen/getexcel', {id: orderid, name: filename})
+    },
+
+    deleteOrder(orderid) {
+        return dbPost('/qa/deleteorder', {orderid: orderid})
     },
 
     //comments
@@ -278,11 +350,8 @@ export default {
         return dbPost('/modeller/listmodelfiles', { modelid: modelid })
     },
 
-    //eslint-disable-next-line no-unused-vars
-    newModel(orderid, modelName) {
-        return new Promise((resolve, reject) => {
-            reject('Unimplemented')
-        })
+    createModels(orderid, file) {
+        return dbUpload('/client/newmodels', file, 'modeldata', { orderid: orderid })
     },
 
     //products
@@ -307,11 +376,8 @@ export default {
         return dbDownload('/modeller/downloadmodelfile', { modelid: modelid, filename: filename, name: filename})
     },
 
-    //eslint-disable-next-line no-unused-vars
     editProductLink(productid, link) {
-        return new Promise(resolve => {
-            resolve({});
-        })
+        return dbPost('/client/editproductlink', {productid: productid, newlink: link})
     },
 
     deleteModelFile(modelid, filename) {
