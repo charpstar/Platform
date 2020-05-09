@@ -349,3 +349,63 @@ export async function resolveOrderMissing(orderid, userid) {
     return { status: 'f' };
   }
 }
+
+export async function deleteOrder(data) {
+  const models = await knexPool('models')
+    .select(['modelid'])
+    .where('orderid', data.orderid);
+
+  const modelIds = [];
+  for (const model of models) {
+    modelIds.push(model.modelid);
+  }
+
+  const products = await knexPool('products')
+    .select(['productid'])
+    .whereIn('modelid', modelIds);
+
+  const productIds = [];
+  for (const product of products) {
+    productIds.push(product.productid);
+  }
+
+  await knexPool('productstates')
+    .whereIn('productid', productIds)
+    .del();
+
+  await knexPool('comments')
+    .whereIn('productid', productIds)
+    .orWhereIn('modelid', modelIds)
+    .orWhere('orderid', data.orderid)
+    .del();
+
+  await knexPool('androidversions')
+    .whereIn('productid', productIds)
+    .del();
+
+  await knexPool('appleversions')
+    .whereIn('productid', productIds)
+    .del();
+
+  await knexPool('products')
+    .whereIn('productid', productIds)
+    .del();
+
+  await knexPool('modelfiles')
+    .whereIn('modelid', modelIds)
+    .del();
+
+  await knexPool('models')
+    .whereIn('modelid', modelIds)
+    .del();
+
+  await knexPool('orderstates')
+    .where('orderid', data.orderid)
+    .del();
+
+  await knexPool('orders')
+    .where('orderid', data.orderid)
+    .del();
+
+  return { productids: productIds, modelids: modelIds };
+}

@@ -1,11 +1,12 @@
 import xlsx from 'xlsx';
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import {
   createOrder,
   getOrders,
   claimOrder,
   getExcel,
+  deleteOrder,
 } from '../models/orderModel';
 
 export async function getOrdersService(filter) {
@@ -142,11 +143,13 @@ export async function orderCreationService(req) {
   const file = xlsx.readFile(req.file.path);
   const sheets = file.SheetNames;
   const rawData = xlsx.utils.sheet_to_json(file.Sheets[sheets[0]]);
-  fs.unlink(req.file.path, (err) => {
-    if (err) {
-      throw err;
-    }
-  });
+  try {
+    fs.remove(req.file.path);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+  }
+
 
   const data = {};
   const models = [];
@@ -197,6 +200,56 @@ export async function orderCreationService(req) {
   }
 
   responseObject.orderid = res.orderid;
+
+  return responseObject;
+}
+
+export async function deleteOrderService(data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const orderData = await deleteOrder(data);
+
+  try {
+    for (const productid of orderData.productids) {
+      const deletionPath = path.resolve(`./public/${productid}/`);
+      const deleteThumb = path.resolve(`./public/thumbs/${productid}.png`);
+      await fs.remove(deletionPath, { recursive: true });
+      await fs.remove(deleteThumb);
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    responseObject.error = 'There was an error trying to remove a product';
+    return responseObject;
+  }
+
+  try {
+    for (const modelid of orderData.modelids) {
+      const deletionPath = path.resolve(`./private/${modelid}/`);
+      await fs.remove(deletionPath, { recursive: true });
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    responseObject.error = 'There was an error trying to remove a model';
+    return responseObject;
+  }
+
+  try {
+    const deletionPath = path.resolve(`./private/${data.orderid}.xlsx`);
+    await fs.remove(deletionPath);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    responseObject.error = 'There was an error trying to remove an excel file';
+    return responseObject;
+  }
+
+  responseObject.status = 'Order removed';
 
   return responseObject;
 }

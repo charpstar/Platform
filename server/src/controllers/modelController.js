@@ -12,6 +12,8 @@ import {
   androidUploadService,
   modelFileDeleteService,
   thumbUploadService,
+  deleteModelService,
+  deleteProductService,
 } from '../services/modelService';
 
 const orderIdParser = Joi.object({
@@ -50,7 +52,7 @@ const modelFileParser = Joi.object({
     .required(),
 });
 
-const productFileParser = Joi.object({
+const productIdParser = Joi.object({
   productid: Joi.number()
     .integer()
     .min(0)
@@ -95,11 +97,11 @@ export async function listmodelfiles(req, res) {
 }
 
 export async function uploadios(req, res) {
-  return validateAndRunService(productFileParser, iosUploadService, req, res);
+  return validateAndRunService(productIdParser, iosUploadService, req, res);
 }
 
 export async function uploadandroid(req, res) {
-  return validateAndRunService(productFileParser, androidUploadService, req, res);
+  return validateAndRunService(productIdParser, androidUploadService, req, res);
 }
 
 export async function assignmodeler(req, res) {
@@ -124,4 +126,12 @@ export async function getmodellermodels(req, res) {
 
 export async function getproducts(req, res) {
   return validateAndRunService(modelIdParser, getProductsService, req, res);
+}
+
+export async function deletemodel(req, res) {
+  validateAndRunService(modelIdParser, deleteModelService, req, res);
+}
+
+export async function deleteproduct(req, res) {
+  validateAndRunService(productIdParser, deleteProductService, req, res);
 }

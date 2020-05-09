@@ -24,6 +24,8 @@ import {
   deletemodelfile,
   uploadthumb,
   getmodel,
+  deletemodel,
+  deleteproduct,
 } from '../controllers/modelController';
 import {
   createorder,
@@ -33,6 +35,7 @@ import {
   getexcel,
   getorder,
   assignorder,
+  deleteorder,
 } from '../controllers/orderController';
 import {
   comment,
@@ -72,6 +75,7 @@ router.post('/qa/claimorder', claimorder);
 router.post('/admin/assignorder', assignorder);
 router.post('/gen/getclientorders', getclientorders);
 router.post('/gen/getorder', getorder);
+router.post('/qa/deleteorder', deleteorder);
 
 // Model related
 router.get('/modeller/models', getmodellermodels);
@@ -87,5 +91,7 @@ router.post('/qa/uploadandroid', upload.single('modelfile'), uploadandroid);
 router.post('/modeller/deletemodelfile', deletemodelfile);
 router.post('/qa/uploadthumb', upload.single('thumb'), uploadthumb);
 router.post('/gen/getmodel', getmodel);
+router.post('/qa/deletemodel', deletemodel);
+router.post('/qa/deleteproduct', deleteproduct);
 
 export default router;

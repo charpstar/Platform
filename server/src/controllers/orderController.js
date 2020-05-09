@@ -6,6 +6,7 @@ import {
   getOrderService,
   claimOrderService,
   getExcelService,
+  deleteOrderService,
 } from '../services/orderService';
 
 const idParser = Joi.object({
@@ -52,6 +53,10 @@ export async function getorder(req, res) {
 
 export async function getclientorders(req, res) {
   validateAndRunService(useridParser, getOrdersService, req, res);
+}
+
+export async function deleteorder(req, res) {
+  validateAndRunService(orderidParser, deleteOrderService, req, res);
 }
 
 export async function claimorder(req, res) {

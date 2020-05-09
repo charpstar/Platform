@@ -1,7 +1,5 @@
-import { promisify } from 'util';
 import path from 'path';
-import fs from 'fs';
-import mv from 'mv';
+import fs from 'fs-extra';
 import {
   getModels,
   assignModeler,
@@ -11,10 +9,10 @@ import {
   uploadModelFile,
   deleteModelFile,
   listModelFiles,
+  deleteProduct,
+  deleteModel,
 } from '../models/modelModel';
 import { domain, port } from '../config/config';
-
-const mvp = promisify(mv);
 
 export async function modelUploadService(data, req) {
   const responseObject = {
@@ -23,8 +21,6 @@ export async function modelUploadService(data, req) {
     data: {},
   };
 
-  const mkdir = promisify(fs.mkdir);
-
   if (typeof req.file === 'undefined') {
     responseObject.error = 'No file uploaded';
     return responseObject;
@@ -32,8 +28,8 @@ export async function modelUploadService(data, req) {
 
   try {
     const dest = path.resolve(`./private/${data.modelid}/`);
-    await mkdir(dest, { recursive: true });
-    await mvp(req.file.path, `${dest}/${req.file.originalname}`);
+    await fs.mkdirs(dest, { recursive: true });
+    await fs.move(req.file.path, `${dest}/${req.file.originalname}`, { overwrite: true });
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -63,12 +59,10 @@ export async function modelFileDeleteService(data) {
     data: {},
   };
 
-  const unlink = promisify(fs.unlink);
-
   const deletionPath = path.resolve(`./private/${data.modelid}/${data.filename}`);
 
   try {
-    await unlink(deletionPath);
+    await fs.remove(deletionPath);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -89,14 +83,12 @@ export async function thumbUploadService(data, req) {
     data: {},
   };
 
-  const mkdir = promisify(fs.mkdir);
-
   const thumbsFolder = path.resolve('./public/thumbs/');
   const fileExt = path.extname(req.file.originalname);
 
   try {
-    await mkdir(thumbsFolder, { recursive: true });
-    mvp(req.file.path, `${thumbsFolder}/${data.modelid}${fileExt}`);
+    await fs.mkdirs(thumbsFolder, { recursive: true });
+    fs.move(req.file.path, `${thumbsFolder}/${data.modelid}${fileExt}`, { overwrite: true });
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -134,10 +126,6 @@ export async function iosUploadService(data, req) {
     data: {},
   };
 
-  const mkdir = promisify(fs.mkdir);
-  const readdir = promisify(fs.readdir);
-  const unlink = promisify(fs.unlink);
-
   if (typeof req.file === 'undefined') {
     responseObject.error = 'No file uploaded';
     return responseObject;
@@ -147,22 +135,22 @@ export async function iosUploadService(data, req) {
   const destOld = path.resolve(`./public/${data.productid}/oldios/`);
 
   try {
-    await mkdir(destNew, { recursive: true });
-    await mkdir(destOld, { recursive: true });
+    await fs.mkdirs(destNew, { recursive: true });
+    await fs.mkdirs(destOld, { recursive: true });
 
-    const clearFiles = await readdir(destOld);
+    const clearFiles = await fs.readdir(destOld);
 
     for (const file of clearFiles) {
-      await unlink(`${destOld}/${file}`);
+      await fs.remove(`${destOld}/${file}`);
     }
 
-    const oldFiles = await readdir(destNew);
+    const oldFiles = await fs.readdir(destNew);
 
     for (const file of oldFiles) {
-      await mvp(`${destNew}/${file}`, `${destOld}/${file}`);
+      await fs.move(`${destNew}/${file}`, `${destOld}/${file}`);
     }
 
-    await mvp(req.file.path, `${destNew}/${req.file.originalname}`);
+    await fs.move(req.file.path, `${destNew}/${req.file.originalname}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -194,10 +182,6 @@ export async function androidUploadService(data, req) {
     data: {},
   };
 
-  const mkdir = promisify(fs.mkdir);
-  const readdir = promisify(fs.readdir);
-  const unlink = promisify(fs.unlink);
-
   if (typeof req.file === 'undefined') {
     responseObject.error = 'No file uploaded';
     return responseObject;
@@ -207,22 +191,22 @@ export async function androidUploadService(data, req) {
   const destOld = path.resolve(`./public/${data.productid}/oldandroid/`);
 
   try {
-    await mkdir(destNew, { recursive: true });
-    await mkdir(destOld, { recursive: true });
+    await fs.mkdirs(destNew, { recursive: true });
+    await fs.mkdirs(destOld, { recursive: true });
 
-    const clearFiles = await readdir(destOld);
+    const clearFiles = await fs.readdir(destOld);
 
     for (const file of clearFiles) {
-      await unlink(`${destOld}/${file}`);
+      await fs.remove(`${destOld}/${file}`);
     }
 
-    const oldFiles = await readdir(destNew);
+    const oldFiles = await fs.readdir(destNew);
 
     for (const file of oldFiles) {
-      await mvp(`${destNew}/${file}`, `${destOld}/${file}`);
+      await fs.move(`${destNew}/${file}`, `${destOld}/${file}`);
     }
 
-    await mvp(req.file.path, `${destNew}/${req.file.originalname}`);
+    await fs.move(req.file.path, `${destNew}/${req.file.originalname}`);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -305,6 +289,71 @@ export async function getProductsService(data) {
   });
 
   responseObject.status = 'Products fetched';
+
+  return responseObject;
+}
+
+export async function deleteModelService(data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const productIds = await deleteModel(data);
+
+  try {
+    for (const productid of productIds) {
+      const deletionPath = path.resolve(`./public/${productid}/`);
+      const deleteThumb = path.resolve(`./public/thumbs/${productid}.png`);
+      await fs.remove(deletionPath, { recursive: true });
+      await fs.remove(deleteThumb);
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    responseObject.error = 'There was an error trying to remove a product';
+    return responseObject;
+  }
+
+  try {
+    const deletionPath = path.resolve(`./private/${data.modelid}/`);
+    await fs.remove(deletionPath, { recursive: true });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    responseObject.error = 'There was an error trying to remove the model';
+    return responseObject;
+  }
+
+  responseObject.status = 'Model removed';
+
+  return responseObject;
+}
+
+export async function deleteProductService(data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  await deleteProduct(data);
+
+  const deletionPath = path.resolve(`./public/${data.productid}/`);
+  const deleteThumb = path.resolve(`./public/thumbs/${data.productid}.png`);
+
+  try {
+    await fs.remove(deletionPath, { recursive: true });
+    await fs.remove(deleteThumb);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    responseObject.error = 'There was an error trying to remove the product';
+    return responseObject;
+  }
+
+  responseObject.status = 'Product removed';
 
   return responseObject;
 }

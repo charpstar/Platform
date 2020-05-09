@@ -146,6 +146,72 @@ export async function deleteModelFile(data) {
     .del();
 }
 
+export async function deleteProduct(data) {
+  await knexPool('productstates')
+    .where('productid', data.productid)
+    .del();
+
+  await knexPool('comments')
+    .where('productid', data.productid)
+    .del();
+
+  await knexPool('androidversions')
+    .where('productid', data.productid)
+    .del();
+
+  await knexPool('appleversions')
+    .where('productid', data.productid)
+    .del();
+
+  await knexPool('products')
+    .where('productid', data.productid)
+    .del();
+
+  return null;
+}
+
+export async function deleteModel(data) {
+  const products = await knexPool('products')
+    .select(['productid'])
+    .where('modelid', data.modelid);
+
+  const productIds = [];
+  for (const product of products) {
+    productIds.push(product.productid);
+  }
+
+  await knexPool('productstates')
+    .whereIn('productid', productIds)
+    .del();
+
+  await knexPool('comments')
+    .whereIn('productid', productIds)
+    .orWhere('modelid', data.modelid)
+    .del();
+
+  await knexPool('androidversions')
+    .whereIn('productid', productIds)
+    .del();
+
+  await knexPool('appleversions')
+    .whereIn('productid', productIds)
+    .del();
+
+  await knexPool('products')
+    .whereIn('productid', productIds)
+    .del();
+
+  await knexPool('modelfiles')
+    .where('modelid', data.modelid)
+    .del();
+
+  await knexPool('models')
+    .where('modelid', data.modelid)
+    .del();
+
+  return productIds;
+}
+
 export async function listModelFiles(modelid) {
   return knexPool('modelfiles')
     .select('time', 'filename')
