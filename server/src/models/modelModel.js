@@ -551,7 +551,7 @@ export async function approveModelQA(modelid, userid) {
 }
 
 export async function setModelDoneModeller(modelid, userid) {
-  return changeModelState(modelid, userid, 'ProductReview', 'ModelDev', ['ProductDev', 'ProductRefine', 'ClientFeedback']);
+  return changeModelState(modelid, userid, 'ProductReview', 'ProductReview', ['ProductDev', 'ProductRefine', 'ClientFeedback']);
 }
 
 export async function approveModelClient(modelid, userid) {
@@ -567,9 +567,9 @@ export async function rejectModelClient(modelid, userid) {
 }
 
 export async function setModelMissing(modelid, userid) {
-  return changeModelState(modelid, userid, 'ProductMissing', 'ModelMissing', null, ['Done']);
+  return changeModelState(modelid, userid, 'ProductMissing', 'ProductMissing', null, ['Done']);
 }
 
 export async function resolveModelMissing(modelid, userid) {
-  return changeModelState(modelid, userid, 'ProductDev', 'ModelDev', ['ProductMissing']);
+  return changeModelState(modelid, userid, 'ProductDev', 'ProductDev', ['ProductMissing']);
 }
