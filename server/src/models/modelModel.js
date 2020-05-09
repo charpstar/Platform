@@ -498,7 +498,42 @@ export async function approveProductClient(productid, userid) {
 }
 
 export async function rejectProductQA(productid, userid) {
-  return changeProductState(productid, userid, 'ProductRefine', ['ProductReview']);
+  let newState;
+  const allowedStates = ['ProductReview'];
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [productstate] = await trx('curstat')
+        .where('productid', productid);
+      if (typeof productstate === 'undefined') {
+        throw new Error('Product does not exist');
+      }
+      if (allowedStates != null) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error(`Disallowed state: ${productstate.stateafter}`);
+        }
+      }
+
+      let newStateFromStateBefore = 'ProductRefine';
+
+      if (productstate.statebefore === 'ClientProductReceived') {
+        newStateFromStateBefore = 'ClientFeedback';
+      }
+
+      [newState] = await trx('productstates')
+        .insert({
+          productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: newStateFromStateBefore,
+        })
+        .returning(['productid', 'stateafter']);
+    });
+    return newState;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
 }
 
 export async function rejectProductClient(productid, userid) {
