@@ -33,10 +33,8 @@ export async function assignModeler(data, userid) {
       }
 
       const products = await trx('products')
-        .select('products.productid')
         .join('productstates', 'products.productid', 'productstates.productid')
         .where('modelid', data.modelid);
-
       const productStates = [];
       for (const product of products) {
         if (product.stateafter === 'ProductReceived') {

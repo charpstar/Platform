@@ -86,7 +86,7 @@ export async function comment(req, res) {
 
     if (value.commentclass === 'Comment') {
       const result = await createCommentService(value, req);
-      if (result.error == '') {
+      if (result.error === '') {
         result.data = { comments: result.data };
       }
       return res.send(result);
