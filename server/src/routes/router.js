@@ -46,6 +46,7 @@ import {
   getcomments,
   getlogin,
   editcomment,
+  deletecomment,
 } from '../controllers/genericController';
 
 const uploadXlsx = multer({
@@ -122,7 +123,9 @@ router.get('/gen/login', getlogin);
 router.post('/gen/comment', comment);
 router.post('/gen/getcomments', getcomments);
 router.post('/gen/editcomment', editcomment);
+router.post('/gen/deletecomment', deletecomment);
 router.post('/gen/getexcel', getexcel);
+
 
 // User related
 router.get('/logout', logout);

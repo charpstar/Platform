@@ -73,6 +73,28 @@ export async function editComment(data) {
     .join('users', 'comments.userid', 'users.userid');
 }
 
+export async function deleteComment(data) {
+  const [tempRes] = await knexPool('comments')
+    .where('commentid', data.commentid)
+    .where('userid', data.userid)
+    .returning(['commentid', 'commentclass']);
+
+  if (typeof tempRes === 'undefined' || tempRes === null) {
+    return { error: 'Comment either doesn\'t exist or isn\'t yours' };
+  }
+
+  if (tempRes.commentclass !== 'Comment') {
+    return { error: 'This type of comment can\'t be deleted' };
+  }
+
+  return knexPool('comments')
+    .where('commentid', data.commentid)
+    .where('userid', data.userid)
+    .where('commentclass', 'Comment')
+    .del()
+    .returning(['commentid']);
+}
+
 export async function getComments(data) {
   return knexPool('comments')
     .where(data)

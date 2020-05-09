@@ -5,6 +5,7 @@ import {
   createCommentService,
   changeStateService,
   editCommentService,
+  deleteCommentService,
 } from '../services/genericService';
 import { getUserService } from '../services/userService';
 
@@ -55,9 +56,18 @@ const commentParser = Joi.object({
 const editCommentParser = Joi.object({
   commentid: Joi.number()
     .integer()
-    .min(0),
+    .min(0)
+    .required(),
 
   newcomment: Joi.string()
+    .required(),
+
+});
+
+const deleteCommentParser = Joi.object({
+  commentid: Joi.number()
+    .integer()
+    .min(0)
     .required(),
 
 });
@@ -106,4 +116,8 @@ export async function getlogin(req, res) {
 
 export async function editcomment(req, res) {
   return validateAndRunService(editCommentParser, editCommentService, req, res);
+}
+
+export async function deletecomment(req, res) {
+  return validateAndRunService(deleteCommentParser, deleteCommentService, req, res);
 }
