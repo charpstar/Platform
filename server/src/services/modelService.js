@@ -11,6 +11,9 @@ import {
   listModelFiles,
   deleteProduct,
   deleteModel,
+  editProductLink,
+  editProductModelId,
+  editModelName,
 } from '../models/modelModel';
 import { domain, port } from '../config/config';
 
@@ -354,6 +357,60 @@ export async function deleteProductService(data) {
   }
 
   responseObject.status = 'Product removed';
+
+  return responseObject;
+}
+
+export async function editProductLinkService(data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = editProductLink(data);
+
+  for (const product of result) {
+    responseObject.data[product.productid] = product;
+  }
+
+  responseObject.status = 'Product link updated';
+
+  return responseObject;
+}
+
+export async function editProductModelIdService(data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = editProductModelId(data);
+
+  for (const product of result) {
+    responseObject.data[product.productid] = product;
+  }
+
+  responseObject.status = 'Product model id updated';
+
+  return responseObject;
+}
+
+export async function editModelNameService(data) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const result = editModelName(data);
+
+  for (const model of result) {
+    responseObject.data[model.modelid] = model;
+  }
+
+  responseObject.status = 'Model name updated';
 
   return responseObject;
 }

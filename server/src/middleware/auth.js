@@ -86,7 +86,7 @@ export async function clientAuth(req, res, next) {
     return res.send(responseObject);
   }
 
-  if (req.session.usertype !== 'Client') {
+  if (!['QA', 'Admin', 'Client'].includes(req.session.usertype)) {
     responseObject.error = 'Insufficient permissions';
     return res.send(responseObject);
   }

@@ -26,6 +26,9 @@ import {
   getmodel,
   deletemodel,
   deleteproduct,
+  editproductlink,
+  editproductmodelid,
+  editmodelname,
 } from '../controllers/modelController';
 import {
   createorder,
@@ -93,5 +96,8 @@ router.post('/qa/uploadthumb', upload.single('thumb'), uploadthumb);
 router.post('/gen/getmodel', getmodel);
 router.post('/qa/deletemodel', deletemodel);
 router.post('/qa/deleteproduct', deleteproduct);
+router.post('/client/editproductlink', editproductlink);
+router.post('/qa/editproductmodelid', editproductmodelid);
+router.post('/qa/editmodelname', editmodelname);
 
 export default router;

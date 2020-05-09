@@ -212,6 +212,27 @@ export async function deleteModel(data) {
   return productIds;
 }
 
+export async function editProductLink(data) {
+  return knexPool('products')
+    .where('productid', data.productid)
+    .update('link', data.newlink)
+    .returning('productid', 'link');
+}
+
+export async function editProductModelId(data) {
+  return knexPool('products')
+    .where('productid', data.productid)
+    .update('modelid', data.newmodelid)
+    .returning('productid', 'modelid');
+}
+
+export async function editModelName(data) {
+  return knexPool('models')
+    .where('modelid', data.modelid)
+    .update('name', data.newname)
+    .returning('modelid', 'name');
+}
+
 export async function listModelFiles(modelid) {
   return knexPool('modelfiles')
     .select('time', 'filename')

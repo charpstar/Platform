@@ -14,6 +14,9 @@ import {
   thumbUploadService,
   deleteModelService,
   deleteProductService,
+  editProductLinkService,
+  editProductModelIdService,
+  editModelNameService,
 } from '../services/modelService';
 
 const orderIdParser = Joi.object({
@@ -76,6 +79,39 @@ const modelIdParser = Joi.object({
     .required(),
 });
 
+const editProductLinkParser = Joi.object({
+  productid: Joi.number()
+    .integer()
+    .min(0)
+    .required(),
+
+  newlink: Joi.string()
+    .uri()
+    .required(),
+});
+
+const editProductModelIdParser = Joi.object({
+  productid: Joi.number()
+    .integer()
+    .min(0)
+    .required(),
+
+  newmodelid: Joi.number()
+    .integer()
+    .min(0)
+    .required(),
+});
+
+const editModelNameParser = Joi.object({
+  modelid: Joi.number()
+    .integer()
+    .min(0)
+    .required(),
+
+  newname: Joi.string()
+    .required(),
+});
+
 export async function uploadmodelfile(req, res) {
   return validateAndRunService(modelFileParser, modelUploadService, req, res);
 }
@@ -134,4 +170,16 @@ export async function deletemodel(req, res) {
 
 export async function deleteproduct(req, res) {
   validateAndRunService(productIdParser, deleteProductService, req, res);
+}
+
+export async function editproductlink(req, res) {
+  validateAndRunService(editProductLinkParser, editProductLinkService, req, res);
+}
+
+export async function editproductmodelid(req, res) {
+  validateAndRunService(editProductModelIdParser, editProductModelIdService, req, res);
+}
+
+export async function editmodelname(req, res) {
+  validateAndRunService(editModelNameParser, editModelNameService, req, res);
 }
