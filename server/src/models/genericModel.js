@@ -18,6 +18,15 @@ const knexPool = knex({
   pool: { min: 0, max: 10 },
 });
 
+export async function statSaver(userAgentString, ip, url) {
+  return knexPool('linkdata')
+    .insert({
+      endpoint: url,
+      ip,
+      useragentstring: userAgentString,
+    });
+}
+
 export async function comment(data) {
   const [tempRes] = await knexPool('comments')
     .insert(data)

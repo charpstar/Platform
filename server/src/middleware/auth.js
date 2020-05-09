@@ -10,7 +10,7 @@ export async function genericAuth(req, res, next) {
     return res.send(responseObject);
   }
 
-  next();
+  return next();
 }
 
 export async function adminAuth(req, res, next) {
@@ -30,7 +30,7 @@ export async function adminAuth(req, res, next) {
     return res.send(responseObject);
   }
 
-  next();
+  return next();
 }
 
 export async function modellerAuth(req, res, next) {
@@ -50,7 +50,7 @@ export async function modellerAuth(req, res, next) {
     return res.send(responseObject);
   }
 
-  next();
+  return next();
 }
 
 
@@ -71,7 +71,7 @@ export async function qaAuth(req, res, next) {
     return res.send(responseObject);
   }
 
-  next();
+  return next();
 }
 
 export async function clientAuth(req, res, next) {
@@ -91,5 +91,5 @@ export async function clientAuth(req, res, next) {
     return res.send(responseObject);
   }
 
-  next();
+  return next();
 }

@@ -15,6 +15,7 @@ import {
   clientAuth,
   genericAuth,
 } from './middleware/auth';
+import { statCollector } from './middleware/logging';
 import { initUserCreationService } from './services/userService';
 
 const envFetch = dotenv.config();
@@ -35,6 +36,9 @@ app.use(cors({
   methods: ['GET', 'POST'],
   credentials: true,
 }));
+
+app.use('/', statCollector);
+
 app.use('/public', express.static('./public/'));
 app.use('/public', (req, res) => {
   const data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
