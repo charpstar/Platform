@@ -34,16 +34,19 @@ export async function assignModeler(data, userid) {
 
       const products = await trx('products')
         .select('productid')
+        .join('productstates', 'products.productid', 'productstates.productid')
         .where('modelid', data.modelid);
 
       const productStates = [];
       for (const product of products) {
-        productStates.push({
-          productid: product.productid,
-          userid,
-          statebefore: 'ProductReceived',
-          stateafter: 'ProductDev',
-        });
+        if (product.stateafter === 'ProductReceived') {
+          productStates.push({
+            productid: product.productid,
+            userid,
+            statebefore: product.stateafter,
+            stateafter: 'ProductDev',
+          });
+        }
       }
 
       await trx('productstates')
@@ -69,11 +72,9 @@ export async function assignModeler(data, userid) {
           .insert({
             orderid: modelExists.orderid,
             userid,
-            statebefore: 'OrderReview',
+            statebefore: tempRes.stateafter,
             stateafter: 'OrderDev',
           });
-      } else {
-        throw new Error('Previous order state is wrong');
       }
 
       temp = await trx('users')
@@ -315,15 +316,8 @@ export async function changeProductState(
   let newState;
   try {
     await knexPool.transaction(async (trx) => {
-      const [productstate] = await trx('productstates')
-        .join((querybuilder) => {
-          querybuilder.from('productstates')
-            .where('productid', productid)
-            .max('time')
-            .groupBy('productid')
-            .as('t1');
-        }, 'productstates.time', 't1.max');
-
+      const [productstate] = await trx('curstat')
+        .where('productid', productid);
       if (typeof productstate === 'undefined') {
         throw new Error('Product does not exist');
       }

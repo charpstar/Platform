@@ -63,9 +63,56 @@ export async function getExcelService(data) {
   };
 
   const tempRes = await getExcel(data.id);
+
+  const parsed = [];
+
+  for (const product of tempRes) {
+    if (product.state !== 'Done') {
+      parsed.push({
+        name: product.name,
+        color: product.color,
+        link: product.link,
+        androidlink: null,
+        ioslink: null,
+        state: product.state,
+      });
+    } else {
+      parsed.push({
+        name: product.name,
+        color: product.color,
+        link: product.link,
+        androidlink: null,
+        ioslink: null,
+        state: product.state,
+      });
+    }
+  }
+
+  const fitToColumn = (objectArray) => {
+    const columnWidths = [];
+    for (const property in objectArray[0]) {
+      if (Object.prototype.hasOwnProperty.call(objectArray[0], property)) {
+        columnWidths.push({
+          wch: Math.max(
+            property
+              ? property.toString().length + 15
+              : 0,
+            ...objectArray.map((obj) => (
+              obj[property]
+                ? obj[property].toString().length + 15
+                : 0
+            )),
+          ),
+        });
+      }
+    }
+    return columnWidths;
+  };
+
   const wb = xlsx.utils.book_new();
-  const ws = xlsx.utils.json_to_sheet(tempRes);
+  const ws = xlsx.utils.json_to_sheet(parsed);
   xlsx.utils.book_append_sheet(wb, ws, 'Products');
+  ws['!cols'] = fitToColumn(parsed);
   try {
     xlsx.writeFile(wb, `./private/${data.id}.xlsx`);
   } catch (e) {

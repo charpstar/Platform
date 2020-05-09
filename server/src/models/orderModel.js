@@ -51,15 +51,6 @@ export async function createOrder(orderData) {
       const insertedProducts = await trx('products')
         .insert(products)
         .returning(['productid']);
-      const modelstates = [];
-      for (const model of models) {
-        modelstates.push({
-          modelid: model.modelid,
-          userid: orderData.clientid,
-          statebefore: 'ModelInit',
-          stateafter: 'ModelReceived',
-        });
-      }
       const productstates = [];
       for (const product of insertedProducts) {
         productstates.push({
@@ -76,8 +67,6 @@ export async function createOrder(orderData) {
           statebefore: 'OrderInit',
           stateafter: 'OrderReceived',
         });
-      await trx('modelstates')
-        .insert(modelstates);
       await trx('productstates')
         .insert(productstates);
     });
@@ -166,6 +155,25 @@ export async function claimOrder(orderId, userId) {
           });
       }
 
+      const productstates = await trx('curstat')
+        .select(['productid', 'stateafter'])
+        .where('orderid', orderId);
+
+      const newProductStates = [];
+      for (const product of productstates) {
+        if (product.stateafter === 'ProductReceived') {
+          newProductStates.push({
+            productid: product.productid,
+            userid: userId,
+            statebefore: product.stateafter,
+            stateafter: 'ProductReview',
+          });
+        }
+      }
+
+      await trx('productstates')
+        .insert(newProductStates);
+
       temp = await trx('users')
         .where('userid', userId)
         .select('userid', 'name');
@@ -187,20 +195,11 @@ export async function getExcel(orderid) {
       'products.color',
       { androidlink: 't1.androidlink' },
       { ioslink: 't2.ioslink' },
+      { state: 'curstat.stateafter' },
     )
-    .where('orderid', orderid)
+    .where('models.orderid', orderid)
     .join('products', 'models.modelid', 'products.modelid')
-    .join((querybuilder) => {
-      querybuilder.from('productstates')
-        .join((querybuilder2) => {
-          querybuilder2.from('productstates')
-            .max('time')
-            .groupBy('productid')
-            .as('t33');
-        }, 'productstates.time', 't33.max')
-        .where('productstates.stateafter', 'Done')
-        .as('t3');
-    }, 'products.productid', 't3.productid')
+    .join('curstat', 'products.productid', 'curstat.productid')
     .leftJoin((querybuilder) => {
       querybuilder.from('androidversions')
         .join((querybuilder2) => {
