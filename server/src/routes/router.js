@@ -30,6 +30,7 @@ import {
   editproductlink,
   editproductmodelid,
   editmodelname,
+  newmodels,
 } from '../controllers/modelController';
 import {
   createorder,
@@ -165,5 +166,7 @@ router.post('/qa/deleteproduct', deleteproduct);
 router.post('/client/editproductlink', editproductlink);
 router.post('/qa/editproductmodelid', editproductmodelid);
 router.post('/qa/editmodelname', editmodelname);
+router.post('/client/newmodels', uploadXlsx.single('modeldata'), newmodels);
+
 
 export default router;
