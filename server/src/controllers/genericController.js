@@ -5,6 +5,7 @@ import {
   createCommentService,
   changeStateService,
   editCommentService,
+  deleteCommentService,
 } from '../services/genericService';
 import { getUserService } from '../services/userService';
 
@@ -55,9 +56,18 @@ const commentParser = Joi.object({
 const editCommentParser = Joi.object({
   commentid: Joi.number()
     .integer()
-    .min(0),
+    .min(0)
+    .required(),
 
   newcomment: Joi.string()
+    .required(),
+
+});
+
+const deleteCommentParser = Joi.object({
+  commentid: Joi.number()
+    .integer()
+    .min(0)
     .required(),
 
 });
@@ -76,6 +86,9 @@ export async function comment(req, res) {
 
     if (value.commentclass === 'Comment') {
       const result = await createCommentService(value, req);
+      if (result.error === '') {
+        result.data = { comments: result.data };
+      }
       return res.send(result);
     }
 
@@ -87,7 +100,7 @@ export async function comment(req, res) {
     if (commentResult.error !== '') {
       return res.send(commentResult);
     }
-    stateResult.data.comment = commentResult.data.comment;
+    stateResult.data.comments = commentResult.data;
     return res.send(stateResult);
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -106,4 +119,8 @@ export async function getlogin(req, res) {
 
 export async function editcomment(req, res) {
   return validateAndRunService(editCommentParser, editCommentService, req, res);
+}
+
+export async function deletecomment(req, res) {
+  return validateAndRunService(deleteCommentParser, deleteCommentService, req, res);
 }

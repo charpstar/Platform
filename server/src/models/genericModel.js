@@ -18,6 +18,15 @@ const knexPool = knex({
   pool: { min: 0, max: 10 },
 });
 
+export async function statSaver(userAgentString, ip, url) {
+  return knexPool('linkdata')
+    .insert({
+      endpoint: url,
+      ip,
+      useragentstring: userAgentString,
+    });
+}
+
 export async function comment(data) {
   const [tempRes] = await knexPool('comments')
     .insert(data)
@@ -62,6 +71,28 @@ export async function editComment(data) {
     ])
     .where('comments.commentid', tempRes.commentid)
     .join('users', 'comments.userid', 'users.userid');
+}
+
+export async function deleteComment(data) {
+  const [tempRes] = await knexPool('comments')
+    .where('commentid', data.commentid)
+    .where('userid', data.userid)
+    .returning(['commentid', 'commentclass']);
+
+  if (typeof tempRes === 'undefined' || tempRes === null) {
+    return { error: 'Comment either doesn\'t exist or isn\'t yours' };
+  }
+
+  if (tempRes.commentclass !== 'Comment') {
+    return { error: 'This type of comment can\'t be deleted' };
+  }
+
+  return knexPool('comments')
+    .where('commentid', data.commentid)
+    .where('userid', data.userid)
+    .where('commentclass', 'Comment')
+    .del()
+    .returning(['commentid']);
 }
 
 export async function getComments(data) {

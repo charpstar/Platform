@@ -169,6 +169,8 @@ export async function orderCreationService(req) {
     }
     if (typeof row['Color/Material'] !== 'undefined' && row['Color/Material'] !== null) {
       tempData.color = row['Color/Material'];
+    } else {
+      errorText = 'At least 1 missing colour';
     }
     models.push(tempData);
   });

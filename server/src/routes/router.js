@@ -30,6 +30,7 @@ import {
   editproductlink,
   editproductmodelid,
   editmodelname,
+  newmodels,
 } from '../controllers/modelController';
 import {
   createorder,
@@ -46,6 +47,7 @@ import {
   getcomments,
   getlogin,
   editcomment,
+  deletecomment,
 } from '../controllers/genericController';
 
 const uploadXlsx = multer({
@@ -122,7 +124,9 @@ router.get('/gen/login', getlogin);
 router.post('/gen/comment', comment);
 router.post('/gen/getcomments', getcomments);
 router.post('/gen/editcomment', editcomment);
+router.post('/gen/deletecomment', deletecomment);
 router.post('/gen/getexcel', getexcel);
+
 
 // User related
 router.get('/logout', logout);
@@ -162,5 +166,7 @@ router.post('/qa/deleteproduct', deleteproduct);
 router.post('/client/editproductlink', editproductlink);
 router.post('/qa/editproductmodelid', editproductmodelid);
 router.post('/qa/editmodelname', editmodelname);
+router.post('/client/newmodels', uploadXlsx.single('modeldata'), newmodels);
+
 
 export default router;

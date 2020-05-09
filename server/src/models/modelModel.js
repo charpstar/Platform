@@ -33,10 +33,8 @@ export async function assignModeler(data, userid) {
       }
 
       const products = await trx('products')
-        .select('productid')
         .join('productstates', 'products.productid', 'productstates.productid')
         .where('modelid', data.modelid);
-
       const productStates = [];
       for (const product of products) {
         if (product.stateafter === 'ProductReceived') {
@@ -122,6 +120,59 @@ export async function getModels(filter) {
   }
 
   return ret;
+}
+
+export async function newModels(modelData) {
+  const modelNames = Object.keys(modelData.models);
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [orderExists] = await trx('orders')
+        .where('orderid', modelData.orderid)
+        .returning(['orderid']);
+      if (typeof orderExists === 'undefined' || orderExists === null) {
+        throw new Error(`No order with orderid: ${modelData.orderid}`);
+      }
+      modelNames.forEach((x, i) => {
+        modelNames[i] = {
+          orderid: modelData.orderid,
+          name: x,
+        };
+      });
+      const models = await trx('models')
+        .insert(modelNames)
+        .returning(['modelid', 'name']);
+      const products = [];
+      models.forEach((x) => {
+        modelData.models[x.name].products.forEach((y) => {
+          products.push({
+            modelid: x.modelid,
+            color: y.color,
+            link: y.link,
+          });
+        });
+      });
+      const insertedProducts = await trx('products')
+        .insert(products)
+        .returning(['productid']);
+      const productstates = [];
+      for (const product of insertedProducts) {
+        productstates.push({
+          productid: product.productid,
+          userid: modelData.userid,
+          statebefore: 'ProductInit',
+          stateafter: 'ProductReceived',
+        });
+      }
+
+      await trx('productstates')
+        .insert(productstates);
+    });
+    return getModels({ orderid: modelData.orderid });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { error: 'Adding models failed' };
+  }
 }
 
 export async function uploadModelFile(userid, filename, modelid) {
@@ -498,7 +549,42 @@ export async function approveProductClient(productid, userid) {
 }
 
 export async function rejectProductQA(productid, userid) {
-  return changeProductState(productid, userid, 'ProductRefine', ['ProductReview']);
+  let newState;
+  const allowedStates = ['ProductReview'];
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [productstate] = await trx('curstat')
+        .where('productid', productid);
+      if (typeof productstate === 'undefined') {
+        throw new Error('Product does not exist');
+      }
+      if (allowedStates != null) {
+        if (!allowedStates.includes(productstate.stateafter)) {
+          throw new Error(`Disallowed state: ${productstate.stateafter}`);
+        }
+      }
+
+      let newStateFromStateBefore = 'ProductRefine';
+
+      if (productstate.statebefore === 'ClientProductReceived') {
+        newStateFromStateBefore = 'ClientFeedback';
+      }
+
+      [newState] = await trx('productstates')
+        .insert({
+          productid,
+          userid,
+          statebefore: productstate.stateafter,
+          stateafter: newStateFromStateBefore,
+        })
+        .returning(['productid', 'stateafter']);
+    });
+    return newState;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { status: 'f' };
+  }
 }
 
 export async function rejectProductClient(productid, userid) {
@@ -518,7 +604,7 @@ export async function approveModelQA(modelid, userid) {
 }
 
 export async function setModelDoneModeller(modelid, userid) {
-  return changeModelState(modelid, userid, 'ProductReview', 'ModelDev', ['ProductDev', 'ProductRefine', 'ClientFeedback']);
+  return changeModelState(modelid, userid, 'ProductReview', 'ProductReview', ['ProductDev', 'ProductRefine', 'ClientFeedback']);
 }
 
 export async function approveModelClient(modelid, userid) {
@@ -534,9 +620,9 @@ export async function rejectModelClient(modelid, userid) {
 }
 
 export async function setModelMissing(modelid, userid) {
-  return changeModelState(modelid, userid, 'ProductMissing', 'ModelMissing', null, ['Done']);
+  return changeModelState(modelid, userid, 'ProductMissing', 'ProductMissing', null, ['Done']);
 }
 
 export async function resolveModelMissing(modelid, userid) {
-  return changeModelState(modelid, userid, 'ProductDev', 'ModelDev', ['ProductMissing']);
+  return changeModelState(modelid, userid, 'ProductDev', 'ProductDev', ['ProductMissing']);
 }

@@ -1,4 +1,9 @@
-import { comment, getComments, editComment } from '../models/genericModel';
+import {
+  comment,
+  getComments,
+  editComment,
+  deleteComment,
+} from '../models/genericModel';
 import { setOrderMissing, resolveOrderMissing } from '../models/orderModel';
 import {
   setProductDoneModeller,
@@ -47,7 +52,7 @@ const stateChangeFunctions = {
       Resolve: resolveProductMissing,
       Info: setProductMissing,
     },
-    Modeler: {
+    Modeller: {
       Done: setProductDoneModeller,
       Info: setProductMissing,
     },
@@ -144,6 +149,32 @@ export async function editCommentService(data, req) {
   }
 
   responseObject.status = 'Comment edited';
+
+  return responseObject;
+}
+
+export async function deleteCommentService(data, req) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  const tempData = data;
+  tempData.userid = req.session.userid;
+
+  const result = await deleteComment(tempData);
+
+  if (typeof result.error !== 'undefined' && result.error !== '') {
+    responseObject.error = result.error;
+    return responseObject;
+  }
+
+  for (const tempComment of result) {
+    responseObject.data[tempComment.commentid] = tempComment;
+  }
+
+  responseObject.status = 'Comment deleted';
 
   return responseObject;
 }

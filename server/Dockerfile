@@ -7,4 +7,4 @@ RUN npm install
 COPY . /app
 EXPOSE 8081
 EXPOSE 5432
-CMD ["npm", "start"]
+CMD ["node", "--es-module-specifier-resolution=node", "src/app.js"]
