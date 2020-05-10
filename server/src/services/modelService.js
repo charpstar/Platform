@@ -298,14 +298,14 @@ export async function getProductsService(data) {
   return responseObject;
 }
 
-export async function deleteModelService(data) {
+export async function deleteModelService(data, req) {
   const responseObject = {
     status: '',
     error: '',
     data: {},
   };
 
-  const productIds = await deleteModel(data);
+  const productIds = await deleteModel(data, req.session.userid);
 
   try {
     for (const productid of productIds) {
