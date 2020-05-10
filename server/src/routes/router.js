@@ -148,7 +148,7 @@ router.post('/gen/getorder', getorder);
 router.post('/qa/deleteorder', deleteorder);
 
 // Model related
-router.get('/modeller/models', getmodellermodels);
+router.post('/modeller/models', getmodellermodels);
 router.get('/qa/getallmodels', getallmodels);
 router.post('/modeller/listmodelfiles', listmodelfiles);
 router.post('/qa/assignmodeler', assignmodeler);
