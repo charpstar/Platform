@@ -444,6 +444,59 @@ export async function getProducts(id) {
     .where('products.modelid', id);
 }
 
+async function setMissing(id, userid, idType) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [orderid] = await trx('curstat')
+        .select(['orderid'])
+        .where(idType, id);
+
+      const productStates = await trx('curstat')
+        .where('orderid', orderid.orderid);
+
+      let onlyMissing = true;
+      let doneOrMissing = true;
+      for (const product of productStates) {
+        if (product.stateafter !== ('Done' || 'ProductMissing')) {
+          if (product.stateafter !== 'ProductMissing') {
+            onlyMissing = false;
+          }
+          doneOrMissing = false;
+          break;
+        }
+      }
+
+      if (doneOrMissing && onlyMissing) {
+        const [curOrderState] = await trx('orderstates')
+          .select('stateafter')
+          .join((querybuilder) => {
+            querybuilder.from('orderstates')
+              .where('orderid', orderid.orderid)
+              .max('time')
+              .groupBy('orderid')
+              .as('t1');
+          }, 'orderstates.time', 't1.max')
+          .where('orderid', orderid.orderid);
+
+        if (curOrderState.stateafter !== 'OrderMissing') {
+          await trx('orderstates')
+            .insert({
+              orderid: orderid.orderid,
+              userid,
+              statebefore: curOrderState.stateafter,
+              stateafter: 'OrderMissing',
+            });
+        }
+      }
+    });
+    return null;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return null;
+  }
+}
+
 async function qaApproveOrderState(id, userid, idType) {
   try {
     await knexPool.transaction(async (trx) => {
@@ -462,7 +515,7 @@ async function qaApproveOrderState(id, userid, idType) {
         }
       }
 
-      if (done === true) {
+      if (done) {
         const [curOrderState] = await trx('orderstates')
           .select('stateafter')
           .join((querybuilder) => {
@@ -504,14 +557,18 @@ async function clientApproveOrderState(id, userid, idType) {
         .where('orderid', orderid.orderid);
 
       let done = true;
+      let doneOrMissing = true;
       for (const product of productStates) {
         if (product.stateafter !== 'Done') {
           done = false;
           break;
         }
+        if(product.stateafter !== ('Done' || 'ProductMissing')) {
+          doneOrMissing = false;
+        }
       }
 
-      if (done === true) {
+      if (done) {
         const [curOrderState] = await trx('orderstates')
           .select('stateafter')
           .join((querybuilder) => {
@@ -530,6 +587,29 @@ async function clientApproveOrderState(id, userid, idType) {
               userid,
               statebefore: curOrderState.stateafter,
               stateafter: 'Done',
+            });
+        }
+      }
+
+      if (!done && doneOrMissing) {
+        const [curOrderState] = await trx('orderstates')
+          .select('stateafter')
+          .join((querybuilder) => {
+            querybuilder.from('orderstates')
+              .where('orderid', orderid.orderid)
+              .max('time')
+              .groupBy('orderid')
+              .as('t1');
+          }, 'orderstates.time', 't1.max')
+          .where('orderid', orderid.orderid);
+
+        if (curOrderState.stateafter !== ('Done' || 'OrderMissing')) {
+          await trx('orderstates')
+            .insert({
+              orderid: orderid.orderid,
+              userid,
+              statebefore: curOrderState.stateafter,
+              stateafter: 'OrderMissing',
             });
         }
       }
@@ -698,7 +778,7 @@ export async function rejectProductClient(productid, userid) {
 }
 
 export async function setProductMissing(productid, userid) {
-  return changeProductState(productid, userid, 'ProductMissing', null, ['Done']);
+  return changeProductState(productid, userid, 'ProductMissing', null, ['Done'], setMissing);
 }
 
 export async function resolveProductMissing(productid, userid) {
@@ -726,7 +806,7 @@ export async function rejectModelClient(modelid, userid) {
 }
 
 export async function setModelMissing(modelid, userid) {
-  return changeModelState(modelid, userid, 'ProductMissing', 'ProductMissing', null, ['Done']);
+  return changeModelState(modelid, userid, 'ProductMissing', 'ProductMissing', null, ['Done'], setMissing);
 }
 
 export async function resolveModelMissing(modelid, userid) {
