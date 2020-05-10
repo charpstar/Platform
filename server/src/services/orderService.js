@@ -51,7 +51,7 @@ export async function claimOrderService(orderid, userid) {
   }
 
   responseObject.status = 'Claim successful';
-  [responseObject.data] = tempRes.data;
+  responseObject.data = tempRes.data;
 
   return responseObject;
 }

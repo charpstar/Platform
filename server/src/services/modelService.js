@@ -244,7 +244,7 @@ export async function assignModelerService(data, req) {
     responseObject.error = 'Something went wrong';
     return responseObject;
   }
-  [responseObject.data] = result.data;
+  responseObject.data = result.data;
   responseObject.status = 'Modeller assigned';
 
   return responseObject;

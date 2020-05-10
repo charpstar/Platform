@@ -75,7 +75,7 @@ export async function assignModeler(data, userid) {
           });
       }
 
-      temp = await trx('users')
+      [temp.userdata] = await trx('users')
         .where('userid', data.modelerid)
         .select('userid', 'name');
     });
@@ -444,12 +444,111 @@ export async function getProducts(id) {
     .where('products.modelid', id);
 }
 
+async function qaApproveOrderState(id, userid, idType) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [orderid] = await trx('curstat')
+        .select(['orderid'])
+        .where(idType, id);
+
+      const productStates = await trx('curstat')
+        .where('orderid', orderid.orderid);
+
+      let done = true;
+      for (const product of productStates) {
+        if (product.stateafter !== ('Done' || 'ProductMissing' || 'ClientProductReceived')) {
+          done = false;
+          break;
+        }
+      }
+
+      if (done === true) {
+        const [curOrderState] = await trx('orderstates')
+          .select('stateafter')
+          .join((querybuilder) => {
+            querybuilder.from('orderstates')
+              .where('orderid', orderid.orderid)
+              .max('time')
+              .groupBy('orderid')
+              .as('t1');
+          }, 'orderstates.time', 't1.max')
+          .where('orderid', orderid.orderid);
+
+        if (curOrderState.stateafter !== ('Done' || 'OrderMissing' || 'OrderClientReview')) {
+          await trx('orderstates')
+            .insert({
+              orderid: orderid.orderid,
+              userid,
+              statebefore: curOrderState.stateafter,
+              stateafter: 'OrderClientReview',
+            });
+        }
+      }
+    });
+    return null;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return null;
+  }
+}
+
+async function clientApproveOrderState(id, userid, idType) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [orderid] = await trx('curstat')
+        .select(['orderid'])
+        .where(idType, id);
+
+      const productStates = await trx('curstat')
+        .where('orderid', orderid.orderid);
+
+      let done = true;
+      for (const product of productStates) {
+        if (product.stateafter !== 'Done') {
+          done = false;
+          break;
+        }
+      }
+
+      if (done === true) {
+        const [curOrderState] = await trx('orderstates')
+          .select('stateafter')
+          .join((querybuilder) => {
+            querybuilder.from('orderstates')
+              .where('orderid', orderid.orderid)
+              .max('time')
+              .groupBy('orderid')
+              .as('t1');
+          }, 'orderstates.time', 't1.max')
+          .where('orderid', orderid.orderid);
+
+        if (curOrderState.stateafter !== ('Done' || 'OrderMissing')) {
+          await trx('orderstates')
+            .insert({
+              orderid: orderid.orderid,
+              userid,
+              statebefore: curOrderState.stateafter,
+              stateafter: 'Done',
+            });
+        }
+      }
+    });
+    return null;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return null;
+  }
+}
+
 export async function changeProductState(
   productid,
   userid,
   newProductState,
   allowedStates,
   disallowedStates,
+  productOrderStateUpdate,
 ) {
   let newState;
   try {
@@ -479,6 +578,9 @@ export async function changeProductState(
         })
         .returning(['productid', 'stateafter']);
     });
+    if (typeof productOrderStateUpdate !== 'undefined' || productOrderStateUpdate !== null) {
+      await productOrderStateUpdate(productid, userid, 'productid');
+    }
     return newState;
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -494,6 +596,7 @@ export async function changeModelState(
   newModelState,
   allowedStates,
   disallowedStates,
+  modelOrderStateUpdate,
 ) {
   try {
     await knexPool.transaction(async (trx) => {
@@ -528,6 +631,9 @@ export async function changeModelState(
       await trx('productstates')
         .insert(newStates);
     });
+    if (typeof modelOrderStateUpdate !== 'undefined' || modelOrderStateUpdate !== null) {
+      await modelOrderStateUpdate(modelid, userid, 'modelid');
+    }
     return { modelid, stateafter: newModelState };
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -541,11 +647,11 @@ export async function setProductDoneModeller(productid, userid) {
 }
 
 export async function approveProductQA(productid, userid) {
-  return changeProductState(productid, userid, 'ClientProductReceived', ['ProductReview']);
+  return changeProductState(productid, userid, 'ClientProductReceived', ['ProductReview'], null, qaApproveOrderState);
 }
 
 export async function approveProductClient(productid, userid) {
-  return changeProductState(productid, userid, 'Done', ['ClientProductReceived']);
+  return changeProductState(productid, userid, 'Done', ['ClientProductReceived'], null, clientApproveOrderState);
 }
 
 export async function rejectProductQA(productid, userid) {
@@ -600,7 +706,7 @@ export async function resolveProductMissing(productid, userid) {
 }
 
 export async function approveModelQA(modelid, userid) {
-  return changeModelState(modelid, userid, 'ClientProductReceived', 'ClientProductReceived', ['ProductReview']);
+  return changeModelState(modelid, userid, 'ClientProductReceived', 'ClientProductReceived', ['ProductReview'], null, qaApproveOrderState);
 }
 
 export async function setModelDoneModeller(modelid, userid) {
@@ -608,7 +714,7 @@ export async function setModelDoneModeller(modelid, userid) {
 }
 
 export async function approveModelClient(modelid, userid) {
-  return changeModelState(modelid, userid, 'Done', 'Done', ['ClientProductReceived']);
+  return changeModelState(modelid, userid, 'Done', 'Done', ['ClientProductReceived'], null, clientApproveOrderState);
 }
 
 export async function rejectModelQA(modelid, userid) {

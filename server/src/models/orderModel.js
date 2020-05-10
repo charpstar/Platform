@@ -150,9 +150,11 @@ export async function claimOrder(orderId, userId) {
           .insert({
             orderid: orderId,
             userid: userId,
-            statebefore: 'OrderReceived',
+            statebefore: tempRes.stateafter,
             stateafter: 'OrderReview',
           });
+
+        temp.newstate = tempRes.stateafter;
       }
 
       const productstates = await trx('curstat')
@@ -174,7 +176,7 @@ export async function claimOrder(orderId, userId) {
       await trx('productstates')
         .insert(newProductStates);
 
-      temp = await trx('users')
+      [temp.userdata] = await trx('users')
         .where('userid', userId)
         .select('userid', 'name');
     });
