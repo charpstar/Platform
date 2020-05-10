@@ -113,6 +113,13 @@ const editModelNameParser = Joi.object({
     .required(),
 });
 
+const modelOwnerParser = Joi.object({
+  modelowner: Joi.number()
+    .integer()
+    .min(0)
+    .required(),
+});
+
 export async function uploadmodelfile(req, res) {
   return validateAndRunService(modelFileParser, modelUploadService, req, res);
 }
@@ -158,7 +165,7 @@ export async function getallmodels(req, res) {
 }
 
 export async function getmodellermodels(req, res) {
-  return runServiceWithData(getModelsService, { modelowner: req.session.userid }, req, res);
+  return validateAndRunService(modelOwnerParser, getModelsService, req, res);
 }
 
 export async function getproducts(req, res) {
