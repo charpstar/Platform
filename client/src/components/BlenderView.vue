@@ -79,7 +79,7 @@
                             <v-btn
                                 v-if="account.usertype != 'Modeller'"
                                 icon
-                                @click="assign.modal = true"
+                                @click="openAssign"
                             >
                                 <v-icon class="iconColor">mdi-account-plus</v-icon>
                             </v-btn>
@@ -101,6 +101,7 @@
                 />
             </div>
         </div>
+        <v-snackbar v-model="assignSnackbar" :timeout="3000">Cannot assign modeller until order is claimed by a QA</v-snackbar>
     </div>
 </template>
 <script>
@@ -126,9 +127,18 @@ export default {
             modeler: false,
             file: "",
             backend: backend,
+            assignSnackbar: false,
         };
     },
     methods: {
+        openAssign() {
+            var vm = this;
+            if(vm.model.state == 'ProductReceived') {
+                vm.assignSnackbar = true;
+            } else {
+                vm.assign.modal = true;
+            }
+        },
         onFileChange(file) {
             this.file = file;
         },
@@ -140,7 +150,7 @@ export default {
                     if(vm.model.state == 'ProductReceived' || vm.model.state == 'ProductReview' ) {
                         vm.model.state = 'ProductDev';
                     }
-                    vm.model.modelowner = data.name;
+                    vm.model.modelowner = data.userdata.name;
                     vm.modeler = false;
                 });
         },

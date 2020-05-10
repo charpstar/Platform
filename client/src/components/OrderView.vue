@@ -63,7 +63,7 @@
                     <tr>
                         <td>Assigned QA</td>
                         <td>
-                            {{order.qaowner ? order.qaownername : 'none'}}
+                            {{order.qaowner ? order.qaownername : 'None'}}
                             <v-tooltip bottom v-if="account.usertype == 'QA'">
                                 <template v-slot:activator="{ on }">
                                     <v-btn
@@ -107,7 +107,7 @@
                         :icon="'mdi-delete'"
                         :color="'#d12300'"
                     />
-                    <v-btn @click="add.modal=true" v-if="account.usertype == 'Client'">
+                    <v-btn @click="add.modal=true" v-if="account.usertype == 'Client' && order.state != 'Done'">
                         Add models
                         <v-icon right>mdi-file-plus</v-icon>
                     </v-btn>

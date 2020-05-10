@@ -88,10 +88,7 @@ export default {
                 { text: "Name", value: "modelname", align: "left" },
                 { text: "Status", value: "state", align: "left" }
             ],
-            filters: {
-                ModelMissing: "Missing information",
-                ClientModelReceived: "Awaiting review"
-            },
+            filters: {},
             newModelHandler: backend.promiseHandler(this.newModel),
             name: "",
             search: "",
@@ -120,9 +117,15 @@ export default {
                 value: "modelowner",
                 align: "left"
             });
+            vm.filters['ProductMissing'] = "Missing information"
+            vm.filters['ProductReview'] = "Awaiting review"
+        } else {
+            vm.filters['ProductQAMissing'] = "Missing information"
+            vm.filters['ClientProductReceived'] = "Awaiting review"
         }
-        if (vm.$route.path == "/modeller/models") {
-            backend.getModellerModels().then(models => {
+        if (vm.$route.path.includes("/modeller/")) {
+            var id = vm.$route.params.id;
+            backend.getModellerModels(id).then(models => {
                 vm.models = models;
             });
         } else if (vm.$route.path == "/admin/models") {

@@ -125,6 +125,7 @@
                             :type="'Product'"
                             :review="account.usertype == 'Client' && product.state == 'ClientProductReceived'"
                             :markdone="account.usertype != 'Client' && product.state == 'ProductReview'"
+                            :markinfo="account.usertype != 'Client' && product.state != 'Done' && product.state != 'ProductQAMissing'"
                             :markresolve="account.usertype != 'Client' && product.state == 'ProductQAMissing'"
                             @state="$emit('state', $event)"
                         />

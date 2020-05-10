@@ -159,7 +159,7 @@ const ClientMessages = {
     OrderDev: "Under development",
 
     ProductInit: "Init state",
-    ProductReceived: "Under development",
+    ProductReceived: "Under review",
     ProductDev: "Under development",
     ProductMissing: "Under development",
     ProductQAMissing: "Information missing",
@@ -326,8 +326,8 @@ export default {
         return dbGet('/qa/getallmodels')
     },
 
-    getModellerModels() {
-        return dbGet('/modeller/models')
+    getModellerModels(userid) {
+        return dbPost('/modeller/models', {modelowner: userid})
     },
 
     getModel(modelid) {
@@ -335,7 +335,7 @@ export default {
     },
 
     uploadThumbnail(modelid, file) {
-        return dbUpload('/qa/uploadthumb', file, 'thumb', { modelid: modelid })
+        return dbUpload('/qa/uploadthumb', file, 'thumb', { modelid: modelid})
     },
 
     getThumbURL(modelid) {

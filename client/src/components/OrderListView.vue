@@ -102,7 +102,6 @@ export default {
                 { text: "ID", value: "orderid", align: "left" },
                 { text: "Date", value: "time", align: "left" },
                 { text: "Models", value: "models", align: "left" },
-                { text: "Progress", value: "complete", align: "left" },
                 { text: "Status", value: "state", align: "left" },
                 { text: "Client", value: "clientname", align: "left" },
                 { text: "Assigned QA", value: "qaownername", align: "left" }

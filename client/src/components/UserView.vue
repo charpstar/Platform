@@ -34,8 +34,12 @@
                 </tr>
             </table>
             <div class="flexcol" id="buttons">
-                <div class="flexrow">
-                    <confirmmodal :handler="resetHandler" :title="'Confirm password reset'" :buttonText="'Reset password'" />
+                <div class="flexrow" v-if="account.usertype == 'Admin'">
+                    <confirmmodal
+                        :handler="resetHandler"
+                        :title="'Confirm password reset'"
+                        :buttonText="'Reset password'"
+                    />
                     <v-text-field
                         outlined
                         readonly
@@ -46,8 +50,23 @@
                         @click:append="toClipboard"
                     ></v-text-field>
                 </div>
-                <v-btn :loading="viewLoading" @click="viewOrders" v-if="user.usertype == 'Client'">View Orders</v-btn>
-                <confirmmodal :handler="deleteHandler" :title="'Confirm user delete'" :buttonText="'Delete'" />
+                <v-btn
+                    @click="$router.push('/user/' + user.userid + '/orders')"
+                    v-if="user.usertype == 'Client'"
+                >View Orders</v-btn>
+                <v-btn
+                    @click="$router.push('/modeller/' + user.userid )"
+                    v-if="user.usertype == 'Modeller'"
+                >View Assigned Models</v-btn>
+
+                <confirmmodal
+                    :handler="deleteHandler"
+                    :title="'Confirm user delete'"
+                    :buttonText="'Delete User'"
+                    :icon="'mdi-delete'"
+                    :color="'#d12300'"
+                    v-if="account.usertype == 'Admin'"
+                />
             </div>
         </div>
         <v-snackbar v-model="snackbar" :timeout="3000">Password copied to clipboard</v-snackbar>
@@ -56,9 +75,12 @@
 
 <script>
 import backend from "../backend";
-import confirmmodal from './ConfirmModal';
+import confirmmodal from "./ConfirmModal";
 
 export default {
+    props: {
+        account: {type: Object, required: true}
+    },
     components: {
         confirmmodal
     },
@@ -68,16 +90,10 @@ export default {
             deleteHandler: backend.promiseHandler(this.deleteUser),
             resetHandler: backend.promiseHandler(this.resetUser),
             newPassword: "",
-            viewLoading: false,
             snackbar: false
         };
     },
     methods: {
-        viewOrders() {
-            var vm = this;
-            vm.viewLoading = true;
-            vm.$router.push("/user/" + vm.user.userid + "/orders");
-        },
         resetUser() {
             var vm = this;
             var password = backend.randomid(10);
@@ -114,13 +130,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.v-btn {
-    margin-top: 10px;
-}
-.v-input {
-    margin-left: 10px;
-    margin-top: 10px;
-}
+
 #user {
     justify-content: flex-start;
 }
@@ -134,6 +144,10 @@ export default {
 
 #buttons {
     align-items: flex-start;
+    > * {
+        margin-bottom: 10px;
+        margin-left: 10px;
+    }
 }
 
 #topRow {

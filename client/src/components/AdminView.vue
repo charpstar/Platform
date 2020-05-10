@@ -3,11 +3,11 @@
         <v-tabs v-model="tab" >
             <v-tabs-slider></v-tabs-slider>
             <v-tab :href="'#orders'">Orders</v-tab>
-            <v-tab :href="'#models'">Models</v-tab>
+            <v-tab :href="'#users'">Users</v-tab>
             <v-tab-item :value="'orders'">
                 <orderlistview :account="account" :isAdminView="true"/>
             </v-tab-item>
-            <v-tab-item :value="'models'">
+            <v-tab-item :value="'users'">
                 <userlistview />
             </v-tab-item>
         </v-tabs>

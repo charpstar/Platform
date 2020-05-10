@@ -47,7 +47,7 @@ const router = new VueRouter({
     { path: '/admin/users', component: userListView },
     { path: '/admin/orders', component: orderListView },
     { path: '/admin/models', component: modelListView },
-    { path: '/modeller/models', component: modelListView },
+    { path: '/modeller/:id', component: modelListView },
     { path: '/user/:id', component: userView },
     { path: '/user/:id/orders', component: orderListView },
     { path: '/user/:id/models', component: modelListView },

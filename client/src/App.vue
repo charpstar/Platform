@@ -44,7 +44,7 @@ export default {
             if (vm.account.usertype == "Client") {
                 vm.$router.push("/user/" + vm.account.userid + "/orders");
             } else if (vm.account.usertype == "Modeller") {
-                vm.$router.push("/modeller/models");
+                vm.$router.push("/modeller/" + vm.account.userid);
             } else {
                 vm.$router.push("/home");
             }
@@ -57,10 +57,6 @@ export default {
     },
     mounted() {
         var vm = this;
-        vm.notifications[1] = {
-            message: "There are 2 new orders",
-            url: "/admin/orders"
-        };
         backend
             .relogin()
             .then(userData => {
