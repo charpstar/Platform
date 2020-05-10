@@ -69,11 +69,9 @@ const uploadGlb = multer({
   dest: './private/',
   fileFilter: (req, file, cb) => {
     const allowedExtNames = /glb/;
-    const allowedMimeTypes = /model\/gltf-binary/;
-    const mimeType = allowedMimeTypes.test(file.mimetype);
     const extName = allowedExtNames.test(path.extname(file.originalname).toLowerCase());
 
-    if (mimeType && extName) {
+    if (extName) {
       return cb(null, true);
     }
     return cb(`Error: File upload only support the following filetypes - ${allowedExtNames}`, false);
@@ -84,11 +82,9 @@ const uploadUsdz = multer({
   dest: './private/',
   fileFilter: (req, file, cb) => {
     const allowedExtNames = /usdz/;
-    const allowedMimeTypes = /model\/vnd\.usdz\+zip/;
-    const mimeType = allowedMimeTypes.test(file.mimetype);
     const extName = allowedExtNames.test(path.extname(file.originalname).toLowerCase());
 
-    if (mimeType && extName) {
+    if (extName) {
       return cb(null, true);
     }
     return cb(`Error: File upload only support the following filetypes - ${allowedExtNames}`, false);
@@ -98,15 +94,7 @@ const uploadUsdz = multer({
 const uploadImage = multer({
   dest: './private/',
   fileFilter: (req, file, cb) => {
-    const allowedExtNames = /png/;
-    const allowedMimeTypes = /image\/png/;
-    const mimeType = allowedMimeTypes.test(file.mimetype);
-    const extName = allowedExtNames.test(path.extname(file.originalname).toLowerCase());
-
-    if (mimeType && extName) {
-      return cb(null, true);
-    }
-    return cb(`Error: File upload only support the following filetypes - ${allowedExtNames}`, false);
+    return cb(null, true);
   },
 });
 
