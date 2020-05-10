@@ -273,7 +273,7 @@ export async function setOrderMissing(orderid, userid) {
 
 export async function resolveOrderMissing(orderid, userid) {
   try {
-    let temp;
+    let temp = {};
     await knexPool.transaction(async (trx) => {
       const [orderExists] = await trx('orders')
         .where('orderid', orderid);

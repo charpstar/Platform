@@ -21,7 +21,7 @@ const knexPool = knex({
 
 export async function assignModeler(data, userid) {
   try {
-    let temp;
+    let temp = {};
     await knexPool.transaction(async (trx) => {
       const [modelExists] = await trx('models')
         .where('modelid', data.modelid)
