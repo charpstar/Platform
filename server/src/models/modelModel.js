@@ -221,48 +221,6 @@ export async function deleteProduct(data) {
   return null;
 }
 
-export async function deleteModel(data) {
-  const products = await knexPool('products')
-    .select(['productid'])
-    .where('modelid', data.modelid);
-
-  const productIds = [];
-  for (const product of products) {
-    productIds.push(product.productid);
-  }
-
-  await knexPool('productstates')
-    .whereIn('productid', productIds)
-    .del();
-
-  await knexPool('comments')
-    .whereIn('productid', productIds)
-    .orWhere('modelid', data.modelid)
-    .del();
-
-  await knexPool('androidversions')
-    .whereIn('productid', productIds)
-    .del();
-
-  await knexPool('appleversions')
-    .whereIn('productid', productIds)
-    .del();
-
-  await knexPool('products')
-    .whereIn('productid', productIds)
-    .del();
-
-  await knexPool('modelfiles')
-    .where('modelid', data.modelid)
-    .del();
-
-  await knexPool('models')
-    .where('modelid', data.modelid)
-    .del();
-
-  return productIds;
-}
-
 export async function editProductLink(data) {
   return knexPool('products')
     .where('productid', data.productid)
@@ -708,7 +666,6 @@ export async function changeProductState(
         .returning(['productid', 'stateafter']);
     });
     if (typeof productOrderStateUpdate !== 'undefined' && productOrderStateUpdate !== null) {
-      console.log(productOrderStateUpdate);
       await productOrderStateUpdate(productid, userid, 'productid');
     }
     return newState;
@@ -861,4 +818,55 @@ export async function setModelMissing(modelid, userid) {
 
 export async function resolveModelMissing(modelid, userid) {
   return changeModelState(modelid, userid, 'ProductDev', 'ProductDev', ['ProductMissing'], null, setResolved);
+}
+
+async function updateOrderAfterDeletion(id, userid) {
+  await setResolved(id, userid, 'modelid');
+  await setMissing(id, userid, 'modelid');
+  await qaApproveOrderState(id, userid, 'modelid');
+  await clientApproveOrderState(id, userid, 'modelid');
+}
+
+export async function deleteModel(data, userid) {
+  const products = await knexPool('products')
+    .select(['productid'])
+    .where('modelid', data.modelid);
+
+  const productIds = [];
+  for (const product of products) {
+    productIds.push(product.productid);
+  }
+
+  await knexPool('productstates')
+    .whereIn('productid', productIds)
+    .del();
+
+  await knexPool('comments')
+    .whereIn('productid', productIds)
+    .orWhere('modelid', data.modelid)
+    .del();
+
+  await knexPool('androidversions')
+    .whereIn('productid', productIds)
+    .del();
+
+  await knexPool('appleversions')
+    .whereIn('productid', productIds)
+    .del();
+
+  await knexPool('products')
+    .whereIn('productid', productIds)
+    .del();
+
+  await knexPool('modelfiles')
+    .where('modelid', data.modelid)
+    .del();
+
+  await knexPool('models')
+    .where('modelid', data.modelid)
+    .del();
+
+  await updateOrderAfterDeletion(data.modelid, userid);
+
+  return productIds;
 }
