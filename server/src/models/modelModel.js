@@ -578,7 +578,8 @@ export async function changeProductState(
         })
         .returning(['productid', 'stateafter']);
     });
-    if (typeof productOrderStateUpdate !== 'undefined' || productOrderStateUpdate !== null) {
+    if (typeof productOrderStateUpdate !== 'undefined' && productOrderStateUpdate !== null) {
+      console.log(productOrderStateUpdate);
       await productOrderStateUpdate(productid, userid, 'productid');
     }
     return newState;
@@ -631,7 +632,7 @@ export async function changeModelState(
       await trx('productstates')
         .insert(newStates);
     });
-    if (typeof modelOrderStateUpdate !== 'undefined' || modelOrderStateUpdate !== null) {
+    if (typeof modelOrderStateUpdate !== 'undefined' && modelOrderStateUpdate !== null) {
       await modelOrderStateUpdate(modelid, userid, 'modelid');
     }
     return { modelid, stateafter: newModelState };
