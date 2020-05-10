@@ -10,6 +10,6 @@ export const statePriority = [
   'ClientFeedback',
   'ProductMissing',
   'ProductQAMissing',
-  'ClientProductReveived',
+  'ClientProductReceived',
   'Done',
 ];
