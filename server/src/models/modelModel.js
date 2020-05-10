@@ -166,6 +166,27 @@ export async function newModels(modelData) {
 
       await trx('productstates')
         .insert(productstates);
+
+      const [curOrderState] = await trx('orderstates')
+        .select('stateafter')
+        .join((querybuilder) => {
+          querybuilder.from('orderstates')
+            .where('orderid', orderExists.orderid)
+            .max('time')
+            .groupBy('orderid')
+            .as('t1');
+        }, 'orderstates.time', 't1.max')
+        .where('orderid', orderExists.orderid);
+
+      if (curOrderState.stateafter !== 'OrderDev') {
+        await trx('orderstates')
+          .insert({
+            orderid: orderExists.orderid,
+            userid: modelData.userid,
+            statebefore: curOrderState.stateafter,
+            stateafter: 'OrderDev',
+          });
+      }
     });
     return getModels({ orderid: modelData.orderid });
   } catch (e) {
