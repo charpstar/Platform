@@ -21,7 +21,7 @@ const knexPool = knex({
 
 export async function assignModeler(data, userid) {
   try {
-    let temp = {};
+    const temp = {};
     await knexPool.transaction(async (trx) => {
       const [modelExists] = await trx('models')
         .where('modelid', data.modelid)
@@ -563,7 +563,7 @@ async function clientApproveOrderState(id, userid, idType) {
           done = false;
           break;
         }
-        if(product.stateafter !== ('Done' || 'ProductMissing')) {
+        if (product.stateafter !== ('Done' || 'ProductMissing')) {
           doneOrMissing = false;
         }
       }
