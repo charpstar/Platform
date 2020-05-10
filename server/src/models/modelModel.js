@@ -782,8 +782,12 @@ export async function setProductMissing(productid, userid) {
   return changeProductState(productid, userid, 'ProductMissing', null, ['Done'], setMissing);
 }
 
+export async function setProductMissingQA(productid, userid) {
+  return changeProductState(productid, userid, 'ProductQAMissing', null, ['Done']);
+}
+
 export async function resolveProductMissing(productid, userid) {
-  return changeProductState(productid, userid, 'ProductDev', ['ProductMissing']);
+  return changeProductState(productid, userid, 'ProductDev', ['ProductMissing', 'ProductQAMissing']);
 }
 
 export async function approveModelQA(modelid, userid) {

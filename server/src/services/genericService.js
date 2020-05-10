@@ -12,6 +12,7 @@ import {
   rejectProductQA,
   rejectProductClient,
   setProductMissing,
+  setProductMissingQA,
   resolveProductMissing,
   approveModelQA,
   setModelDoneModeller,
@@ -50,7 +51,7 @@ const stateChangeFunctions = {
       Approve: approveProductQA,
       Reject: rejectProductQA,
       Resolve: resolveProductMissing,
-      Info: setProductMissing,
+      Info: setProductMissingQA,
     },
     Modeller: {
       Done: setProductDoneModeller,
