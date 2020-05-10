@@ -251,6 +251,7 @@ export async function setOrderMissing(orderid, userid) {
         && (
           tempRes.stateafter === 'OrderReview'
           || tempRes.stateafter === 'OrderDev'
+          || tempRes.stateafter === 'OrderClientReview'
         )
       ) {
         await trx('orderstates')

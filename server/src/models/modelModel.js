@@ -444,6 +444,55 @@ export async function getProducts(id) {
     .where('products.modelid', id);
 }
 
+async function setResolved(id, userid, idType) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [orderid] = await trx('curstat')
+        .select(['orderid'])
+        .where(idType, id);
+
+      const productStates = await trx('curstat')
+        .where('orderid', orderid.orderid);
+
+      let notMissing = true;
+      for (const product of productStates) {
+        if (product.stateafter === 'ProductMissing') {
+          notMissing = false;
+          break;
+        }
+      }
+
+      if (notMissing) {
+        const [curOrderState] = await trx('orderstates')
+          .select('stateafter')
+          .join((querybuilder) => {
+            querybuilder.from('orderstates')
+              .where('orderid', orderid.orderid)
+              .max('time')
+              .groupBy('orderid')
+              .as('t1');
+          }, 'orderstates.time', 't1.max')
+          .where('orderid', orderid.orderid);
+
+        if (curOrderState.stateafter === 'OrderMissing') {
+          await trx('orderstates')
+            .insert({
+              orderid: orderid.orderid,
+              userid,
+              statebefore: curOrderState.stateafter,
+              stateafter: 'OrderDev',
+            });
+        }
+      }
+    });
+    return null;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return null;
+  }
+}
+
 async function setMissing(id, userid, idType) {
   try {
     await knexPool.transaction(async (trx) => {
@@ -460,9 +509,9 @@ async function setMissing(id, userid, idType) {
         if (product.stateafter !== ('Done' || 'ProductMissing')) {
           if (product.stateafter !== 'ProductMissing') {
             onlyMissing = false;
+            break;
           }
           doneOrMissing = false;
-          break;
         }
       }
 
@@ -787,7 +836,7 @@ export async function setProductMissingQA(productid, userid) {
 }
 
 export async function resolveProductMissing(productid, userid) {
-  return changeProductState(productid, userid, 'ProductDev', ['ProductMissing', 'ProductQAMissing']);
+  return changeProductState(productid, userid, 'ProductDev', ['ProductMissing', 'ProductQAMissing'], null, setResolved);
 }
 
 export async function approveModelQA(modelid, userid) {
@@ -815,5 +864,5 @@ export async function setModelMissing(modelid, userid) {
 }
 
 export async function resolveModelMissing(modelid, userid) {
-  return changeModelState(modelid, userid, 'ProductDev', 'ProductDev', ['ProductMissing']);
+  return changeModelState(modelid, userid, 'ProductDev', 'ProductDev', ['ProductMissing'], null, setResolved);
 }
