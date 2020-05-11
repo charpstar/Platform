@@ -6,7 +6,7 @@ The contents of this repository were developed as part of the KTH course DD1393 
 * PostgreSQL database setup
 * Postman data
 
-# Docker instructions
+# Docker
 Docker provides containerisation to facilitate mobility and migration of the contents on the server. 
 
 To create the containers, run first 01-buildImage.sh and then 02-createContainer.sh in both client and server folder. The client container will be called `ui` and the server container will be called `backend`. All uploaded files are located in /charpstarfiles
