@@ -143,10 +143,11 @@ export async function getModelsPartitioned(filter) {
   console.log(newFilter);
 
   return knexPool('curstat')
-    .select('modelid', 'stateafter')
+    .select('curstat.modelid', 'stateafter')
     .count('*')
     .as('products')
-    .groupBy(['modelid', 'stateafter'])
+    .groupBy(['curstat.modelid', 'stateafter'])
+    .join('models', 'curstat.modelid', 'models.modelid')
     .where(newFilter);
 }
 
