@@ -52,7 +52,8 @@ CREATE TYPE public.commentclass AS ENUM (
     'Reject',
     'Approve',
     'Done',
-    'Info'
+    'Info',
+    'Resolve'
 );
 
 
@@ -86,6 +87,7 @@ ALTER TYPE public.modelstate OWNER TO postgres;
 CREATE TYPE public.orderstate AS ENUM (
     'OrderReceived',
     'OrderReview',
+    'OrderClientReview',
     'OrderMissing',
     'Error',
     'Pause',
@@ -105,6 +107,7 @@ CREATE TYPE public.productstate AS ENUM (
     'ProductReceived',
     'ProductDev',
     'ProductMissing',
+    'ProductQAMissing',
     'ProductReview',
     'ProductRefine',
     'ClientProductReceived',
@@ -131,6 +134,28 @@ CREATE TYPE public.usertype AS ENUM (
 
 
 ALTER TYPE public.usertype OWNER TO postgres;
+
+--
+-- Name: refresh_curstat(); Type: FUNCTION; Schema: public; Owner: charpstar
+--
+
+CREATE FUNCTION public.refresh_curstat() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+declare
+	populated bool;
+begin
+	select relispopulated into populated from pg_class where relname = 'curstat';
+	if populated = false then
+		refresh materialized view curstat;
+	else
+		refresh materialized view concurrently curstat;
+	end if;
+	return null;
+end $$;
+
+
+ALTER FUNCTION public.refresh_curstat() OWNER TO charpstar;
 
 SET default_tablespace = '';
 
@@ -208,6 +233,78 @@ ALTER SEQUENCE public.comments_commentid_seq OWNED BY public.comments.commentid;
 
 
 --
+-- Name: models; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.models (
+    modelid integer NOT NULL,
+    modelowner integer,
+    orderid integer,
+    name character varying NOT NULL
+);
+
+
+ALTER TABLE public.models OWNER TO postgres;
+
+--
+-- Name: products; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.products (
+    productid integer NOT NULL,
+    modelid integer,
+    color character varying,
+    link character varying NOT NULL
+);
+
+
+ALTER TABLE public.products OWNER TO postgres;
+
+--
+-- Name: productstates; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.productstates (
+    productid integer NOT NULL,
+    "time" timestamp with time zone DEFAULT now() NOT NULL,
+    userid integer,
+    statebefore public.productstate NOT NULL,
+    stateafter public.productstate NOT NULL
+);
+
+
+ALTER TABLE public.productstates OWNER TO postgres;
+
+--
+-- Name: curstat; Type: MATERIALIZED VIEW; Schema: public; Owner: charpstar
+--
+
+CREATE MATERIALIZED VIEW public.curstat AS
+ SELECT models.orderid,
+    products.modelid,
+    products.productid,
+    t1."time",
+    t1.userid,
+    t1.statebefore,
+    t1.stateafter
+   FROM ((public.models
+     JOIN public.products ON ((models.modelid = products.modelid)))
+     JOIN ( SELECT productstates.productid,
+            productstates."time",
+            productstates.userid,
+            productstates.statebefore,
+            productstates.stateafter
+           FROM (public.productstates
+             JOIN ( SELECT productstates_1.productid,
+                    max(productstates_1."time") AS max
+                   FROM public.productstates productstates_1
+                  GROUP BY productstates_1.productid) t11 ON (((productstates."time" = t11.max) AND (productstates.productid = t11.productid))))) t1 ON ((products.productid = t1.productid)))
+  WITH NO DATA;
+
+
+ALTER TABLE public.curstat OWNER TO charpstar;
+
+--
 -- Name: linkdata; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -236,20 +333,6 @@ CREATE TABLE public.modelfiles (
 ALTER TABLE public.modelfiles OWNER TO postgres;
 
 --
--- Name: models; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.models (
-    modelid integer NOT NULL,
-    modelowner integer,
-    orderid integer,
-    name character varying NOT NULL
-);
-
-
-ALTER TABLE public.models OWNER TO postgres;
-
---
 -- Name: models_modelid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -270,21 +353,6 @@ ALTER TABLE public.models_modelid_seq OWNER TO postgres;
 
 ALTER SEQUENCE public.models_modelid_seq OWNED BY public.models.modelid;
 
-
---
--- Name: modelstates; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.modelstates (
-    modelid integer NOT NULL,
-    "time" timestamp with time zone DEFAULT now() NOT NULL,
-    userid integer,
-    statebefore public.modelstate NOT NULL,
-    stateafter public.modelstate NOT NULL
-);
-
-
-ALTER TABLE public.modelstates OWNER TO postgres;
 
 --
 -- Name: notifications; Type: TABLE; Schema: public; Owner: postgres
@@ -366,21 +434,6 @@ CREATE TABLE public.orderstates (
 ALTER TABLE public.orderstates OWNER TO postgres;
 
 --
--- Name: products; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.products (
-    productid integer NOT NULL,
-    modelid integer,
-    color character varying,
-    link character varying NOT NULL,
-    broken boolean
-);
-
-
-ALTER TABLE public.products OWNER TO postgres;
-
---
 -- Name: products_productid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -401,21 +454,6 @@ ALTER TABLE public.products_productid_seq OWNER TO postgres;
 
 ALTER SEQUENCE public.products_productid_seq OWNED BY public.products.productid;
 
-
---
--- Name: productstates; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.productstates (
-    productid integer NOT NULL,
-    "time" timestamp with time zone DEFAULT now() NOT NULL,
-    userid integer,
-    statebefore public.productstate NOT NULL,
-    stateafter public.productstate NOT NULL
-);
-
-
-ALTER TABLE public.productstates OWNER TO postgres;
 
 --
 -- Name: session; Type: TABLE; Schema: public; Owner: charpstar
@@ -536,14 +574,6 @@ ALTER TABLE ONLY public.models
 
 
 --
--- Name: modelstates modelstates_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.modelstates
-    ADD CONSTRAINT modelstates_pkey PRIMARY KEY (modelid, "time");
-
-
---
 -- Name: orderhistory orderhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -604,6 +634,20 @@ ALTER TABLE ONLY public.users
 --
 
 CREATE INDEX "IDX_session_expire" ON public.session USING btree (expire);
+
+
+--
+-- Name: prod_time; Type: INDEX; Schema: public; Owner: charpstar
+--
+
+CREATE UNIQUE INDEX prod_time ON public.curstat USING btree (productid, "time");
+
+
+--
+-- Name: productstates refresh_curstat; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER refresh_curstat AFTER INSERT OR DELETE OR UPDATE OR TRUNCATE ON public.productstates FOR EACH STATEMENT EXECUTE PROCEDURE public.refresh_curstat();
 
 
 --
@@ -700,22 +744,6 @@ ALTER TABLE ONLY public.models
 
 ALTER TABLE ONLY public.models
     ADD CONSTRAINT models_orderid_fkey FOREIGN KEY (orderid) REFERENCES public.orders(orderid);
-
-
---
--- Name: modelstates modelstates_modelid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.modelstates
-    ADD CONSTRAINT modelstates_modelid_fkey FOREIGN KEY (modelid) REFERENCES public.models(modelid);
-
-
---
--- Name: modelstates modelstates_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.modelstates
-    ADD CONSTRAINT modelstates_userid_fkey FOREIGN KEY (userid) REFERENCES public.users(userid);
 
 
 --
