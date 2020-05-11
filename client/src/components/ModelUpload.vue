@@ -15,6 +15,7 @@
                 </div>
                 <v-divider></v-divider>
                 <p class="error-text" v-if="handler.error">{{handler.error}}</p>
+                <p class="error-text" v-if="error">{{error}}</p>
                 <v-card-actions>
                     <v-checkbox v-model="thumbnail" :label="' Update Thumbnail'" color="#2196f3"></v-checkbox>
                     <v-spacer></v-spacer>
@@ -22,7 +23,7 @@
                         class="buttons"
                         @click="handler.execute"
                         :loading="handler.loading"
-                        :disabled="!(modelFile.file && modelFile.image)"
+                        :disabled="!modelFile.file || !(!thumbnail || modelFile.image) ||!!error"
                     >Upload</v-btn>
                     <v-btn class="buttons" @click="handler.modal = false">Cancel</v-btn>
                 </v-card-actions>
@@ -42,12 +43,13 @@ export default {
     props: {
         product: { type: Object, required: true },
         model: { type: Object, required: true },
-        uploadfun: { type: Function, required: true }
+        uploadfun: { type: Function, required: true },
+        filetype: {type: String, required: true}
     },
     data() {
         return {
             handler: backend.promiseHandler(this.upload),
-            thumbnail: true,
+            thumbnail: false,
             modelFile: {
                 file: false,
                 model: "",
@@ -59,6 +61,12 @@ export default {
     computed: {
         open() {
             return this.handler.modal;
+        },
+        error() {
+            if(this.modelFile.file && this.modelFile.file.name.split('.').pop() != this.filetype) {
+                return "Unsupported extension, please use ." + this.filetype;
+            }
+            return false;
         }
     },
     methods: {
@@ -96,6 +104,9 @@ export default {
 }
 .v-label {
     margin-left: 5px;
+}
+.error-text {
+    padding-left: 20px;
 }
 
 .buttons {

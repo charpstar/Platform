@@ -3,7 +3,7 @@
         <v-dialog v-model="handler.modal" width="400px">
             <div class="card flexcol">
                 <h2>{{title}}</h2>
-                <p v-if="text != ''">{{text}}</p>
+                <p v-if="text != ''" class="text">{{text}}</p>
                 <div class="flexrow buttons">
                     <v-btn :loading="handler.loading" @click="handler.execute">Confirm</v-btn>
                     <v-btn @click="handler.modal = false">Cancel</v-btn>
@@ -31,5 +31,8 @@ export default {
 <style lang="scss" scoped>
 .buttons > * {
     margin-right: 10px;
+}
+.text {
+    padding: 10px;
 }
 </style>

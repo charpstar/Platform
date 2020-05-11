@@ -20,18 +20,6 @@
             :loading="button.loading"
             :disabled="!email || !password"
         >Login</v-btn>
-        <v-btn
-            :loading="button.loading"
-            @click="demologin('qa@t.com', 'kqE96gPHHz')"
-        >QADude</v-btn>
-        <v-btn
-            :loading="button.loading"
-            @click="demologin('joe@modeller.com', 'Gl67ejD1MB')"
-        >Joe modeller</v-btn>
-        <v-btn
-            :loading="button.loading"
-            @click="demologin('demo@tes.com', '2yIpxT3gTO')"
-        >DemoClient</v-btn>
     </div>
 </template>
 

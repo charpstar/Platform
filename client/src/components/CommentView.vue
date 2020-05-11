@@ -10,37 +10,56 @@
                 :hide-details="true"
             ></v-textarea>
             <div class="flexcol" id="sendButtons">
-                <v-btn
-                    v-if="review"
-                    block
-                    @click="() => sendComment('Approve')"
-                    :loading="loading['Approve']"
-                    class="approve"
+                <commentmodal
+                    :title="'Confirm approve'"
+                    :text="'You will not be able to rever this action'"
+                    :open="modalapprove"
+                    :click="() => sendComment('Approve')"
                 >
-                    Approve
-                    <v-icon right>mdi-check</v-icon>
-                </v-btn>
-                <v-btn
-                    v-if="markdone"
-                    block
-                    @click="() => sendComment('Done')"
-                    :loading="loading['Done']"
-                    class="approve"
-                    :disabled="markdonedisabled"
+                    <v-btn
+                        v-if="review"
+                        block
+                        @click="modalapprove = true"
+                        :loading="loading['Approve']"
+                        class="approve"
+                    >
+                        Approve
+                        <v-icon right>mdi-check</v-icon>
+                    </v-btn>
+                </commentmodal>
+                <commentmodal
+                    :title="'Confirm mark as done'"
+                    :open="modaldone"
+                    :click="() => sendComment('Done')"
                 >
-                    Done
-                    <v-icon right>mdi-check</v-icon>
-                </v-btn>
-                <v-btn
-                    v-if="markresolve"
-                    block
-                    @click="() => sendComment('Resolve')"
-                    :loading="loading['Resolve']"
-                    class="approve"
+                    <v-btn
+                        v-if="markdone"
+                        block
+                        @click="modaldone = true"
+                        :loading="loading['Done']"
+                        class="approve"
+                        :disabled="markdonedisabled"
+                    >
+                        Done
+                        <v-icon right>mdi-check</v-icon>
+                    </v-btn>
+                </commentmodal>
+                <commentmodal
+                    :title="'Confirm resolve'"
+                    :open="modalresolve"
+                    :click="() => sendComment('Resolve')"
                 >
-                    Resolve
-                    <v-icon right>mdi-check</v-icon>
-                </v-btn>
+                    <v-btn
+                        v-if="markresolve"
+                        block
+                        @click="modalresolve = true"
+                        :loading="loading['Resolve']"
+                        class="approve"
+                    >
+                        Resolve
+                        <v-icon right>mdi-check</v-icon>
+                    </v-btn>
+                </commentmodal>
                 <v-btn
                     v-if="review"
                     block
@@ -92,7 +111,11 @@
 
 <script>
 import backend from "../backend";
+import commentmodal from "./CommentModal";
 export default {
+    components: {
+        commentmodal
+    },
     props: {
         type: { type: String, required: true },
         idobj: { type: Object, required: true },
@@ -115,15 +138,18 @@ export default {
                 Comment: false,
                 Done: false,
                 Info: false,
-                Resolve: false,
+                Resolve: false
             },
+            modalresolve: false,
+            modalapprove: false,
+            modaldone: false,
             icons: {
-                Reject: 'mdi-refresh',
-                Approve : 'mdi-check',
-                Comment: '',
-                Done: 'mdi-check',
-                Info: 'mdi-information',
-                Resolve: 'mdi-check',
+                Reject: "mdi-refresh",
+                Approve: "mdi-check",
+                Comment: "",
+                Done: "mdi-check",
+                Info: "mdi-information",
+                Resolve: "mdi-check"
             }
         };
     },
@@ -132,19 +158,19 @@ export default {
             var vm = this;
             if (vm.addComment === "") {
                 switch (ctype) {
-                    case ('Done'): {
-                        vm.addComment = 'Marked as done'
+                    case "Done": {
+                        vm.addComment = "Marked as done";
                         break;
                     }
-                    case ('Approve'): {
-                        vm.addComment = 'Approved'
+                    case "Approve": {
+                        vm.addComment = "Approved";
                         break;
                     }
-                    case ('Resolve'): {
-                        vm.addComment = 'Resolved'
+                    case "Resolve": {
+                        vm.addComment = "Resolved";
                         break;
                     }
-                    default : {
+                    default: {
                         vm.snackbar = true;
                         return;
                     }
@@ -161,13 +187,13 @@ export default {
             backend
                 .sendComment(comment)
                 .then(data => {
-                    if(data.comments != null && !vm.$emptyObj(data.comments)) {
-                        Object.values(data.comments).forEach((comment) => {
+                    if (data.comments != null && !vm.$emptyObj(data.comments)) {
+                        Object.values(data.comments).forEach(comment => {
                             vm.comments.unshift(comment);
-                        })
+                        });
                     }
-                    if(data.state != null && !vm.$emptyObj(data.state)) {
-                        vm.$emit('state', data.state)
+                    if (data.state != null && !vm.$emptyObj(data.state)) {
+                        vm.$emit("state", data.state);
                     }
                     vm.addComment = "";
                     vm.loading = {
@@ -176,8 +202,11 @@ export default {
                         Comment: false,
                         Done: false,
                         Info: false,
-                        Resolve: false,
+                        Resolve: false
                     };
+                    vm.modalresolve = false;
+                    vm.modalapprove = false;
+                    vm.modaldone = false;
                 })
                 .catch(error => {
                     vm.error = error;
@@ -187,15 +216,20 @@ export default {
                         Comment: false,
                         Done: false,
                         Info: false,
-                        Resolve: false,
+                        Resolve: false
                     };
+                    vm.modalresolve = false;
+                    vm.modalapprove = false;
+                    vm.modaldone = false;
                 });
         }
     },
     mounted() {
         var vm = this;
         backend.getComments(vm.idobj).then(comments => {
-            vm.comments = Object.values(comments).slice().reverse();
+            vm.comments = Object.values(comments)
+                .slice()
+                .reverse();
         });
     }
 };

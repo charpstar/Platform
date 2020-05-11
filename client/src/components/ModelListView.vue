@@ -1,12 +1,5 @@
 <template>
     <div>
-        <v-dialog v-model="newModelHandler.modal" width="500">
-            <div class="card">
-                <v-text-field label="Name" v-model="name" />
-                <v-btn :loading="newModelHandler.loading" @click="newModelHandler.execute">New Model</v-btn>
-                <p class="error-text" v-if="newModelHandler.error">{{newModelHandler.error}}</p>
-            </div>
-        </v-dialog>
         <div class="flexrow" id="topRow">
             <div class="flexrow">
                 <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Modeller'">
@@ -14,10 +7,6 @@
                 </v-btn>
                 <h2>Models</h2>
             </div>
-            <v-btn id="buttonNew" @click="newModelHandler.dialog = true" v-if="order">
-                New Model
-                <v-icon right>mdi-file-plus</v-icon>
-            </v-btn>
         </div>
         <div id="itemsView">
             <div class="flexrow">
@@ -48,7 +37,7 @@
             </div>
             <v-data-table
                 id="table"
-                :headers="headers"
+                :headers="filteredHeaders"
                 :items="Object.values(models)"
                 :items-per-page="-1"
                 :must-sort="true"
@@ -56,12 +45,24 @@
                 :search="search"
                 @click:row="handleClick"
             >
-                <template v-slot:item.thumbnail="{item}">
-                    <img :src="backend.getThumbURL(item.modelid)" class="thumbnail" onerror="this.style.display='none'"/>
+                <template v-slot:item.thumb="{item}">
+                    <img
+                        :src="backend.getThumbURL(item.modelid)"
+                        class="thumbnail"
+                        onerror="this.style.display='none'"
+                    />
                 </template>
                 <template v-slot:item.state="{value}">
                     {{backend.messageFromStatus(value, account.usertype)}}
                     <v-icon>{{backend.iconFromStatus(value, account.usertype)}}</v-icon>
+                </template>
+                <template v-slot:item.partitiondata="{value}">
+                    <barchart :productdata="value" :account="account" />
+                </template>
+                <template v-slot:item.products="{item}">{{sumProducts(item)}}</template>
+                <template v-slot:item.modelowner="{value}">
+                    <span v-if="value">{{value}}</span>
+                    <span v-else ><i>Unassigned</i></span>
                 </template>
             </v-data-table>
         </div>
@@ -70,26 +71,29 @@
 
 <script>
 import backend from "../backend";
+import barchart from "./BarChart";
+
 export default {
     props: {
         account: { required: true, type: Object }
+    },
+    components: {
+        barchart
     },
     data() {
         return {
             models: {},
             headers: [
-                {
-                    text: "",
-                    align: "left",
-                    sortable: false,
-                    value: "thumbnail"
-                },
-                { text: "ID", value: "modelid", align: "left" },
-                { text: "Name", value: "modelname", align: "left" },
-                { text: "Status", value: "state", align: "left" }
+                { text: "", sortable: false, value: "thumb"},
+                { text: "ID", value: "modelid" },
+                { text: "Name", value: "modelname" },
+                { text: "Client", value: "client", hideClient: true},
+                { text: "Modeller", value: "modelowner", hideClient: true},
+                { text: "Status", value: "state" },
+                { text: "Products", value: "products" },
+                { text: "Product states", value: "partitiondata" }
             ],
             filters: {},
-            newModelHandler: backend.promiseHandler(this.newModel),
             name: "",
             search: "",
             backend: backend,
@@ -98,30 +102,36 @@ export default {
         };
     },
     methods: {
+        sumProducts(item) {
+            var sum = 0;
+            var states = Object.values(item.partitiondata);
+            states.forEach(state => {
+                sum += parseInt(state.count);
+            });
+            return sum;
+        },
         handleClick(model) {
             this.$router.push("/model/" + model.modelid);
-        },
-        newModel() {
-            var vm = this;
-            return backend.newModel(vm.order, vm.name).then(model => {
-                vm.name = "";
-                vm.models[model.modelid] = model;
-            });
+        }
+    },
+    computed: {
+        filteredHeaders() {
+            if(this.account.usertype == 'Client') {
+                return this.headers.filter(header => header.hideClient != true);
+            }
+            return this.headers
         }
     },
     mounted() {
         var vm = this;
         if (vm.account.usertype != "Client") {
-            vm.headers.push({
-                text: "Modeller",
-                value: "modelowner",
-                align: "left"
-            });
-            vm.filters['ProductMissing'] = "Missing information"
-            vm.filters['ProductReview'] = "Awaiting review"
+            vm.filters["ProductMissing"] = "Missing information";
+            vm.filters["ProductQAMissing"] = "Missing client information";
+            vm.filters["ProductReview"] = "Awaiting review";
+            
         } else {
-            vm.filters['ProductQAMissing'] = "Missing information"
-            vm.filters['ClientProductReceived'] = "Awaiting review"
+            vm.filters["ProductQAMissing"] = "Missing information";
+            vm.filters["ClientProductReceived"] = "Awaiting review";
         }
         if (vm.$route.path.includes("/modeller/")) {
             var id = vm.$route.params.id;

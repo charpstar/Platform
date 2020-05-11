@@ -1,17 +1,5 @@
 <template>
     <div class="view">
-        <v-dialog v-model="add.modal" width="500">
-            <div class="card">
-                <v-file-input :label="'Select Excel Document'" @change="file = $event"></v-file-input>
-                <p v-if="add.error">{{add.error}}</p>
-                <p v-if="!fileIsExcel">Must be a .xlsx file</p>
-                <v-btn
-                    :disabled="!file || !fileIsExcel"
-                    :loading="add.loading"
-                    @click="add.execute"
-                >Upload</v-btn>
-            </div>
-        </v-dialog>
         <v-dialog v-model="assign.modal" width="500">
             <div class="card">
                 <v-select :items="qas" label="QA" v-model="qa">
@@ -42,23 +30,12 @@
                         <td>{{order.orderid}}</td>
                     </tr>
                     <tr>
+                        <td>Date</td>
+                        <td v-if="order">{{$formatTime(order.time)}}</td>
+                    </tr>
+                    <tr>
                         <td>Client</td>
                         <td>{{order.clientname}}</td>
-                    </tr>
-                    <tr>
-                        <td>Date</td>
-                        <td>{{$formatTime(order.time)}}</td>
-                    </tr>
-                    <tr>
-                        <td>Models</td>
-                        <td>{{order.models}}</td>
-                    </tr>
-                    <tr>
-                        <td>Status</td>
-                        <td>
-                            {{backend.messageFromStatus(order.state, account.usertype)}}
-                            <v-icon>{{backend.iconFromStatus(order.state, account.usertype)}}</v-icon>
-                        </td>
                     </tr>
                     <tr>
                         <td>Assigned QA</td>
@@ -91,6 +68,26 @@
                             </v-tooltip>
                         </td>
                     </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>
+                            {{backend.messageFromStatus(order.state, account.usertype)}}
+                            <v-icon>{{backend.iconFromStatus(order.state, account.usertype)}}</v-icon>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Models</td>
+                        <td>{{order.models}}</td>
+                    </tr>
+                    <tr>
+                        <td>Products</td>
+                        <td>{{products}}</td>
+                    </tr>
+                    <tr>
+                    <tr>
+                        <td>Product states</td>
+                        <td><barchart v-if="order" :account="account" :productdata="order.partitiondata"/></td>
+                    </tr>
                 </table>
                 <div class="flexcol" id="buttons">
                     <v-btn @click="viewModels">View Models</v-btn>
@@ -107,10 +104,10 @@
                         :icon="'mdi-delete'"
                         :color="'#d12300'"
                     />
-                    <v-btn @click="add.modal=true" v-if="account.usertype == 'Client' && order.state != 'Done'">
+                    <excelupload :handler="add" @file="file=$event" v-if="account.usertype == 'Client' && order.state != 'Done'">
                         Add models
                         <v-icon right>mdi-file-plus</v-icon>
-                    </v-btn>
+                    </excelupload>
                 </div>
             </div>
             <div>
@@ -119,7 +116,7 @@
                     v-if="order"
                     :idobj="{orderid: order.orderid}"
                     :type="'Order'"
-                    :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderReview'"
+                    :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
                     :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
                     @state="order.state = $event.orderstatus"
                 />
@@ -131,23 +128,30 @@
 import backend from "./../backend";
 import comments from "./CommentView";
 import confirmmodal from "./ConfirmModal";
+import barchart from './BarChart';
+import excelupload from './ExcelUpload';
+
 export default {
     components: {
         comments,
-        confirmmodal
+        confirmmodal,
+        barchart,
+        excelupload
     },
     props: {
         account: { type: Object, required: true }
     },
     computed: {
-        fileIsExcel() {
-            var vm = this;
-            if (vm.file) {
-                var arr = vm.file.name.split(".");
-                var last = arr[arr.length - 1];
-                return last == "xlsx";
+        products() {
+            var sum = 0;
+            if (!this.order) {
+                return 0
             }
-            return true;
+            var states = Object.values(this.order.partitiondata)
+            states.forEach(state => {
+                sum += parseInt(state.count);
+            })
+            return sum;
         }
     },
     data() {
@@ -194,8 +198,8 @@ export default {
             vm.assignLoading = true;
             backend.assignQA(vm.order.orderid).then(data => {
                 vm.assignLoading = false;
-                vm.order.qaowner = data.userid;
-                vm.order.qaownername = data.name;
+                vm.order.qaowner = data.userdata.userid;
+                vm.order.qaownername = data.userdata.name;
                 if (vm.order.state == 'OrderReceived') {
                     vm.order.state = 'OrderReview'
                 }

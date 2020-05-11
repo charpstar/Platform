@@ -5,7 +5,7 @@
             <div class="flexrow">
                 <h2>Users</h2>
             </div>
-            <v-btn id="buttonNew" @click="newUserHandler.modal = true">
+            <v-btn id="buttonNew" @click="newUserHandler.modal = true" v-if="account.usertype == 'Admin'">
                 New User
                 <v-icon right>mdi-account-plus</v-icon>
             </v-btn>
@@ -42,6 +42,9 @@ import backend from "../backend";
 import Vue from "vue";
 
 export default {
+    props: {
+        account: {required: true, type: Object}
+    },
     components: {
         usernewmodal
     },

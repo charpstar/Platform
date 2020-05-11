@@ -8,7 +8,7 @@
                 <orderlistview :account="account" :isAdminView="true"/>
             </v-tab-item>
             <v-tab-item :value="'users'">
-                <userlistview />
+                <userlistview :account="account"/>
             </v-tab-item>
         </v-tabs>
     </div>

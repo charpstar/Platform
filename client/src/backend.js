@@ -6,8 +6,6 @@ const backend = 'http://46.101.115.253:8081'
 function parseResponse(axios) {
     return new Promise((resolve, reject) => {
         axios.then((res) => {
-            //eslint-disable-next-line no-console
-            console.log(res.data)
             if (res.data.error == '') {
                 resolve(res.data.data)
             } else {
@@ -40,8 +38,6 @@ function dbDownload(url, data) {
     delete(data.name);
     return new Promise((resolve, reject) => {
         Axios.post(backend + url, data, {responseType: 'blob'}).then((response) => {
-            //eslint-disable-next-line no-console
-            console.log(response)
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -50,13 +46,12 @@ function dbDownload(url, data) {
             link.click();
             resolve();
         }).catch(error => {
-            //eslint-disable-next-line no-console
-            console.log(error)
             reject(error)
         });
     })
 }
 
+ //eslint-disable-next-line no-unused-vars
 const Icons = {
     OrderInit: "",
     OrderReceived: "",
@@ -73,14 +68,6 @@ const Icons = {
     ProductReview: "mdi-image-search",
     ProductRefine: "",
     ClientProductReceived: "mdi-image-search",
-    
-    ModelInit: "",
-    ModelReceived: "",
-    ModelDev: "",
-    ModelMissing: "mdi-information",
-    ModelReview: "mdi-image-search",
-    ModelRefine: "",
-    ClientModelReceived: "mdi-image-search",
 
     ClientFeedback: "",
     Done: "mdi-check",
@@ -88,6 +75,7 @@ const Icons = {
     Error: ""
 }
 
+ //eslint-disable-next-line no-unused-vars
 const ClientIcons = {
     OrderInit: "",
     OrderReceived: "",
@@ -104,14 +92,6 @@ const ClientIcons = {
     ProductReview: "",
     ProductRefine: "",
     ClientProductReceived: "mdi-image-search",
-    
-    ModelInit: "",
-    ModelReceived: "",
-    ModelDev: "",
-    ModelMissing: "mdi-information",
-    ModelReview: "",
-    ModelRefine: "",
-    ClientModelReceived: "mdi-image-search",
 
     ClientFeedback: "",
     Done: "mdi-check",
@@ -121,30 +101,22 @@ const ClientIcons = {
 
 const Messages = {
     OrderInit: "Init state",
-    OrderReceived: "Order received",
+    OrderReceived: "Unassigned",
     OrderReview: "QA review",
     OrderClientReview: "Awaiting client feedback",
     OrderMissing: "Information missing",
     OrderDev: "Under development",
 
     ProductInit: "Init state",
-    ProductReceived: "Product received",
+    ProductReceived: "Unassigned",
     ProductDev: "Under development",
     ProductMissing: "Information missing",
     ProductQAMissing: "Client information missing",
     ProductReview: "QA review",
-    ProductRefine: "Redoing model",
+    ProductRefine: "Needs revision",
     ClientProductReceived: "Client review",
-    
-    ModelInit: "Init state",
-    ModelReceived: "Model received",
-    ModelDev: "Under development",
-    ModelMissing: "Information missing",
-    ModelReview: "QA review",
-    ModelRefine: "Redoing model",
-    ClientModelReceived: "Client review",
 
-    ClientFeedback: "Incorporating feedback",
+    ClientFeedback: "Incorporating client feedback",
     Done: "Complete",
     Pause: "Pause",
     Error: "Error"
@@ -166,16 +138,8 @@ const ClientMessages = {
     ProductReview: "Under development",
     ProductRefine: "Under development",
     ClientProductReceived: "Awaiting your feedback",
-    
-    ModelInit: "Init state",
-    ModelReceived: "Under development",
-    ModelDev: "Under development",
-    ModelMissing: "Information missing",
-    ModelReview: "Under development",
-    ModelRefine: "Under development",
-    ClientModelReceived: "Awaiting your feedback",
 
-    ClientFeedback: "Incorporating feedback",
+    ClientFeedback: "Incorporating your feedback",
     Done: "Complete",
     Pause: "Pause",
     Error: "Error"
@@ -190,9 +154,9 @@ export default {
             error: '',
             fun: fun
         }
-        handler.execute = () => {
+        handler.execute = (data) => {
             handler.loading = true
-            handler.fun().then(() => {
+            handler.fun(data).then(() => {
                 handler.modal = false
                 handler.loading = false
                 handler.error = ''
@@ -211,11 +175,15 @@ export default {
         return Messages[status]
     },
 
+    //eslint-disable-next-line no-unused-vars
     iconFromStatus(status, usertype) {
+        return ''
+        /* if you want to enable icons, uncomment this
         if (usertype == 'Client') {
             return ClientIcons[status]
         }
         return Icons[status]
+        */
     },
 
     randomid(length) {
@@ -286,8 +254,8 @@ export default {
         return dbPost('/gen/getorder', { orderid: orderid })
     },
 
-    createOrder(file) {
-        return dbUpload('/client/createorder', file, 'orderdata')
+    createOrder(file, userid) {
+        return dbUpload('/client/createorder', file, 'orderdata', {userid: userid})
     },
 
     assignQA(orderid) {
@@ -383,5 +351,25 @@ export default {
     deleteModelFile(modelid, filename) {
         return dbPost('/modeller/deletemodelfile', {modelid: modelid, filename: filename})
     },
+
+    deleteProduct(productid) {
+        return dbPost('/qa/deleteproduct', {productid: productid})
+    },
+
+    deleteModel(modelid) {
+        return dbPost('/qa/deletemodel', {modelid: modelid})
+    },
+
+    editProductModelId(productid, modelid) {
+        return dbPost('/qa/editproductmodelid', {productid: productid, newmodelid: modelid})
+    },
+
+    editModelName(modelid, name) {
+        return dbPost('/qa/editmodelname', {name: name, modelid: modelid})
+    },
+
+    createProducts(modelid, file) {
+        return dbUpload('/client/newproducts', file, 'productdata', { modelid: modelid })
+    }
 }
 

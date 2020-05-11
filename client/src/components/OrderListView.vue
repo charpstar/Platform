@@ -1,17 +1,6 @@
 <template>
     <div>
-        <v-dialog v-model="newOrderHandler.modal" width="500">
-            <div class="card">
-                <v-file-input :label="'Select Excel Document'" @change="onFileChange"></v-file-input>
-                <p v-if="newOrderHandler.error">{{newOrderHandler.error}}</p>
-                <p v-if="!fileIsExcel">Must be a .xlsx file</p>
-                <v-btn
-                    :disabled="!file || !fileIsExcel"
-                    :loading="newOrderHandler.loading"
-                    @click="newOrderHandler.execute"
-                >Upload</v-btn>
-            </div>
-        </v-dialog>
+
         <div class="flexrow" id="topRow">
             <div class="flexrow">
                 <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Client' && !isAdminView">
@@ -19,10 +8,10 @@
                 </v-btn>
                 <h2>Orders</h2>
             </div>
-            <v-btn id="buttonNew" @click="newOrderHandler.modal=true" v-if="userOrders && account.usertype == 'Client'">
+            <excelupload id="buttonNew" :handler="newOrderHandler" v-if="userOrders && account.usertype != 'Modeller'" @file="file = $event">
                 New Order
                 <v-icon right>mdi-file-plus</v-icon>
-            </v-btn>
+            </excelupload>
         </div>
         <div id="itemsView">
             <div class="flexrow">
@@ -53,7 +42,7 @@
             </div>
             <v-data-table
                 id="table"
-                :headers="headers"
+                :headers="filteredHeaders"
                 :items="Object.values(orders)"
                 :items-per-page="-1"
                 :must-sort="true"
@@ -76,9 +65,19 @@
                         <span>{{item.complete}} / {{item.models}}</span>
                     </v-tooltip>
                 </template>
+                <template v-slot:item.qaownername="{value}">
+                    <span v-if="value">{{value}}</span>
+                    <span v-else ><i>Unassigned</i></span>
+                </template>
                 <template v-slot:item.state="{value}">
                     {{backend.messageFromStatus(value, account.usertype)}}
                     <v-icon>{{backend.iconFromStatus(value, account.usertype)}}</v-icon>
+                </template>
+                <template v-slot:item.partitiondata="{value}">
+                    <barchart :productdata="value" :account="account"/>
+                </template>
+                <template v-slot:item.products="{item}">
+                    {{sumProducts(item)}}
                 </template>
                 <template v-slot:item.time="{value}">{{$formatTime(value)}}</template>
             </v-data-table>
@@ -88,23 +87,31 @@
 
 <script>
 import backend from "../backend";
+import barchart from './BarChart'
+import excelupload from './ExcelUpload'
 
 export default {
     props: {
         account: { required: true, type: Object },
         isAdminView : { type: Boolean, default: false}
     },
+    components: {
+        barchart,
+        excelupload
+    },
     data() {
         return {
             orders: {},
             userOrders: false,
             headers: [
-                { text: "ID", value: "orderid", align: "left" },
-                { text: "Date", value: "time", align: "left" },
-                { text: "Models", value: "models", align: "left" },
-                { text: "Status", value: "state", align: "left" },
-                { text: "Client", value: "clientname", align: "left" },
-                { text: "Assigned QA", value: "qaownername", align: "left" }
+                { text: "ID", value: "orderid" },
+                { text: "Date", value: "time" },
+                { text: "Client", value: "clientname", hideClient: true},
+                { text: "Assigned QA", value: "qaownername" },
+                { text: "Status", value: "state" },
+                { text: "Models", value: "models"},
+                { text: "Products", value: "products"},
+                { text: "Product states", value: "partitiondata"},
             ],
             filters: {},
             newOrderHandler: backend.promiseHandler(this.newOrder),
@@ -116,40 +123,36 @@ export default {
         };
     },
     computed: {
-        fileIsExcel() {
-            var vm = this;
-            if (vm.file) {
-                var arr = vm.file.name.split(".");
-                var last = arr[arr.length - 1];
-                return last == "xlsx";
+        filteredHeaders() {
+            if(this.account.usertype == 'Client') {
+                return this.headers.filter(header => header.hideClient != true);
             }
-            return true;
+            return this.headers
         }
     },
     methods: {
+        sumProducts(item) {
+            var sum = 0;
+            var states =  Object.values(item.partitiondata)
+            states.forEach(state => {
+                sum += parseInt(state.count);
+            })
+            return sum;
+        },
         handleClick(order) {
             this.$router.push("/order/" + order.orderid);
-        },
-        onFileChange(file) {
-            this.file = file;
         },
         newOrder() {
             var vm = this;
             if (vm.file) {
-                return backend.createOrder(vm.file).then(order => {
-                    vm.$set(vm.orders, order.orderid, order);
-                    vm.file = false;
+                return backend.createOrder(vm.file, vm.$route.params.id).then(() => {
+                    vm.getOrders();
                 });
             }
-        }
-    },
-    mounted() {
-        var vm = this;
-        if (vm.account.usertype == "QA" || vm.account.usertype == "Admin") {
-            vm.filters[vm.account.name] = "Assigned to";
-        }
-
-        if (vm.isAdminView) {
+        },
+        getOrders() {
+            var vm = this;
+            if (vm.isAdminView) {
             backend
                 .getAllOrders()
                 .then(orders => {
@@ -158,13 +161,22 @@ export default {
                 .catch(error => {
                     vm.error = error;
                 });
-        } else {
-            vm.userOrders = true;
-            vm.user.userid = vm.$route.params.id;
-            backend.getOrders(vm.user.userid).then(orders => {
-                vm.orders = orders;
-            });
+            } else {
+                vm.userOrders = true;
+                vm.user.userid = vm.$route.params.id;
+                backend.getOrders(vm.user.userid).then(orders => {
+                    vm.orders = orders;
+                });
+            }
         }
+    },
+    mounted() {
+        var vm = this;
+        if (vm.account.usertype == "QA" || vm.account.usertype == "Admin") {
+            vm.filters[vm.account.name] = "Assigned to";
+            vm.filters['OrderReceived'] = "Unassigned";
+        }
+        vm.getOrders();
     }
 };
 </script>

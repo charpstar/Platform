@@ -1,20 +1,7 @@
 <template>
     <div id="item">
-        <v-dialog v-model="edit.modal" width="400px">
-            <div class="card flexcol">
-                <h2>Edit product link</h2>
-                <v-text-field
-                    label="link"
-                    v-model="product.link"
-                ></v-text-field>
-                
-                <div class="flexrow editbuttons">
-                <v-btn :loading="edit.loading" @click="edit.execute">Save</v-btn>
-                <v-btn @click="edit.modal = false">Cancel</v-btn>
-                </div>
-                <p class="error-text" v-if="edit.error">{{edit.error}}</p>
-            </div>
-        </v-dialog>
+        <edittextmodal :label="'link'" :handler="edit" :text="product.link">Edit product link</edittextmodal>
+        <edittextmodal :label="'model id'" :handler="editId" :text="product.modelid">Edit product parent model</edittextmodal>
         <div class="flexrow" id="itemsrow">
             <div style="position:relative;">
                 <v-btn icon @click="reload" class="reloadIcon">
@@ -33,6 +20,18 @@
 
             <div class="column">
                 <table id="itemTable">
+                    <tr v-if="account.usertype == 'QA' || account.usertype == 'Admin'">
+                        <td class="modelid">Parent Modelid</td>
+                        <td>
+                            {{product.modelid}}
+                            <v-tooltip>
+                                <template v-slot:activator="{ on }">
+                                    <v-icon class="iconColor" v-on="on" @click="editId.modal = true">mdi-border-color</v-icon>
+                                </template>
+                                <span>Change parent model</span>
+                            </v-tooltip>
+                        </td>
+                    </tr>
                     <tr>
                         <td>Status</td>
                         <td>
@@ -71,6 +70,7 @@
                                 :model="model"
                                 :product="product"
                                 :uploadfun="androidUploadFun"
+                                :filetype="'glb'"
                                 @upload="uploadedAndroid"
                                 @opened="hideMv = $event"
                             />
@@ -91,6 +91,7 @@
                                 :model="model"
                                 :product="product"
                                 :uploadfun="iosUploadFun"
+                                :filetype="'usdz'"
                                 @upload="uploadedIos"
                                 @opened="hideMv = $event"
                             />
@@ -99,6 +100,15 @@
                     <tr>
                         <td>
                             <modelversions :product="product" @opened="hideMv = $event" v-if="product.oldandroidlink"></modelversions>
+                            <confirmmodal 
+                                v-if ="(account.usertype == 'QA' || account.usertype == 'Admin') && false" 
+                                :handler="del" 
+                                :title="'Confirm product delete'"
+                                :text="'This will delete the product and related files and comments'"
+                                :buttonText="'Delete product'"
+                                :icon="'mdi-delete'"
+                                :color="'#d12300'"
+                            />
                         </td>
                     </tr>
                 </table>
@@ -125,7 +135,7 @@
                             :type="'Product'"
                             :review="account.usertype == 'Client' && product.state == 'ClientProductReceived'"
                             :markdone="account.usertype != 'Client' && product.state == 'ProductReview'"
-                            :markinfo="account.usertype != 'Client' && product.state != 'Done' && product.state != 'ProductQAMissing'"
+                            :markinfo="account.usertype != 'Client' && !(['Done', 'ProductQAMissing', 'ClientProductReceived'].includes(product.state))"
                             :markresolve="account.usertype != 'Client' && product.state == 'ProductQAMissing'"
                             @state="$emit('state', $event)"
                         />
@@ -141,12 +151,16 @@ import modelupload from "./ModelUpload";
 import backend from "./../backend";
 import comments from "./CommentView";
 import modelversions from "./VersionModal";
+import edittextmodal from './EditTextModal'
+import confirmmodal from './ConfirmModal'
 
 export default {
     components: {
         modelupload,
         comments,
         modelversions,
+        edittextmodal,
+        confirmmodal
     },
     props: {
         product: { type: Object, required: true },
@@ -161,13 +175,29 @@ export default {
             commentsTab: "",
             hideMv: true,
             edit: backend.promiseHandler(this.editLink),
-            backend: backend
+            editId: backend.promiseHandler(this.editIdFun),
+            del : backend.promiseHandler(this.deleteProduct),
+            backend: backend,
         };
     },
     methods: {
-        editLink() {
+        deleteProduct() {
+            var vm = this;
+            return backend.deleteProduct(vm.product.productid).then(() => {
+                vm.$router.go(-1);
+            })
+        },
+        editLink(newlink) {
             var vm = this
-            return backend.editProductLink(vm.product.productid, vm.product.link)
+            return backend.editProductLink(vm.product.productid, newlink).then(() => {
+                vm.product.link = newlink;
+            })
+        },
+        editIdFun(newid) {
+            var vm = this
+            return backend.editProductModelId(vm.product.productid, newid).then(() => {
+                vm.product.modelid = newid;
+            })
         },
         uploadedAndroid(values) {
             this.product.newandroidlink = values[0].new.androidlink;
@@ -254,7 +284,9 @@ export default {
     width: 350px;
 }
 
-.editbuttons > * {
-    margin-right: 10px;
+
+.modelid {
+    padding-right: 10px;
 }
+
 </style>

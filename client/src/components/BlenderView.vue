@@ -1,5 +1,6 @@
 <template>
     <div id="item">
+        <edittextmodal :label="'model name'" :handler="editname" :text="model.modelname">Edit product parent model</edittextmodal>
         <v-dialog v-model="assign.modal" width="500">
             <div class="card">
                 <v-select :items="modelers" label="Modeler" v-model="modeler">
@@ -79,7 +80,7 @@
                             <v-btn
                                 v-if="account.usertype != 'Modeller'"
                                 icon
-                                @click="openAssign"
+                                @click="assign.modal = true"
                             >
                                 <v-icon class="iconColor">mdi-account-plus</v-icon>
                             </v-btn>
@@ -108,10 +109,12 @@
 import backend from "./../backend";
 import comments from "./CommentView";
 import Vue from "vue";
+import edittextmodal from './EditTextModal'
 
 export default {
     components: {
-        comments
+        comments,
+        edittextmodal
     },
     props: {
         model: { type: Object, required: true },
@@ -121,6 +124,7 @@ export default {
         return {
             assign: backend.promiseHandler(this.assignModeler),
             upload: backend.promiseHandler(this.uploadModel),
+            editname: backend.promiseHandler(this.changeName),
             deleteHandler: backend.promiseHandler(this.deleteFileConfirmed),
             selectedFile: false,
             modelers: [],
@@ -131,6 +135,12 @@ export default {
         };
     },
     methods: {
+        changeName(newname) {
+            var vm = this;
+            return backend.editModelName(vm.model.modelid, newname).then(() => {
+                vm.model.modelname = newname;
+            })
+        },
         openAssign() {
             var vm = this;
             if(vm.model.state == 'ProductReceived') {
