@@ -1,5 +1,5 @@
 # Charpstar's 3D asset management system
-The contents of this repository were developed as part of the KTH course DD1393 Mjukvarukonstruktion (MVK) / Software Construction. While  extensive project documentation written in Word has been provided to Charpstar, below aims to provide more technical supporting materials. This README file covers:
+The contents of this repository were developed as part of the KTH course DD1393 Mjukvarukonstruktion (MVK) / Software Construction. While [extensive project documentation](https://docs.google.com/document/d/1Dzq1DD2ReBc3ONjUZBLnNpn3k4-_u1khyI2tl0223ac/edit#) has been provided, below aims to provide more technical supporting materials. This README file covers:
 
 * Docker containerisation
 * Reverse proxy protection 
@@ -22,10 +22,10 @@ Core functionalities:
 TBD
 
 # PostgreSQL
-pg_dump
+The `pg_dump` command has been executed to recreate the [database schema](https://github.com/officialmugi/mvk-projekt/blob/master/database.sql). Executing the PostgreSQL code can recreate the database, including its relations, enums and views. No data is recreated.
 
 # Postman
-A link to the postman file illustrating the back-end end-points can be found here. These end-points are used as an API by the front-end and thus constitute the backbone of the platform.
+The [postman file](https://github.com/officialmugi/mvk-projekt/blob/master/Charpstar.postman_collection.json) illustrates the back-end end-points, which are used by the front-end AS an API and thus constitute the backbone of the platform. See the [postman webpage](https://www.postman.com/) for more information.
 
 # UI routes
 The routes used for the UI are:
