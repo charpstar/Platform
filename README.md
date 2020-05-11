@@ -1,10 +1,10 @@
 # Charpstar's 3D asset management system
 The contents of this repository were developed as part of the KTH course DD1393 Mjukvarukonstruktion (MVK) / Software Construction. While  extensive project documentation written in Word has been provided to Charpstar, below aims to provide more technical supporting materials. This README file covers:
 
-* Docker containerisation,
-* Reverse proxy protection, 
-* PostgreSQL database setup,
-* Postman data.
+* Docker containerisation
+* Reverse proxy protection 
+* PostgreSQL database setup
+* Postman data
 
 # Docker instructions
 Docker provides containerisation to facilitate mobility and migration of the contents on the server. 
