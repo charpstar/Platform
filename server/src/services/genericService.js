@@ -69,7 +69,7 @@ export async function changeStateService(data, req) {
     error: '',
     data: {},
   };
-  let usertype = req.session.usertype;
+  let { usertype } = req.session;
   if (usertype === 'Admin') {
     usertype = 'QA';
   }
