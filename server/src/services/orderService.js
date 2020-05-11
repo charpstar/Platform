@@ -45,14 +45,11 @@ export async function getOrderService(filter) {
   const result = await getOrders(filter);
   const partitionResults = await getOrdersPartitioned(filter);
 
-  for (const order of result) {
-    responseObject.data[order.orderid] = order;
-  }
+  [responseObject.data] = result;
 
   for (const partition of partitionResults) {
-    responseObject.data[partition.orderid].partitiondata = responseObject
-      .data[partition.orderid].partitiondata || {};
-    responseObject.data[partition.orderid].partitiondata[partition.stateafter] = partition;
+    responseObject.data.partitiondata = responseObject.data.partitiondata || {};
+    responseObject.data.partitiondata[partition.stateafter] = partition;
   }
   responseObject.status = 'Order fetched';
   return responseObject;
