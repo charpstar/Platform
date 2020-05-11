@@ -108,10 +108,19 @@ export async function getModels(filter) {
     };
   }
 
+  const newFilter = filter;
+
+  if (typeof filter.orderid !== 'undefined' && filter.orderid !== null) {
+    newFilter['models.orderid'] = filter.orderid;
+    delete newFilter.orderid;
+  }
+
   const models = await knexPool('models')
-    .select(['modelid', 'models.name as modelname', 'users.name as modelowner'])
-    .leftJoin('users', 'models.modelowner', 'users.userid')
-    .where(filter);
+    .select(['modelid', 'models.name as modelname', 'users1.name as modelowner', 'users2.name as client'])
+    .leftJoin('users as users1', 'models.modelowner', 'users1.userid')
+    .leftJoin('orders', 'models.orderid', 'orders.orderid')
+    .leftJoin('users as users2', 'orders.clientid', 'users2.userid')
+    .where(newFilter);
 
   const ret = {};
   for (const model of models) {
@@ -124,12 +133,21 @@ export async function getModels(filter) {
 }
 
 export async function getModelsPartitioned(filter) {
+  const newFilter = filter;
+
+  if (typeof filter['models.orderid'] !== 'undefined' && filter['models.orderid'] !== null) {
+    newFilter.orderid = filter['models.orderid'];
+    delete newFilter['models.orderid'];
+  }
+
+  console.log(newFilter);
+
   return knexPool('curstat')
     .select('modelid', 'stateafter')
     .count('*')
     .as('products')
     .groupBy(['modelid', 'stateafter'])
-    .where(filter);
+    .where(newFilter);
 }
 
 export async function newModels(modelData) {
