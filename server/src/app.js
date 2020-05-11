@@ -42,7 +42,14 @@ app.use(helmet({
   },
   referrerPolicy: {
     policy: 'no-referrer',
-  }
+  },
+  featurePolicy: {
+    features: {
+      camera: ["'none'"],
+      microphone: ["'none'"],
+      geolocation: ["'none'"],
+    },
+  },
 }));
 app.use(cors({
   origin: true,
