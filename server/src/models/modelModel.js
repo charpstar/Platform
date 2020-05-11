@@ -127,6 +127,7 @@ export async function getModels(filter) {
     ret[model.modelid] = modelStates[model.modelid];
     ret[model.modelid].modelname = model.modelname;
     ret[model.modelid].modelowner = model.modelowner;
+    ret[model.modelid].client = model.client;
   }
 
   return ret;
@@ -139,8 +140,6 @@ export async function getModelsPartitioned(filter) {
     newFilter['models.modelid'] = filter.modelid;
     delete newFilter.modelid;
   }
-
-  console.log(newFilter);
 
   return knexPool('curstat')
     .select('curstat.modelid', 'stateafter')
