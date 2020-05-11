@@ -126,7 +126,24 @@ export async function uploadmodelfile(req, res) {
 }
 
 export async function downloadmodelfile(req, res) {
-  return validateAndRunService(modelFileDownloadParser, modelFileDownloadService, req, res);
+  try {
+    const { error, value } = modelFileDownloadParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    return modelFileDownloadService(value).then((result) => {
+      res.download(result);
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return res.send('Failed');
+  }
 }
 
 export async function deletemodelfile(req, res) {
