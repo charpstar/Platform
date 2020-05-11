@@ -175,25 +175,6 @@ export async function claimOrder(orderId, userId) {
         temp.newstate = tempRes.stateafter;
       }
 
-      const productstates = await trx('curstat')
-        .select(['productid', 'stateafter'])
-        .where('orderid', orderId);
-
-      const newProductStates = [];
-      for (const product of productstates) {
-        if (product.stateafter === 'ProductReceived') {
-          newProductStates.push({
-            productid: product.productid,
-            userid: userId,
-            statebefore: product.stateafter,
-            stateafter: 'ProductReview',
-          });
-        }
-      }
-
-      await trx('productstates')
-        .insert(newProductStates);
-
       [temp.userdata] = await trx('users')
         .where('userid', userId)
         .select('userid', 'name');

@@ -69,7 +69,11 @@ export async function changeStateService(data, req) {
     error: '',
     data: {},
   };
-  let stateFunction = stateChangeFunctions[data.commenttype][req.session.usertype];
+  let usertype = req.session.usertype;
+  if (usertype === 'Admin') {
+    usertype = 'QA';
+  }
+  let stateFunction = stateChangeFunctions[data.commenttype][usertype];
   if (stateFunction == null) {
     responseObject.error = 'This state change is not allowed';
     return responseObject;
