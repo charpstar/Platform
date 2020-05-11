@@ -135,11 +135,6 @@ export async function getModels(filter) {
 export async function getModelsPartitioned(filter) {
   const newFilter = filter;
 
-  if (typeof filter['models.orderid'] !== 'undefined' && filter['models.orderid'] !== null) {
-    newFilter.orderid = filter['models.orderid'];
-    delete newFilter['models.orderid'];
-  }
-
   console.log(newFilter);
 
   return knexPool('curstat')
