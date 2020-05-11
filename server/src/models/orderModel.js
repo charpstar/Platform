@@ -118,7 +118,7 @@ export async function getOrders(data) {
 export async function getOrdersPartitioned(data) {
   const filter = {};
   if (typeof data.orderid !== 'undefined' && data.orderid !== null) {
-    filter.orderid = data.orderid;
+    filter['curstat.orderid'] = data.orderid;
   }
   if (typeof data.userid !== 'undefined' && data.userid !== null) {
     filter.clientid = data.userid;
