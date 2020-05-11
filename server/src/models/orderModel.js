@@ -414,10 +414,10 @@ export async function deleteOrder(data) {
 }
 
 export async function doneOrderCleanup(orderid) {
-  let productids = [];
+  const productids = [];
   try {
-    result = await knexPool.transaction(async (trx) => {
-      result = trx('curstat')
+    await knexPool.transaction(async (trx) => {
+      const result = await trx('curstat')
         .select('productid')
         .where('orderid', orderid);
 
@@ -432,7 +432,7 @@ export async function doneOrderCleanup(orderid) {
           as rn from androidversions) 
           as x where rn = 2 and productid in ?`, productids);
 
-      let androidTimes = [];
+      const androidTimes = [];
 
       for (const android of androidDeletions) {
         androidTimes.push(android.time);
@@ -443,13 +443,13 @@ export async function doneOrderCleanup(orderid) {
         .del();
 
       const appleDeletions = await trx
-      .raw(`select time from 
-        (select *, ROW_NUMBER() over 
-        (partition by productid order by time desc) 
-        as rn from appleversions) 
-        as x where rn = 2 and productid in ?`, productids);
+        .raw(`select time from 
+          (select *, ROW_NUMBER() over 
+          (partition by productid order by time desc) 
+          as rn from appleversions) 
+          as x where rn = 2 and productid in ?`, productids);
 
-      let appleTimes = [];
+      const appleTimes = [];
 
       for (const apple of appleDeletions) {
         appleTimes.push(apple.time);

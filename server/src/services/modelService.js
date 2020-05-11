@@ -16,6 +16,7 @@ import {
   editProductModelId,
   editModelName,
   newModels,
+  newProducts,
 } from '../models/modelModel';
 import { domain, port } from '../config/config';
 
@@ -492,6 +493,74 @@ export async function newModelsService(inData, req) {
   }
 
   responseObject.orderid = res.orderid;
+
+  return responseObject;
+}
+
+export async function newProductsService(inData, req) {
+  const responseObject = {
+    status: '',
+    error: '',
+    data: {},
+  };
+
+  if (typeof req.file === 'undefined' || req.file === null) {
+    responseObject.error = 'No file was uploaded';
+    return responseObject;
+  }
+
+  const file = xlsx.readFile(req.file.path);
+  const sheets = file.SheetNames;
+  const rawData = xlsx.utils.sheet_to_json(file.Sheets[sheets[0]]);
+  try {
+    fs.remove(req.file.path);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+  }
+
+
+  const data = {};
+  const products = [];
+  let errorText = '';
+
+  rawData.forEach((row) => {
+    const tempData = {};
+    if (typeof row['Store Link'] !== 'undefined' && row['Store Link'] !== null) {
+      tempData.link = row['Store Link'];
+    } else {
+      errorText = 'At least 1 missing link';
+    }
+    if (typeof row['Color/Material'] !== 'undefined' && row['Color/Material'] !== null) {
+      tempData.color = row['Color/Material'];
+    } else {
+      errorText = 'At least 1 missing Colour';
+    }
+    products.push(tempData);
+  });
+
+  if (errorText !== '') {
+    responseObject.error = errorText;
+    return responseObject;
+  }
+
+  data.userid = req.session.userid;
+
+  const parsedProducts = [];
+
+  for (const product of products) {
+    parsedProducts.push({ link: product.link, color: product.color });
+  }
+
+  data.products = parsedProducts;
+  data.modelid = inData.modelid;
+  const res = await newProducts(data);
+  if (typeof res.error !== 'undefined' && res.error !== '') {
+    responseObject.error = res.error;
+    return responseObject;
+  }
+  responseObject.status = 'Products added';
+  responseObject.data = res;
 
   return responseObject;
 }

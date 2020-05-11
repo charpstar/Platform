@@ -268,6 +268,7 @@ export async function doneOrderCleanupService(orderid) {
       await fs.remove(deletionPathApple);
     }
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.log(e);
   }
   return null;

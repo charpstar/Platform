@@ -31,6 +31,7 @@ import {
   editproductmodelid,
   editmodelname,
   newmodels,
+  newproducts,
 } from '../controllers/modelController';
 import {
   createorder,
@@ -93,9 +94,7 @@ const uploadUsdz = multer({
 
 const uploadImage = multer({
   dest: './private/',
-  fileFilter: (req, file, cb) => {
-    return cb(null, true);
-  },
+  fileFilter: (req, file, cb) => cb(null, true),
 });
 
 const upload = multer({ dest: './private/' });
@@ -155,6 +154,6 @@ router.post('/client/editproductlink', editproductlink);
 router.post('/qa/editproductmodelid', editproductmodelid);
 router.post('/qa/editmodelname', editmodelname);
 router.post('/client/newmodels', uploadXlsx.single('modeldata'), newmodels);
-
+router.post('/client/newproducts', uploadXlsx.single('productdata'), newproducts);
 
 export default router;

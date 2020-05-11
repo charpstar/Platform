@@ -424,6 +424,75 @@ export async function getProducts(id) {
     .where('products.modelid', id);
 }
 
+export async function newProducts(productData) {
+  try {
+    await knexPool.transaction(async (trx) => {
+      const [modelExists] = await trx('models')
+        .where('modelid', productData.modelid)
+        .returning(['modelid']);
+      if (typeof modelExists === 'undefined' || modelExists === null) {
+        throw new Error(`No model with modelid: ${productData.modelid}`);
+      }
+
+      const productsToInsert = [];
+
+      for (const product of productData) {
+        productsToInsert.push({
+          modelid: productData.modelid,
+          color: product.color,
+          link: product.link,
+        });
+      }
+
+      const insertedProducts = await trx('products')
+        .insert(productsToInsert)
+        .returning(['productid', 'color', 'link']);
+      const productstates = [];
+      for (const product of insertedProducts) {
+        productstates.push({
+          productid: product.productid,
+          userid: productData.userid,
+          statebefore: 'ProductInit',
+          stateafter: 'ProductReceived',
+        });
+      }
+
+      await trx('productstates')
+        .insert(productstates);
+
+      const [orderid] = await trx('models')
+        .select(['orderid'])
+        .where('modelid', productData.modelid);
+
+      const [curOrderState] = await trx('orderstates')
+        .select('stateafter')
+        .join((querybuilder) => {
+          querybuilder.from('orderstates')
+            .where('orderid', orderid.orderid)
+            .max('time')
+            .groupBy('orderid')
+            .as('t1');
+        }, 'orderstates.time', 't1.max')
+        .where('orderid', orderid.orderid);
+
+      if (curOrderState.stateafter !== ('OrderDev' || 'OrderMissing')) {
+        await trx('orderstates')
+          .insert({
+            orderid: orderid.orderid,
+            userid: productData.userid,
+            statebefore: curOrderState.stateafter,
+            stateafter: 'OrderDev',
+          });
+      }
+    });
+    return getProducts(productData.modelid);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return { error: 'Adding models failed' };
+  }
+}
+
 async function setResolved(id, userid, idType) {
   try {
     await knexPool.transaction(async (trx) => {
@@ -617,7 +686,7 @@ async function clientApproveOrderState(id, userid, idType) {
               stateafter: 'Done',
             });
 
-            await doneOrderCleanupService(orderid.orderid);
+          await doneOrderCleanupService(orderid.orderid);
         }
       }
 

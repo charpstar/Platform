@@ -18,6 +18,7 @@ import {
   editProductModelIdService,
   editModelNameService,
   newModelsService,
+  newProductsService,
 } from '../services/modelService';
 
 const orderIdParser = Joi.object({
@@ -194,4 +195,8 @@ export async function editmodelname(req, res) {
 
 export async function newmodels(req, res) {
   validateAndRunService(orderIdParser, newModelsService, req, res);
+}
+
+export async function newproducts(req, res) {
+  validateAndRunService(modelIdParser, newProductsService, req, res);
 }

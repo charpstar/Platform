@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import session from 'express-session';
 import pg from 'pg';
 import connectPgSimple from 'connect-pg-simple';
-import { port } from './config/config';
+import { port, isSecure } from './config/config';
 import router from './routes/router';
 import {
   adminAuth,
@@ -29,6 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({
   extended: true,
 }));
+app.set('trust proxy', true);
 app.use(morgan('combined'));
 app.use(helmet());
 app.use(cors({
@@ -63,10 +64,12 @@ app.use(session({
   store: new PgSession({
     pool: pgPool,
   }),
+  name: 'sessionId',
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 },
+  saveUninitialized: false,
+  secure: isSecure,
+  cookie: { maxAge: 30 * 60 * 1000 },
 }));
 
 // If no user exists, create root user
