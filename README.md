@@ -9,16 +9,13 @@ The contents of this repository were developed as part of the KTH course DD1393 
 # Docker instructions
 Docker provides containerisation to facilitate mobility and migration of the contents on the server. 
 
-To create the containers, run first 01-buildImage.sh and then 02-createContainer.sh in both client and server folder
+To create the containers, run first 01-buildImage.sh and then 02-createContainer.sh in both client and server folder. The client container will be called `ui` and the server container will be called `backend`. All uploaded files are located in /charpstarfiles
 
-The client container will be called `ui` and the server container will be called `backend`
-
-All uploaded files are located in /charpstarfiles
-
+Core functionalities:
 * To start a container, run `docker start $NAME`
 * To stop a container, run `docker stop $NAME`
 * To see container status, run `docker ps`
-* for more docker commands, see the [Docker documentation](https://docs.docker.com/get-started/overview/)
+* For more docker commands, see the [Docker documentation](https://docs.docker.com/get-started/overview/)
 
 # Reverse proxy
 TBD
