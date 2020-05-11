@@ -121,15 +121,16 @@ export async function getOrdersPartitioned(data) {
     filter.orderid = data.orderid;
   }
   if (typeof data.userid !== 'undefined' && data.userid !== null) {
-    filter.userid = data.userid;
+    filter.clientid = data.userid;
   }
 
   return knexPool('curstat')
-    .select('orderid', 'stateafter')
+    .select('curstat.orderid', 'stateafter')
     .count('*')
     .as('products')
-    .groupBy(['orderid', 'stateafter'])
-    .where(filter);
+    .groupBy(['curstat.orderid', 'stateafter'])
+    .where(filter)
+    .leftJoin('orders', 'curstat.orderid', 'orders.orderid');
 }
 
 export async function claimOrder(orderId, userId) {
