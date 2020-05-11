@@ -1,0 +1,1566 @@
+{
+	"info": {
+		"_postman_id": "d8ae24fa-1c15-4be0-b810-e45052029dfb",
+		"name": "Charpstar",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "General",
+			"item": [
+				{
+					"name": "/logout",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"logout"
+							]
+						},
+						"description": "Logout"
+					},
+					"response": []
+				},
+				{
+					"name": "/login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "temp@modeller.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "temp",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "temp@qa.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "temp",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "root@charpstar.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "root",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "temp@client.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "temp",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"login"
+							]
+						},
+						"description": "Login endpoint"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Generic",
+			"item": [
+				{
+					"name": "/gen/login",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/gen/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"gen",
+								"login"
+							]
+						},
+						"description": "Get logged in users info"
+					},
+					"response": []
+				},
+				{
+					"name": "/gen/comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "commenttype",
+									"value": "Order",
+									"type": "text"
+								},
+								{
+									"key": "orderid",
+									"value": "6",
+									"type": "text"
+								},
+								{
+									"key": "comment",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "modelid",
+									"value": "13",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "internal",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "commentclass",
+									"value": "Comment",
+									"type": "text"
+								},
+								{
+									"key": "productid",
+									"value": "10",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/gen/comment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"gen",
+								"comment"
+							]
+						},
+						"description": "Comment"
+					},
+					"response": []
+				},
+				{
+					"name": "/gen/getComments",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "modelid",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "orderid",
+									"value": "6",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/gen/getComments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"gen",
+								"getComments"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get comments"
+					},
+					"response": []
+				},
+				{
+					"name": "/gen/getclientorders",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "test",
+									"value": "2",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "id",
+									"value": "12",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/gen/getclientorders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"gen",
+								"getclientorders"
+							]
+						},
+						"description": "Get a clients orders"
+					},
+					"response": []
+				},
+				{
+					"name": "/gen/getproducts",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "modelid",
+									"value": "13",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/gen/getproducts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"gen",
+								"getproducts"
+							]
+						},
+						"description": "Get products (modelid)"
+					},
+					"response": []
+				},
+				{
+					"name": "/gen/getexcel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "id",
+									"value": "5",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/gen/getexcel",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"gen",
+								"getexcel"
+							]
+						},
+						"description": "Get excel sheet of products (orderid)"
+					},
+					"response": []
+				},
+				{
+					"name": "/gen/getorder",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "orderid",
+									"value": "5",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/gen/getorder",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"gen",
+								"getorder"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/gen/getmodel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "modelid",
+									"value": "16",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/gen/getmodel",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"gen",
+								"getmodel"
+							]
+						},
+						"description": "Get single model (modelid)"
+					},
+					"response": []
+				},
+				{
+					"name": "/gen/getmodels",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "orderid",
+									"value": "10",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/gen/getmodels",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"gen",
+								"getmodels"
+							]
+						},
+						"description": "Get models (orderid)"
+					},
+					"response": []
+				},
+				{
+					"name": "/gen/editcomment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "commentid",
+									"value": "4",
+									"type": "text"
+								},
+								{
+									"key": "newcomment",
+									"value": "test new",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/gen/editcomment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"gen",
+								"editcomment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/gen/deletecomment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "commentid",
+									"value": "4",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/gen/deletecomment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"gen",
+								"deletecomment"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "/admin/createuser",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "temp",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "temp",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "temp@qa.com",
+									"type": "text"
+								},
+								{
+									"key": "repeatPassword",
+									"value": "temp",
+									"type": "text"
+								},
+								{
+									"key": "usertype",
+									"value": "QA",
+									"type": "text"
+								},
+								{
+									"key": "active",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/admin/createuser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"admin",
+								"createuser"
+							]
+						},
+						"description": "Creates a user"
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/edituser",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "userid",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "root",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "root",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "repeatPassword",
+									"value": "root",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "luckri@root.com",
+									"type": "text"
+								},
+								{
+									"key": "active",
+									"value": "true",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "usertype",
+									"value": "Admin",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/admin/edituser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"admin",
+								"edituser"
+							]
+						},
+						"description": "Edit user"
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/deleteuser",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "userid",
+									"value": "10",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/admin/deleteuser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"admin",
+								"deleteuser"
+							]
+						},
+						"description": "Delete user"
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/assignorder",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "orderid",
+									"value": "11",
+									"type": "text"
+								},
+								{
+									"key": "userid",
+									"value": "3",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/admin/assignorder",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"admin",
+								"assignorder"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "QA",
+			"item": [
+				{
+					"name": "/qa/getmodelers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/qa/getmodelers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"getmodelers"
+							]
+						},
+						"description": "Get modelers"
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/getorders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/qa/getorders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"getorders"
+							]
+						},
+						"description": "Get orders"
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/getallmodels",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:8081/qa/getallmodels",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"getallmodels"
+							]
+						},
+						"description": "Get all models"
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/claimorder",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "id",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/qa/claimorder",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"claimorder"
+							]
+						},
+						"description": "Claim an order"
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/assignmodeler",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "modelid",
+									"value": "23",
+									"type": "text"
+								},
+								{
+									"key": "modelerid",
+									"value": "2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/qa/assignmodeler",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"assignmodeler"
+							]
+						},
+						"description": "Assign a modeller"
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/uploadandroid",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "modelfile",
+									"type": "file",
+									"src": "/home/vidarr/projects/mvk-projekt/client/demoModels/taklampa.glb"
+								},
+								{
+									"key": "productid",
+									"value": "61",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/qa/uploadandroid",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"uploadandroid"
+							]
+						},
+						"description": "Upload android file"
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/uploadios",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "modelfile",
+									"type": "file",
+									"src": "/home/vidarr/test.usdz"
+								},
+								{
+									"key": "productid",
+									"value": "61",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/qa/uploadios",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"uploadios"
+							]
+						},
+						"description": "Upload IOS file"
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/uploadthumb",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "thumb",
+									"type": "file",
+									"src": "/home/vidarr/temp.txt"
+								},
+								{
+									"key": "modelid",
+									"value": "661",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/qa/uploadthumb",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"uploadthumb"
+							]
+						},
+						"description": "Upload thumbnail"
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/getusers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/qa/getusers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"getusers"
+							]
+						},
+						"description": "Get all users"
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/getuser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "id",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/qa/getuser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"getuser"
+							]
+						},
+						"description": "Get single user (id)"
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/deleteorder",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "orderid",
+									"value": "5",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/qa/deleteorder",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"deleteorder"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/deletemodel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "modelid",
+									"value": "13",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/qa/deletemodel",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"deletemodel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/deleteproduct",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "productid",
+									"value": "29",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/qa/deleteproduct",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"deleteproduct"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/editproductmodelid",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "productid",
+									"value": "36",
+									"type": "text"
+								},
+								{
+									"key": "newmodelid",
+									"value": "17",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/qa/editproductmodelid",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"editproductmodelid"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/qa/editmodelname",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "modelid",
+									"value": "18",
+									"type": "text"
+								},
+								{
+									"key": "newname",
+									"value": "test new name",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/qa/editmodelname",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"qa",
+								"editmodelname"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Modeller",
+			"item": [
+				{
+					"name": "/modeller/models",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "modelowner",
+									"value": "5",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/modeller/models",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"modeller",
+								"models"
+							]
+						},
+						"description": "Get models"
+					},
+					"response": []
+				},
+				{
+					"name": "/modeller/uploadmodelfile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "modelfile",
+									"type": "file",
+									"src": "/home/vidarr/temp.txt"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "modelid",
+									"value": "661",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/modeller/uploadmodelfile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"modeller",
+								"uploadmodelfile"
+							]
+						},
+						"description": "Upload a model"
+					},
+					"response": []
+				},
+				{
+					"name": "/modeller/downloadmodelfile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "modelid",
+								"value": "26",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "modelid",
+									"value": "661",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "temp.txt",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/modeller/downloadmodelfile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"modeller",
+								"downloadmodelfile"
+							]
+						},
+						"description": "Download a model file"
+					},
+					"response": []
+				},
+				{
+					"name": "/modeller/listmodelfiles",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "modelid",
+									"value": "661",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/modeller/listmodelfiles",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"modeller",
+								"listmodelfiles"
+							]
+						},
+						"description": "list model files"
+					},
+					"response": []
+				},
+				{
+					"name": "/modeller/deletemodelfile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "modelid",
+									"value": "661",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "temp.txt",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/modeller/deletemodelfile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"modeller",
+								"deletemodelfile"
+							]
+						},
+						"description": "Deletes a model file"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Client",
+			"item": [
+				{
+					"name": "/client/createorder",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "multipart/form-data",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "orderdata",
+									"type": "file",
+									"src": "/home/vidarr/Downloads/Nya_AR-produkter_okt_2019_1.xlsx"
+								},
+								{
+									"key": "userid",
+									"value": "2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/client/createorder",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"client",
+								"createorder"
+							]
+						},
+						"description": "Creates an order"
+					},
+					"response": []
+				},
+				{
+					"name": "/client/editproductlink",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "productid",
+									"value": "36",
+									"type": "text"
+								},
+								{
+									"key": "newlink",
+									"value": "https://www.ptbds.com/cool/new",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/client/editproductlink",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"client",
+								"editproductlink"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/client/newmodels",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "modeldata",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "orderid",
+									"value": "11",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/client/newmodels",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"client",
+								"newmodels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/client/newproducts",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "modelid",
+									"value": "44",
+									"type": "text"
+								},
+								{
+									"key": "productdata",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/client/newproducts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"client",
+								"newproducts"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
