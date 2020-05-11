@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import knex from 'knex';
 import { statePriority } from '../config/config';
+import { doneOrderCleanupService } from '../services/orderService';
 
 const envFetch = dotenv.config();
 
@@ -178,7 +179,7 @@ export async function newModels(modelData) {
         }, 'orderstates.time', 't1.max')
         .where('orderid', orderExists.orderid);
 
-      if (curOrderState.stateafter !== 'OrderDev') {
+      if (curOrderState.stateafter !== ('OrderDev' || 'OrderMissing')) {
         await trx('orderstates')
           .insert({
             orderid: orderExists.orderid,
@@ -435,7 +436,7 @@ async function setResolved(id, userid, idType) {
 
       let notMissing = true;
       for (const product of productStates) {
-        if (product.stateafter === 'ProductMissing') {
+        if (product.stateafter === ('ProductMissing' || 'ProductQAMissing')) {
           notMissing = false;
           break;
         }
@@ -485,8 +486,8 @@ async function setMissing(id, userid, idType) {
       let onlyMissing = true;
       let doneOrMissing = true;
       for (const product of productStates) {
-        if (product.stateafter !== ('Done' || 'ProductMissing')) {
-          if (product.stateafter !== 'ProductMissing') {
+        if (product.stateafter !== ('Done' || 'ProductMissing' || 'ProductQAMissing')) {
+          if (product.stateafter !== ('ProductMissing' || 'ProductQAMissing')) {
             onlyMissing = false;
             break;
           }
@@ -537,7 +538,7 @@ async function qaApproveOrderState(id, userid, idType) {
 
       let done = true;
       for (const product of productStates) {
-        if (product.stateafter !== ('Done' || 'ProductMissing' || 'ClientProductReceived')) {
+        if (product.stateafter !== ('Done' || 'ProductMissing' || 'ProductQAMissing' || 'ClientProductReceived')) {
           done = false;
           break;
         }
@@ -589,9 +590,8 @@ async function clientApproveOrderState(id, userid, idType) {
       for (const product of productStates) {
         if (product.stateafter !== 'Done') {
           done = false;
-          break;
         }
-        if (product.stateafter !== ('Done' || 'ProductMissing')) {
+        if (product.stateafter !== ('Done' || 'ProductMissing' || 'ProductQAMissing')) {
           doneOrMissing = false;
         }
       }
@@ -616,6 +616,8 @@ async function clientApproveOrderState(id, userid, idType) {
               statebefore: curOrderState.stateafter,
               stateafter: 'Done',
             });
+
+            await doneOrderCleanupService(orderid.orderid);
         }
       }
 

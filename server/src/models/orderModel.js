@@ -412,3 +412,57 @@ export async function deleteOrder(data) {
 
   return { productids: productIds, modelids: modelIds };
 }
+
+export async function doneOrderCleanup(orderid) {
+  let productids = [];
+  try {
+    result = await knexPool.transaction(async (trx) => {
+      result = trx('curstat')
+        .select('productid')
+        .where('orderid', orderid);
+
+      for (const product of result) {
+        productids.push(product.productid);
+      }
+
+      const androidDeletions = await trx
+        .raw(`select time from 
+          (select *, ROW_NUMBER() over 
+          (partition by productid order by time desc) 
+          as rn from androidversions) 
+          as x where rn = 2 and productid in ?`, productids);
+
+      let androidTimes = [];
+
+      for (const android of androidDeletions) {
+        androidTimes.push(android.time);
+      }
+
+      await trx('androidversions')
+        .whereIn('time', androidTimes)
+        .del();
+
+      const appleDeletions = await trx
+      .raw(`select time from 
+        (select *, ROW_NUMBER() over 
+        (partition by productid order by time desc) 
+        as rn from appleversions) 
+        as x where rn = 2 and productid in ?`, productids);
+
+      let appleTimes = [];
+
+      for (const apple of appleDeletions) {
+        appleTimes.push(apple.time);
+      }
+
+      await trx('apple')
+        .whereIn('time', appleTimes)
+        .del();
+    });
+    return productids;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return [];
+  }
+}

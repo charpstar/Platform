@@ -7,6 +7,7 @@ import {
   claimOrder,
   getExcel,
   deleteOrder,
+  doneOrderCleanup,
 } from '../models/orderModel';
 
 export async function getOrdersService(filter) {
@@ -254,4 +255,20 @@ export async function deleteOrderService(data) {
   responseObject.status = 'Order removed';
 
   return responseObject;
+}
+
+export async function doneOrderCleanupService(orderid) {
+  const productids = await doneOrderCleanup(orderid);
+  try {
+    for (const productid of productids) {
+      const deletionPathAndroid = path.resolve(`./public/${productid}/oldandroid/`);
+      const deletionPathApple = path.resolve(`./public/${productid}/oldios/`);
+
+      await fs.remove(deletionPathAndroid);
+      await fs.remove(deletionPathApple);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+  return null;
 }
