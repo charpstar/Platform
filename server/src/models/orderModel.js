@@ -115,6 +115,22 @@ export async function getOrders(data) {
     .where(filter);
 }
 
+export async function getOrdersPartitioned(data) {
+  const filter = {};
+  if (typeof data.orderid !== 'undefined' && data.orderid !== null) {
+    filter['orders.orderid'] = data.orderid;
+  }
+  if (typeof data.userid !== 'undefined' && data.userid !== null) {
+    filter['orders.clientid'] = data.userid;
+  }
+
+  return knexPool('curstat')
+    .select('orderid', 'stateafter')
+    .count('*')
+    .as('products')
+    .groupBy(['orderid', 'stateafter']);
+}
+
 export async function claimOrder(orderId, userId) {
   try {
     const temp = {};
