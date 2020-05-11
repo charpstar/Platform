@@ -15,7 +15,7 @@ import {
   clientAuth,
   genericAuth,
 } from './middleware/auth';
-import { statCollector } from './middleware/logging';
+import statCollector from './middleware/logging';
 import { initUserCreationService } from './services/userService';
 
 const envFetch = dotenv.config();
