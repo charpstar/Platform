@@ -121,7 +121,7 @@ export async function getOrdersPartitioned(data) {
     filter.orderid = data.orderid;
   }
   if (typeof data.userid !== 'undefined' && data.userid !== null) {
-    filter.clientid = data.userid;
+    filter.userid = data.userid;
   }
 
   return knexPool('curstat')
