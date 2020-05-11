@@ -31,7 +31,19 @@ app.use(express.urlencoded({
 }));
 app.set('trust proxy', true);
 app.use(morgan('combined'));
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+    }
+  },
+  permittedCrossDomainPolicies: {
+    permittedPolicies: 'none',
+  },
+  referrerPolicy: {
+    policy: 'no-referrer',
+  }
+}));
 app.use(cors({
   origin: true,
   methods: ['GET', 'POST'],
