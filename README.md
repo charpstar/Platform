@@ -31,13 +31,23 @@ A link to the postman file illustrating the back-end end-points can be found her
 The routes used for the UI are:
 
 `/                  -> login
+
 /home              -> admin panel
+
 /admin/users       -> user list
+
 /admin/orders      -> all orders
+
 /admin/models      -> all models
+
 /modeller/models   -> modeller model list
+
 /user/:id          -> user view
+
 /user/:id/orders   -> user orders
+
 /order/:id         -> order overview
+
 /order/:id/models  -> order models
+
 /model/:id         -> model products`
