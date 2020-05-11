@@ -5,6 +5,7 @@ The contents of this repository were developed as part of the KTH course DD1393 
 * Reverse proxy protection 
 * PostgreSQL database setup
 * Postman data
+* UI routes
 
 # Docker
 Docker provides containerisation to facilitate mobility and migration of the contents on the server. 
@@ -25,3 +26,18 @@ pg_dump
 
 # Postman
 A link to the postman file illustrating the back-end end-points can be found here. These end-points are used as an API by the front-end and thus constitute the backbone of the platform.
+
+# UI routes
+The routes used for the UI are:
+
+`/                  -> login
+/home              -> admin panel
+/admin/users       -> user list
+/admin/orders      -> all orders
+/admin/models      -> all models
+/modeller/models   -> modeller model list
+/user/:id          -> user view
+/user/:id/orders   -> user orders
+/order/:id         -> order overview
+/order/:id/models  -> order models
+/model/:id         -> model products`
