@@ -123,15 +123,7 @@ export async function getModels(filter) {
   return ret;
 }
 
-export async function getModelsPartitioned(data) {
-  const filter = {};
-  if (typeof data.modelid !== 'undefined' && data.modelid !== null) {
-    filter.modelid = data.modelid;
-  }
-  if (typeof data.userid !== 'undefined' && data.userid !== null) {
-    filter.clientid = data.userid;
-  }
-
+export async function getModelsPartitioned(filter) {
   return knexPool('curstat')
     .select('modelid', 'stateafter')
     .count('*')

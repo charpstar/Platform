@@ -118,17 +118,18 @@ export async function getOrders(data) {
 export async function getOrdersPartitioned(data) {
   const filter = {};
   if (typeof data.orderid !== 'undefined' && data.orderid !== null) {
-    filter['orders.orderid'] = data.orderid;
+    filter.orderid = data.orderid;
   }
   if (typeof data.userid !== 'undefined' && data.userid !== null) {
-    filter['orders.clientid'] = data.userid;
+    filter.clientid = data.userid;
   }
 
   return knexPool('curstat')
     .select('orderid', 'stateafter')
     .count('*')
     .as('products')
-    .groupBy(['orderid', 'stateafter']);
+    .groupBy(['orderid', 'stateafter'])
+    .where(filter);
 }
 
 export async function claimOrder(orderId, userId) {
