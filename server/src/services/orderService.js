@@ -48,8 +48,11 @@ export async function getOrderService(filter) {
   [responseObject.data] = result;
 
   for (const partition of partitionResults) {
-    responseObject.data.partitiondata = responseObject.data.partitiondata || {};
-    responseObject.data.partitiondata[partition.stateafter] = partition;
+    if(partition.orderid === responseObject.data.orderid) {
+      responseObject.data.partitiondata = responseObject.data.partitiondata || {};
+      responseObject.data.partitiondata[partition.stateafter] = partition;
+    }
+
   }
   responseObject.status = 'Order fetched';
   return responseObject;
