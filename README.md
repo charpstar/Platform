@@ -22,7 +22,7 @@ Core functionalities:
 TBD
 
 # PostgreSQL
-The `pg_dump` command has been executed to recreate the [database schema](https://github.com/officialmugi/mvk-projekt/blob/master/database.sql). Executing the PostgreSQL code can recreate the database, including its relations, enums and views. No data is recreated.
+The `pg_dump` command has been executed to recreate the [database schema](https://github.com/officialmugi/mvk-projekt/blob/master/database.sql). Executing the PostgreSQL code can recreate the database, including its relations, enums and views. No data is recreated. For more commands, see the [pSQL documentation](https://www.postgresql.org/docs/).
 
 # Postman
 The [postman file](https://github.com/officialmugi/mvk-projekt/blob/master/Charpstar.postman_collection.json) illustrates the back-end end-points, which are used by the front-end AS an API and thus constitute the backbone of the platform. See the [postman webpage](https://www.postman.com/) for more information.
