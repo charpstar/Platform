@@ -102,8 +102,8 @@ export async function getExcelService(data) {
         name: product.name,
         color: product.color,
         link: product.link,
-        androidlink: null,
-        ioslink: null,
+        androidlink: product.androidlink,
+        ioslink: product.ioslink,
         state: product.state,
       });
     }
