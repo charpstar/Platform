@@ -17,6 +17,7 @@ import {
   editModelName,
   newModels,
   newProducts,
+  getModelsPartitioned,
 } from '../models/modelModel';
 import { domain, port } from '../config/config';
 
@@ -259,8 +260,18 @@ export async function getModelsService(filter) {
   };
 
   const result = await getModels(filter);
+  const partitionResults = await getModelsPartitioned(filter);
 
-  responseObject.data = result;
+  for (const modelid of Object.keys(result)) {
+    responseObject.data[modelid] = result[modelid];
+  }
+
+  for (const partition of partitionResults) {
+    responseObject.data[partition.modelid].partitiondata = responseObject
+      .data[partition.modelid].partitiondata || {};
+    responseObject.data[partition.modelid].partitiondata[partition.stateafter] = partition;
+  }
+
   responseObject.status = 'Models fetched';
 
   return responseObject;
@@ -274,9 +285,16 @@ export async function getModelService(filter) {
   };
 
   const result = await getModels(filter);
+  const partitionResults = await getModelsPartitioned(filter);
 
   [responseObject.data] = Object.values(result);
-  responseObject.status = 'Models fetched';
+
+  for (const partition of partitionResults) {
+    responseObject.data.partitiondata = responseObject.data.partitiondata || {};
+    responseObject.data.partitiondata[partition.stateafter] = partition;
+  }
+
+  responseObject.status = 'Model fetched';
 
   return responseObject;
 }
