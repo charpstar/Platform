@@ -18,7 +18,7 @@ const knexPool = knex({
   pool: { min: 0, max: 10 },
 });
 
-export async function createOrder(orderData) {
+export async function createOrder(orderData, stateSeterId) {
   const modelNames = Object.keys(orderData.models);
   try {
     let createdOrderID = 0;
@@ -55,7 +55,7 @@ export async function createOrder(orderData) {
       for (const product of insertedProducts) {
         productstates.push({
           productid: product.productid,
-          userid: orderData.clientid,
+          userid: stateSeterId,
           statebefore: 'ProductInit',
           stateafter: 'ProductReceived',
         });
@@ -63,7 +63,7 @@ export async function createOrder(orderData) {
       await trx('orderstates')
         .insert({
           orderid: orderId,
-          userid: orderData.clientid,
+          userid: stateSeterId,
           statebefore: 'OrderInit',
           stateafter: 'OrderReceived',
         });

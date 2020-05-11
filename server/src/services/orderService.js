@@ -148,7 +148,7 @@ export async function getExcelService(data) {
   return filePath;
 }
 
-export async function orderCreationService(req) {
+export async function orderCreationService(req, clientid) {
   const responseObject = {
     status: '',
     error: '',
@@ -201,6 +201,9 @@ export async function orderCreationService(req) {
   }
 
   data.clientid = req.session.userid;
+  if (clientid) {
+    data.clientid = clientid;
+  }
 
   const parsedModels = {};
 
@@ -215,7 +218,7 @@ export async function orderCreationService(req) {
   });
 
   data.models = parsedModels;
-  const res = await createOrder(data);
+  const res = await createOrder(data, req.session.userid);
   if (typeof res.error !== 'undefined' && res.error !== '') {
     responseObject.error = res.error;
     return responseObject;

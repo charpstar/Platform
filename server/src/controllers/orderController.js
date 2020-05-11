@@ -124,7 +124,16 @@ export async function getexcel(req, res) {
 
 export async function createorder(req, res) {
   try {
-    const result = await orderCreationService(req);
+    const { error, value } = useridParser.validate(req.body);
+    if (typeof error !== 'undefined' && error !== null) {
+      const responseObject = {
+        status: '',
+        error: error.details[0].message,
+        data: {},
+      };
+      return res.send(responseObject);
+    }
+    const result = await orderCreationService(req, value.userid);
     if (typeof result.error !== 'undefined' && result.error !== null && result.error !== '') {
       return res.send(result);
     }
