@@ -22,7 +22,7 @@
                 <table id="itemTable">
                     <tr v-if="account.usertype == 'QA' || account.usertype == 'Admin'">
                         <td class="modelid">Parent Modelid</td>
-                        <td>
+                        <td >
                             {{product.modelid}}
                             <v-tooltip>
                                 <template v-slot:activator="{ on }">

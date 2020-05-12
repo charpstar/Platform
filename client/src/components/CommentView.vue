@@ -12,7 +12,7 @@
             <div class="flexcol" id="sendButtons">
                 <commentmodal
                     :title="'Confirm approve'"
-                    :text="'You will not be able to rever this action'"
+                    :text="'You will not be able to revert this action'"
                     :open="modalapprove"
                     :click="() => sendComment('Approve')"
                 >
