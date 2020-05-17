@@ -229,7 +229,9 @@ export default {
         backend.getComments(vm.idobj).then(comments => {
             vm.comments = Object.values(comments)
                 .slice()
-                .reverse();
+                .reverse().filter((c) => {
+                    return c.internal == vm.internal
+                });
         });
     }
 };
