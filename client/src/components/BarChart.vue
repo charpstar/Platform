@@ -101,6 +101,8 @@ export default {
             return dataObj     
         },
 
+        // The following code will not be used as long as we are using vue-chartjs library //
+
         // chartBars() {
         //     var ret = {}
         //     var sum = 0;
