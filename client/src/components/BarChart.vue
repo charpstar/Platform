@@ -1,6 +1,8 @@
 <template>
     <div class="chart">
-        <bar-chart-render :bardata="barData" :baroptions="barOptions"/>
+        <bar-chart-render 
+            :chart-data="barData" 
+            :options="barOptions"/>
         <!-- <v-tooltip bottom v-for="bar in chartBars" :key="bar.state">
             <template v-slot:activator="{ on }">
                 <div v-on="on" class="chartbar" :style="{width: bar.size + '%', 'background-color': bar.color}"></div>
@@ -64,14 +66,18 @@ export default {
         //options configuration for bar graph
         barOptions() {
             var optionsObj = {
+                    legend: {
+                        display: false
+                    },
                 responsive: true,
                 scales: {
-                        yAxes: [{
+                    yAxes: [{
                         ticks: {
                             min: 0,
-                            max: this.total
+                            max: this.total,
+                            stepSize: 1 //scale up by 1 on y-axis; shows only integers
                         }
-                        }],  
+                    }],  
                 },
                 title: {
                     display: true,
@@ -80,6 +86,7 @@ export default {
             }
             return optionsObj
         },
+
         //get data for bar graph from backend
         barData() {
             var dataObj = {
@@ -89,6 +96,8 @@ export default {
                     }] 
             }
             dataObj.labels = Object.values(this.productdata).map(state => backend.messageFromStatus(state.stateafter, this.account.usertype))
+            dataObj.datasets[0].data = Object.values(this.productdata).map(state => state.count)
+            
             return dataObj     
         },
 
