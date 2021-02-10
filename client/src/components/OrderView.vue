@@ -83,11 +83,10 @@
                         <td>Products</td>
                         <td>{{products}}</td>
                     </tr>
-                    <tr>
-                    <tr>
+                    <!-- <tr>
                         <td>Product states</td>
                         <td><barchart v-if="order" :account="account" :productdata="order.partitiondata"/></td>
-                    </tr>
+                    </tr> -->
                 </table>
                 <div class="flexcol" id="buttons">
                     <v-btn @click="viewModels">View Models</v-btn>
@@ -110,16 +109,25 @@
                     </excelupload>
                 </div>
             </div>
-            <div>
-                <h2 id="commentsLabel">Comments</h2>
-                <comments
-                    v-if="order"
-                    :idobj="{orderid: order.orderid}"
-                    :type="'Order'"
-                    :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
-                    :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
-                    @state="order.state = $event.orderstatus"
-                />
+            <div class="d-flex">
+                <div>
+                <!-- Pass props to the bar chart component in order to render graph -->
+                <barchart v-if="order" 
+                    :account="account" 
+                    :productdata="order.partitiondata" 
+                    :orderstate="backend.messageFromStatus(order.state, account.usertype)"/>
+                </div>
+                <div>
+                    <h2 id="commentsLabel">Comments</h2>
+                    <comments
+                        v-if="order"
+                        :idobj="{orderid: order.orderid}"
+                        :type="'Order'"
+                        :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
+                        :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
+                        @state="order.state = $event.orderstatus"
+                    />
+                </div>  
             </div>
         </div>
     </div>

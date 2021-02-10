@@ -73,9 +73,11 @@
                     {{backend.messageFromStatus(value, account.usertype)}}
                     <v-icon>{{backend.iconFromStatus(value, account.usertype)}}</v-icon>
                 </template>
-                <template v-slot:item.partitiondata="{value}">
-                    <barchart :productdata="value" :account="account"/>
-                </template>
+                <!-- <template v-slot:item.partitiondata="{value}"> -->
+                    <!-- this bar chart will not be displayed when OrderView is displayed
+                    next to the orders list -->
+                    <!-- <barchart :productdata="value" :account="account"/>
+                </template> -->
                 <template v-slot:item.products="{item}">
                     {{sumProducts(item)}}
                 </template>
@@ -87,7 +89,7 @@
 
 <script>
 import backend from "../backend";
-import barchart from './BarChart'
+// import barchart from './BarChart'
 import excelupload from './ExcelUpload'
 
 export default {
@@ -96,7 +98,7 @@ export default {
         isAdminView : { type: Boolean, default: false}
     },
     components: {
-        barchart,
+        // barchart,
         excelupload
     },
     data() {
@@ -111,7 +113,7 @@ export default {
                 { text: "Status", value: "state" },
                 { text: "Models", value: "models"},
                 { text: "Products", value: "products"},
-                { text: "Product states", value: "partitiondata"},
+                // { text: "Product states", value: "partitiondata"},
             ],
             filters: {},
             newOrderHandler: backend.promiseHandler(this.newOrder),

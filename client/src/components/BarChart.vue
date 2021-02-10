@@ -1,20 +1,25 @@
 <template>
     <div class="chart">
-        <v-tooltip bottom v-for="bar in chartBars" :key="bar.state">
+        <bar-chart-render :bardata="barData" :baroptions="barOptions"/>
+        <!-- <v-tooltip bottom v-for="bar in chartBars" :key="bar.state">
             <template v-slot:activator="{ on }">
                 <div v-on="on" class="chartbar" :style="{width: bar.size + '%', 'background-color': bar.color}"></div>
             </template>
             <span>{{bar.message}} {{bar.count}} / {{total}}</span>
-        </v-tooltip>
+        </v-tooltip> -->
     </div>
 </template>
 
 <script>
 import backend from '../backend'
+import BarChartRender from './BarChartRender.vue';
+
 export default {
+  components: { BarChartRender },
     props: {
         productdata: {type: Object, required: true},
-        account: {type: Object, required: true}
+        account: {type: Object, required: true},
+        orderstate: {type: String, required: true}
     },
     data() {
         return {
@@ -55,42 +60,74 @@ export default {
             
             return sum
         },
-        chartBars() {
-            var ret = {}
-            var sum = 0;
-            var states =  Object.values(this.productdata)
-            states.forEach(state => {
-                sum += parseInt(state.count);
-            })
-            states.forEach(state => {
-                var message = backend.messageFromStatus(state.stateafter, this.account.usertype);
-                if(!ret[message]) {
-                    ret[message] = {
-                        message: message,
-                        color: this.colorFromAccount(state.stateafter),
-                        count: 0,
-                        state: state.stateafter,
-                    }
-                }
-                ret[message].count += parseInt(state.count);
-            })
 
-            ret = Object.values(ret);
-            ret.forEach(state => {
-                state.size = (100 / sum) * parseInt(state.count);
-            })
+        //options configuration for bar graph
+        barOptions() {
+            var optionsObj = {
+                responsive: true,
+                scales: {
+                        yAxes: [{
+                        ticks: {
+                            min: 0,
+                            max: this.total
+                        }
+                        }],  
+                },
+                title: {
+                    display: true,
+                    text: `Order status: ${this.orderstate}`
+                }
+            }
+            return optionsObj
+        },
+        //get data for bar graph from backend
+        barData() {
+            var dataObj = {
+                    labels: [],
+                    datasets: [{
+                        data: []
+                    }] 
+            }
+            dataObj.labels = Object.values(this.productdata).map(state => backend.messageFromStatus(state.stateafter, this.account.usertype))
+            return dataObj     
+        },
 
-            ret.sort((a,b) => {
-                if ( a.color < b.color ){
-                    return -1;
-                }
-                if ( a.color > b.color ){
-                    return 1;
-                }
-                return 0;
-            });
-            return ret;
-        }
+        // chartBars() {
+        //     var ret = {}
+        //     var sum = 0;
+        //     var states =  Object.values(this.productdata)
+        //     states.forEach(state => {
+        //         sum += parseInt(state.count);
+        //     })
+        //     states.forEach(state => {
+        //         var message = backend.messageFromStatus(state.stateafter, this.account.usertype);
+        //         if(!ret[message]) {
+        //             ret[message] = {
+        //                 message: message,
+        //                 color: this.colorFromAccount(state.stateafter),
+        //                 count: 0,
+        //                 state: state.stateafter,
+        //             }
+        //         }
+        //         ret[message].count += parseInt(state.count);
+        //     })
+
+        //     ret = Object.values(ret);
+        //     ret.forEach(state => {
+        //         state.size = (100 / sum) * parseInt(state.count);
+        //     })
+
+        //     ret.sort((a,b) => {
+        //         if ( a.color < b.color ){
+        //             return -1;
+        //         }
+        //         if ( a.color > b.color ){
+        //             return 1;
+        //         }
+        //         return 0;
+        //     });
+        //     return ret;
+        // }
     },
     methods: {
         colorFromAccount(state) {
