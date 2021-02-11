@@ -108,6 +108,7 @@ export default {
                     }] 
             }
             dataObj.labels = Object.values(this.productdata).map(state => backend.messageFromStatus(state.stateafter, this.account.usertype))
+            dataObj.labels.sort()
             dataObj.datasets[0].data = Object.values(this.productdata).map(state => state.count)
             
             return dataObj     
