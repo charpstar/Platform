@@ -5,7 +5,7 @@
             :options="barOptions"
             />
         <!-- Previous code for creating a progress bar -->
-        
+
         <!-- <v-tooltip bottom v-for="bar in chartBars" :key="bar.state">
             <template v-slot:activator="{ on }">
                 <div v-on="on" class="chartbar" :style="{width: bar.size + '%', 'background-color': bar.color}"></div>
@@ -99,6 +99,16 @@ export default {
                     display: true,
                     fontSize: 16, //default is 12, kind of small
                     text: `Order status: ${this.status}`
+                },
+                tooltips: {
+                    //If we want the tooltip to show how many products out of total products
+                    //are in this category
+                    callbacks: {
+                        label: (tooltipItems) =>{ 
+                            let totalProducts = this.total;
+                            return tooltipItems.yLabel + ' / ' + totalProducts;
+                        }
+                }
                 }
             }
             return optionsObj
@@ -109,14 +119,20 @@ export default {
             var dataObj = {
                     labels: [],
                     datasets: [{
+                        backgroundColor: [],
                         barThickness: 'flex',
                         maxBarThickness: 60,
                         data: []
                     }] 
             }
-            dataObj.labels = Object.values(this.productdata).map(state => backend.messageFromStatus(state.stateafter, this.account.usertype))
-            dataObj.labels.sort() //sort alphabetically
+
+            var statesAfter = Object.values(this.productdata).map(state => state.stateafter).sort()           
+
+            dataObj.labels = statesAfter.map(stateafter => backend.messageFromStatus(stateafter, this.account.usertype))
             dataObj.datasets[0].data = Object.values(this.productdata).map(state => state.count)
+            
+            //dynamically set colors for each bar
+            dataObj.datasets[0].backgroundColor = statesAfter.map(stateafter => this.colorFromAccount(stateafter))
             
             return dataObj     
         },
