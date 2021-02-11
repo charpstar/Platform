@@ -4,6 +4,8 @@
             :chart-data="barData" 
             :options="barOptions"
             />
+        <!-- Previous code for creating a progress bar -->
+        
         <!-- <v-tooltip bottom v-for="bar in chartBars" :key="bar.state">
             <template v-slot:activator="{ on }">
                 <div v-on="on" class="chartbar" :style="{width: bar.size + '%', 'background-color': bar.color}"></div>
@@ -70,7 +72,9 @@ export default {
                     legend: {
                         display: false
                     },
-                //requires parent element to graph component to be positioned    
+
+                //"responsive" requires container graph component to be relatively positioned
+                //and relative (width, height) values for the container size  
                 responsive: true, 
                 scales: {
                     xAxes: [{
@@ -84,7 +88,7 @@ export default {
                             fontSize: 16, //default is 12, kind of small
                             labelString: 'Products'
                         },
-                        ticks: {
+                        ticks: { 
                             min: 0,
                             max: this.total,
                             stepSize: 1 //scale up by 1 on y-axis; shows only integers
@@ -93,6 +97,7 @@ export default {
                 },
                 title: {
                     display: true,
+                    fontSize: 16, //default is 12, kind of small
                     text: `Order status: ${this.status}`
                 }
             }
@@ -104,17 +109,19 @@ export default {
             var dataObj = {
                     labels: [],
                     datasets: [{
+                        barThickness: 'flex',
+                        maxBarThickness: 60,
                         data: []
                     }] 
             }
             dataObj.labels = Object.values(this.productdata).map(state => backend.messageFromStatus(state.stateafter, this.account.usertype))
-            dataObj.labels.sort()
+            dataObj.labels.sort() //sort alphabetically
             dataObj.datasets[0].data = Object.values(this.productdata).map(state => state.count)
             
             return dataObj     
         },
 
-        // The following code will not be used as long as we are using vue-chartjs library //
+    /* The following code will not be used as long as we are using vue-chartjs library */
 
         // chartBars() {
         //     var ret = {}
@@ -167,8 +174,11 @@ export default {
 <style lang="scss" scoped>
     .chart {
         position: relative; 
-        width: 40vw;
+        width: 40vw; //only "vw" works in order to have responsive graph, not "%" 
     }
+
+/* This CSS code is not needed when having a charts library */
+
 //     border-radius: 5px;
 //     display: flex;
 //     flex-direction: row;
