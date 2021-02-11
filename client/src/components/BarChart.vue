@@ -2,7 +2,8 @@
     <div class="chart">
         <bar-chart-render 
             :chart-data="barData" 
-            :options="barOptions"/>
+            :options="barOptions"
+            />
         <!-- <v-tooltip bottom v-for="bar in chartBars" :key="bar.state">
             <template v-slot:activator="{ on }">
                 <div v-on="on" class="chartbar" :style="{width: bar.size + '%', 'background-color': bar.color}"></div>
@@ -21,7 +22,7 @@ export default {
     props: {
         productdata: {type: Object, required: true},
         account: {type: Object, required: true},
-        orderstate: {type: String, required: true}
+        status: {type: String, required: false}
     },
     data() {
         return {
@@ -69,19 +70,30 @@ export default {
                     legend: {
                         display: false
                     },
-                responsive: true,
+                //requires parent element to graph component to be positioned    
+                responsive: true, 
                 scales: {
+                    xAxes: [{
+                        gridLines: {
+                            display: false,
+                        },
+                    }],
                     yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            fontSize: 16, //default is 12, kind of small
+                            labelString: 'Products'
+                        },
                         ticks: {
                             min: 0,
                             max: this.total,
                             stepSize: 1 //scale up by 1 on y-axis; shows only integers
-                        }
+                        },
                     }],  
                 },
                 title: {
                     display: true,
-                    text: `Order status: ${this.orderstate}`
+                    text: `Order status: ${this.status}`
                 }
             }
             return optionsObj
@@ -152,14 +164,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.chart {
-    border-radius: 5px;
-    display: flex;
-    flex-direction: row;
-    overflow: hidden;
-}
-.chartbar {
-    display: block;
-    height: 10px;
-}
+    .chart {
+        position: relative; 
+        width: 40vw;
+    }
+//     border-radius: 5px;
+//     display: flex;
+//     flex-direction: row;
+//     overflow: hidden;
+// }
+// .chartbar {
+//     display: block;
+//     height: 10px;
+// }
 </style>

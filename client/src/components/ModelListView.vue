@@ -56,9 +56,9 @@
                     {{backend.messageFromStatus(value, account.usertype)}}
                     <v-icon>{{backend.iconFromStatus(value, account.usertype)}}</v-icon>
                 </template>
-                <template v-slot:item.partitiondata="{value}">
+                <!-- <template v-slot:item.partitiondata="{value}">
                     <barchart :productdata="value" :account="account" />
-                </template>
+                </template> -->
                 <template v-slot:item.products="{item}">{{sumProducts(item)}}</template>
                 <template v-slot:item.modelowner="{value}">
                     <span v-if="value">{{value}}</span>
@@ -71,15 +71,15 @@
 
 <script>
 import backend from "../backend";
-import barchart from "./BarChart";
+// import barchart from "./BarChart";
 
 export default {
     props: {
         account: { required: true, type: Object }
     },
-    components: {
-        barchart
-    },
+    // components: {
+    //     barchart
+    // },
     data() {
         return {
             models: {},
@@ -91,7 +91,7 @@ export default {
                 { text: "Modeller", value: "modelowner", hideClient: true},
                 { text: "Status", value: "state" },
                 { text: "Products", value: "products" },
-                { text: "Product states", value: "partitiondata" }
+                // { text: "Product states", value: "partitiondata" }
             ],
             filters: {},
             name: "",

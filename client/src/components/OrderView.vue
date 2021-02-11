@@ -115,7 +115,7 @@
                 <barchart v-if="order" 
                     :account="account" 
                     :productdata="order.partitiondata" 
-                    :orderstate="backend.messageFromStatus(order.state, account.usertype)"/>
+                    :status="backend.messageFromStatus(order.state, account.usertype)"/>
                 </div>
                 <div>
                     <h2 id="commentsLabel">Comments</h2>
