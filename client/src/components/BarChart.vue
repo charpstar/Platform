@@ -55,7 +55,7 @@ export default {
             },
             clientcolors: {
                 ProductInit: "grey",
-                ProductReceived: "#868686",
+                ProductReceived: "#FFA500",
                 ProductDev: "#7FCB7F",
                 ProductMissing: "#7FCB7F",
                 ProductQAMissing: "#EC4E4E",   
