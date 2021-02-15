@@ -126,13 +126,13 @@ export default {
                     }] 
             }
 
-            var statesAfter = Object.values(this.productdata).map(state => state.stateafter).sort()           
+            var orderedStates = Object.values(this.productdata).sort(this.stateSort)   
 
-            dataObj.labels = statesAfter.map(stateafter => backend.messageFromStatus(stateafter, this.account.usertype))
-            dataObj.datasets[0].data = Object.values(this.productdata).map(state => state.count)
+            dataObj.labels = orderedStates.map(state => backend.messageFromStatus(state.stateafter, this.account.usertype))
+            dataObj.datasets[0].data = orderedStates.map(state => state.count)
             
             //dynamically set colors for each bar
-            dataObj.datasets[0].backgroundColor = statesAfter.map(stateafter => this.colorFromAccount(stateafter))
+            dataObj.datasets[0].backgroundColor = orderedStates.map(state => this.colorFromAccount(state.stateafter))
             
             return dataObj     
         },
@@ -182,7 +182,16 @@ export default {
                 return this.clientcolors[state]
             }
             return this.colors[state]
-        }
+        },
+        stateSort( a, b ) {
+            if ( a.stateafter < b.stateafter ){
+                return -1;
+            }
+            if ( a.stateafter > b.stateafter ){
+                return 1;
+            }
+            return 0;
+            }
     }
 }
 </script>
