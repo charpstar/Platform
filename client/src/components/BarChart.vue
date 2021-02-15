@@ -38,7 +38,7 @@ export default {
                 ProductQAMissing: "#A33636",               
                 ProductReview: "#4A754A",
                 ProductRefine: "#FFA500", 
-                ClientProductReceived: "#60106E",               
+                ClientProductReceived: "#744885",               
                 ClientFeedback: "#1DA19A",
                 Done: "#188038",
                 Error: "red"
@@ -90,9 +90,9 @@ export default {
         //options configuration for bar graph
         barOptions() {
             var optionsObj = {
-                    legend: {
-                        display: false
-                    },
+                legend: {
+                    display: false
+                },
 
                 //"responsive" requires container graph component to be relatively positioned
                 //and relative (width, height) values for the container size  
