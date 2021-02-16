@@ -1,8 +1,9 @@
 <template>
     <div class="chart">
-        <bar-chart-render 
-            :chart-data="barData" 
+        <bar-chart-render
+            :chart-data="barData"
             :options="barOptions"
+            :plugins="plugins"
             />
         <!-- Previous code for creating a progress bar -->
 
@@ -28,17 +29,20 @@ export default {
     },
     data() {
         return {
+            //instead of array with static data, we can have functions to get right icon from backend
+            //similar to how we get message and colors for bars
+            images : ['https://i.stack.imgur.com/2RAv2.png', 'https://i.stack.imgur.com/Tq5DA.png', 'https://i.stack.imgur.com/3KRtW.png', 'https://i.stack.imgur.com/iLyVi.png'],
 
             /* Commented code in colors means the colors previously used for the bar chart */
             colors: {
                 ProductInit: "grey", //maybe different color?
-                ProductReceived: "#868686",               
-                ProductDev: "#7FCB7F",               
-                ProductMissing: "#EC4E4E",               
-                ProductQAMissing: "#A33636",               
+                ProductReceived: "#868686",
+                ProductDev: "#7FCB7F",
+                ProductMissing: "#EC4E4E",
+                ProductQAMissing: "#A33636",
                 ProductReview: "#4A754A",
-                ProductRefine: "#FFA500", 
-                ClientProductReceived: "#744885",               
+                ProductRefine: "#FFA500",
+                ClientProductReceived: "#744885",
                 ClientFeedback: "#1DA19A",
                 Done: "#188038",
                 Error: "red"
@@ -51,19 +55,19 @@ export default {
                 // ClientProductReceived: "#37db4d",
                 // ClientFeedback: "#0e6ab5",
                 // Done: "green"
-                
+
             },
             clientcolors: {
                 ProductInit: "grey",
                 ProductReceived: "#FFA500",
                 ProductDev: "#7FCB7F",
                 ProductMissing: "#7FCB7F",
-                ProductQAMissing: "#EC4E4E",   
-                ProductReview: "#7FCB7F",               
+                ProductQAMissing: "#EC4E4E",
+                ProductReview: "#7FCB7F",
                 ProductRefine: "#7FCB7F",
-                ClientProductReceived: "#60106E",               
+                ClientProductReceived: "#60106E",
                 ClientFeedback: "#1DA19A",
-                Done: "#188038",                
+                Done: "#188038",
                 Error: "red"
                 // ProductReceived: "grey",
                 // ProductDev: "#0e6ab5",
@@ -78,14 +82,6 @@ export default {
         };
     },
     computed: {
-        total() {
-            var sum = 0;
-            Object.values(this.productdata).forEach(state => {
-                sum += parseInt(state.count);
-            })
-            
-            return sum
-        },
 
         //options configuration for bar graph
         barOptions() {
@@ -95,13 +91,13 @@ export default {
                 },
 
                 //"responsive" requires container graph component to be relatively positioned
-                //and relative (width, height) values for the container size  
-                responsive: true, 
+                //and relative (width, height) values for the container size
+                responsive: true,
                 scales: {
                     xAxes: [{
                         gridLines: {
                             display: false,
-                        },
+                        }
                     }],
                     yAxes: [{
                         scaleLabel: {
@@ -109,12 +105,12 @@ export default {
                             fontSize: 16, //default is 12, kind of small
                             labelString: 'Products'
                         },
-                        ticks: { 
+                        ticks: {
                             min: 0,
                             max: this.total,
                             stepSize: 1 //scale up by 1 on y-axis; shows only integers
                         },
-                    }],  
+                    }],
                 },
                 title: {
                     display: true,
@@ -122,15 +118,21 @@ export default {
                     text: `Order status: ${this.status}`
                 },
                 tooltips: {
-                    //If we want the tooltip to show how many products out of total products
-                    //are in this category
+                    //custom tooltip
                     callbacks: {
-                        label: (tooltipItems) =>{ 
+
+                        //title is the appropriate message from backend
+                        title: (tooltipItems) =>{
+                            var tooltipItem = tooltipItems[0];
+                            return this.statusMessage[tooltipItem.index]
+                        },
+
+                        label: (tooltipItem) =>{
                             let totalProducts = this.total;
-                            return tooltipItems.yLabel + ' / ' + totalProducts;
+                            return tooltipItem.yLabel + ' / ' + totalProducts;
                         }
-                }
-                }
+                    }
+                },
             }
             return optionsObj
         },
@@ -144,18 +146,65 @@ export default {
                         barThickness: 'flex',
                         maxBarThickness: 60,
                         data: []
-                    }] 
+                    }]
             }
-
-            var orderedStates = Object.values(this.productdata).sort(this.stateSort)   
-
-            dataObj.labels = orderedStates.map(state => backend.messageFromStatus(state.stateafter, this.account.usertype))
-            dataObj.datasets[0].data = orderedStates.map(state => state.count)
             
+            //create an array with the same number of items as the product states
+            //this way we don't get text as labels, only icons
+            for (let i=0; i<this.orderedStates.length ; i++) {dataObj.labels[i] = ''}
+
+            dataObj.datasets[0].data = this.orderedStates.map(state => state.count)
+
             //dynamically set colors for each bar
-            dataObj.datasets[0].backgroundColor = orderedStates.map(state => this.colorFromAccount(state.stateafter))
-            
-            return dataObj     
+            dataObj.datasets[0].backgroundColor = this.orderedStates.map(state => this.colorFromAccount(state.stateafter))
+
+            return dataObj
+        },
+
+        orderedStates() {
+            //sort the states to always get them in the same order and with correct data
+            return Object.values(this.productdata).sort(this.stateSort)
+        },
+        
+        plugins() {
+            /* This plugin code lets us insert an image in place of label on xAxis */
+
+            //plugin code from
+            //https://stackoverflow.com/questions/30247579/how-to-add-an-images-as-labels-to-canvas-charts-using-chart-js
+            var pluginsArray= [{
+                afterDraw: chart => {
+                    var ctx = chart.chart.ctx;
+                    var xAxis = chart.scales['x-axis-0'];
+                    var yAxis = chart.scales['y-axis-0'];
+                    xAxis.ticks.forEach((value, index) => {
+                        var x = xAxis.getPixelForTick(index);
+                        var image = new Image();
+
+                        //images will need to be saved in a folder in our project;
+                        //can't be fontAwesome(?) or vuetify icons
+                        image.src = this.images[index],
+                        ctx.drawImage(image, x - 12, yAxis.bottom + 10);
+                    });
+                }
+            }]
+
+            return pluginsArray
+        },
+
+        statusMessage() {
+            //display as tooltip title in bar graph
+            return this.orderedStates.map(state => 
+                backend.messageFromStatus(state.stateafter, this.account.usertype)
+            )
+        },
+
+        total() {
+            var sum = 0;
+            Object.values(this.productdata).forEach(state => {
+                sum += parseInt(state.count);
+            })
+
+            return sum
         },
 
     /* The following code will not be used as long as we are using vue-chartjs library */
@@ -219,8 +268,8 @@ export default {
 
 <style lang="scss" scoped>
     .chart {
-        position: relative; 
-        width: 40vw; //only "vw" works in order to have responsive graph, not "%" 
+        position: relative;
+        width: 40vw; //only "vw" works in order to have responsive graph, not "%"
     }
 
 /* This CSS code is not needed when having a charts library */
