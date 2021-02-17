@@ -1,5 +1,5 @@
 <template>
-    <div class="chart">
+   <div class="chart">
         <bar-chart-render
             :chart-data="barData"
             :options="barOptions"
@@ -13,7 +13,8 @@
             </template>
             <span>{{bar.message}} {{bar.count}} / {{total}}</span>
         </v-tooltip> -->
-    </div>
+    </div> 
+    
 </template>
 
 <script>
@@ -31,7 +32,7 @@ export default {
         return {
             //instead of array with static data, we can have functions to get right icon from backend
             //similar to how we get message and colors for bars
-            images : ['https://i.stack.imgur.com/2RAv2.png', 'https://i.stack.imgur.com/Tq5DA.png', 'https://i.stack.imgur.com/3KRtW.png', 'https://i.stack.imgur.com/iLyVi.png'],
+            // images : ['https://i.stack.imgur.com/2RAv2.png', 'https://i.stack.imgur.com/Tq5DA.png', 'https://i.stack.imgur.com/3KRtW.png', 'https://i.stack.imgur.com/iLyVi.png'],
 
             /* Commented code in colors means the colors previously used for the bar chart */
             colors: {
@@ -78,9 +79,20 @@ export default {
                 // ClientProductReceived: "#37db4d",
                 // ClientFeedback: "#0e6ab5",
                 // Done: "green"
-            }
+            },
+
+            //icons sources first for admin, then for client
+            baricons: {
+                ProductReceived: require('@/assets/bar-icons/unassigned.png'),
+                ProductRefine: 'https://i.stack.imgur.com/iLyVi.png'
+
+            },
+            clientbaricons:{
+
+            },
         };
     },
+    
     computed: {
 
         //options configuration for bar graph
@@ -181,8 +193,9 @@ export default {
                         var image = new Image();
 
                         //images will need to be saved in a folder in our project;
-                        //can't be fontAwesome(?) or vuetify icons
-                        image.src = this.images[index],
+                        //can't be vuetify icons using mdi-...
+                        var images = this.orderedStates.map(state => this.iconFromAccount(state.stateafter));
+                        image.src = images[index];
                         ctx.drawImage(image, x - 12, yAxis.bottom + 10);
                     });
                 }
@@ -253,6 +266,14 @@ export default {
             }
             return this.colors[state]
         },
+
+        iconFromAccount(state) {
+            if(this.account.usertype == 'Client') {
+                return this.clientbaricons[state]
+            }
+            return this.baricons[state]
+        },
+        
         stateSort( a, b ) {
             if ( a.stateafter < b.stateafter ){
                 return -1;
