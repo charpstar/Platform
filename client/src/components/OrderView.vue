@@ -112,10 +112,10 @@
             <div class="d-flex">
                 <div>
                 <!-- Pass props to the bar chart component in order to render graph -->
-                <barchart v-if="order" 
-                    :account="account" 
-                    :productdata="order.partitiondata" 
-                    :status="backend.messageFromStatus(order.state, account.usertype)"/>
+                    <barchart v-if="order" 
+                        :account="account" 
+                        :productdata="order.partitiondata" 
+                        :status="backend.messageFromStatus(order.state, account.usertype)"/>
                 </div>
                 <div>
                     <h2 id="commentsLabel">Comments</h2>

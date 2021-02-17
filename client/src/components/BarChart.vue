@@ -83,12 +83,31 @@ export default {
 
             //icons sources first for admin, then for client
             baricons: {
+                ProductInit: '',
                 ProductReceived: require('@/assets/bar-icons/unassigned.png'),
-                ProductRefine: 'https://i.stack.imgur.com/iLyVi.png'
+                ProductDev: require('@/assets/bar-icons/under-development.png'),
+                ProductMissing: require('@/assets/bar-icons/information-missing.png'),
+                ProductQAMissing: "",
+                ProductReview: "",
+                ProductRefine: require('@/assets/bar-icons/review-revision.png'),
+                ClientProductReceived: "",
+                ClientFeedback: "",
+                Done: require('@/assets/bar-icons/complete.png'),
+                Error: ""
 
             },
             clientbaricons:{
-
+                ProductInit: "",
+                ProductReceived: require('@/assets/bar-icons/review-revision.png'),
+                ProductDev: require('@/assets/bar-icons/under-development.png'),
+                ProductMissing: require('@/assets/bar-icons/under-development.png'),
+                ProductQAMissing: require('@/assets/bar-icons/information-missing.png'),
+                ProductReview: require('@/assets/bar-icons/under-development.png'),
+                ProductRefine: require('@/assets/bar-icons/under-development.png'),
+                ClientProductReceived: "",
+                ClientFeedback: "",
+                Done: require('@/assets/bar-icons/complete.png'),
+                Error: ""
             },
         };
     },
@@ -100,6 +119,12 @@ export default {
             var optionsObj = {
                 legend: {
                     display: false
+                },
+                layout: {
+                    //give some padding to bottom in order to get the whole icons
+                    padding: {
+                        bottom: 10
+                    }
                 },
 
                 //"responsive" requires container graph component to be relatively positioned
