@@ -46,7 +46,7 @@ export default {
                 ClientProductReceived: "#744885",
                 ClientFeedback: "#1DA19A",
                 Done: "#188038",
-                Error: "red"
+                Error: "E20000"
                 // ProductReceived: "grey",
                 // ProductDev: "#0e6ab5",
                 // ProductMissing: "#c91463",
@@ -66,10 +66,10 @@ export default {
                 ProductQAMissing: "#EC4E4E",
                 ProductReview: "#7FCB7F",
                 ProductRefine: "#7FCB7F",
-                ClientProductReceived: "#60106E",
+                ClientProductReceived: "#744885",
                 ClientFeedback: "#1DA19A",
                 Done: "#188038",
-                Error: "red"
+                Error: "E20000"
                 // ProductReceived: "grey",
                 // ProductDev: "#0e6ab5",
                 // ProductMissing: "#0e6ab5",
@@ -87,13 +87,13 @@ export default {
                 ProductReceived: require('@/assets/bar-icons/unassigned.png'),
                 ProductDev: require('@/assets/bar-icons/under-development.png'),
                 ProductMissing: require('@/assets/bar-icons/information-missing.png'),
-                ProductQAMissing: "",
-                ProductReview: "",
+                ProductQAMissing: require('@/assets/bar-icons/client-info-miss.png'),
+                ProductReview: require('@/assets/bar-icons/qa-review.png'),
                 ProductRefine: require('@/assets/bar-icons/review-revision.png'),
-                ClientProductReceived: "",
-                ClientFeedback: "",
+                ClientProductReceived: require('@/assets/bar-icons/client-review.png'),
+                ClientFeedback: require('@/assets/bar-icons/client-feedback.png'),
                 Done: require('@/assets/bar-icons/complete.png'),
-                Error: ""
+                Error: require('@/assets/bar-icons/error.png')
 
             },
             clientbaricons:{
@@ -104,10 +104,10 @@ export default {
                 ProductQAMissing: require('@/assets/bar-icons/information-missing.png'),
                 ProductReview: require('@/assets/bar-icons/under-development.png'),
                 ProductRefine: require('@/assets/bar-icons/under-development.png'),
-                ClientProductReceived: "",
-                ClientFeedback: "",
+                ClientProductReceived: require('@/assets/bar-icons/client-review.png'),
+                ClientFeedback: require('@/assets/bar-icons/client-feedback.png'),
                 Done: require('@/assets/bar-icons/complete.png'),
-                Error: ""
+                Error: require('@/assets/bar-icons/error.png')
             },
         };
     },
