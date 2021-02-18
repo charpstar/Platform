@@ -112,11 +112,34 @@
             <div class="d-flex">
                 <div>
                 <!-- Pass props to the bar chart component in order to render graph -->
-                    <barchart v-if="order" 
+                    <barchart 
+                        v-if="order" 
                         :account="account" 
                         :productdata="order.partitiondata" 
+                        :orderedstates="orderedStates"
+                        :baricons="baricons"
+                        :clientbaricons="clientbaricons"
+                        :total="products"
                         :status="backend.messageFromStatus(order.state, account.usertype)"/>
                 </div>
+                <v-expansion-panels>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>
+                            Product states
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <product-states 
+                            v-if="order"
+                            :total="products"
+                            :account="account" 
+                            :orderedstates="orderedStates"
+                            :baricons="baricons"
+                            :clientbaricons="clientbaricons"
+                            />
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+                    
                 <div>
                     <h2 id="commentsLabel">Comments</h2>
                     <comments
@@ -138,17 +161,20 @@ import comments from "./CommentView";
 import confirmmodal from "./ConfirmModal";
 import barchart from './BarChart';
 import excelupload from './ExcelUpload';
+import ProductStates from './ProductStates.vue';
 
 export default {
     components: {
         comments,
         confirmmodal,
         barchart,
-        excelupload
+        excelupload,
+        ProductStates
     },
     props: {
         account: { type: Object, required: true }
     },
+
     computed: {
         products() {
             var sum = 0;
@@ -160,7 +186,22 @@ export default {
                 sum += parseInt(state.count);
             })
             return sum;
-        }
+        },
+
+        orderedStates() {
+            //sort the states to always get them in the same order and with correct data
+            function stateSort( a, b ) {
+            if ( a.stateafter < b.stateafter ){
+                return -1;
+            }
+            if ( a.stateafter > b.stateafter ){
+                return 1;
+            }
+            return 0;
+            }
+
+            return Object.values(this.order.partitiondata).sort(stateSort)
+        },
     },
     data() {
         return {
@@ -174,6 +215,35 @@ export default {
             del: backend.promiseHandler(this.deleteOrder),
             add: backend.promiseHandler(this.addNewModels),
             file: false,
+
+            //icons sources first for admin, then for client
+            baricons: {
+                ProductInit: '',
+                ProductReceived: require('@/assets/bar-icons/unassigned.png'),
+                ProductDev: require('@/assets/bar-icons/under-development.png'),
+                ProductMissing: require('@/assets/bar-icons/information-missing.png'),
+                ProductQAMissing: require('@/assets/bar-icons/client-info-miss.png'),
+                ProductReview: require('@/assets/bar-icons/qa-review.png'),
+                ProductRefine: require('@/assets/bar-icons/review-revision.png'),
+                ClientProductReceived: require('@/assets/bar-icons/client-review.png'),
+                ClientFeedback: require('@/assets/bar-icons/client-feedback.png'),
+                Done: require('@/assets/bar-icons/complete.png'),
+                Error: require('@/assets/bar-icons/error.png')
+
+            },
+            clientbaricons:{
+                ProductInit: "",
+                ProductReceived: require('@/assets/bar-icons/review-revision.png'),
+                ProductDev: require('@/assets/bar-icons/under-development.png'),
+                ProductMissing: require('@/assets/bar-icons/under-development.png'),
+                ProductQAMissing: require('@/assets/bar-icons/information-missing.png'),
+                ProductReview: require('@/assets/bar-icons/under-development.png'),
+                ProductRefine: require('@/assets/bar-icons/under-development.png'),
+                ClientProductReceived: require('@/assets/bar-icons/client-review.png'),
+                ClientFeedback: require('@/assets/bar-icons/client-feedback.png'),
+                Done: require('@/assets/bar-icons/complete.png'),
+                Error: require('@/assets/bar-icons/error.png')
+            }
         };
     },
     methods: {

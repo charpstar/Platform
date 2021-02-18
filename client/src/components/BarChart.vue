@@ -24,15 +24,16 @@ import BarChartRender from './BarChartRender.vue';
 export default {
   components: { BarChartRender },
     props: {
-        productdata: {type: Object, required: true},
         account: {type: Object, required: true},
-        status: {type: String, required: false}
+        status: {type: String, required: false},
+        orderedstates: {type: Array, required: true},
+        baricons: {type: Object, required: true},
+        clientbaricons: {type: Object, required: true},
+        total: {type: Number, required: true}
+        // productdata: {type: Object, required: true}
     },
     data() {
         return {
-            //instead of array with static data, we can have functions to get right icon from backend
-            //similar to how we get message and colors for bars
-            // images : ['https://i.stack.imgur.com/2RAv2.png', 'https://i.stack.imgur.com/Tq5DA.png', 'https://i.stack.imgur.com/3KRtW.png', 'https://i.stack.imgur.com/iLyVi.png'],
 
             /* Commented code in colors means the colors previously used for the bar chart */
             colors: {
@@ -79,36 +80,7 @@ export default {
                 // ClientProductReceived: "#37db4d",
                 // ClientFeedback: "#0e6ab5",
                 // Done: "green"
-            },
-
-            //icons sources first for admin, then for client
-            baricons: {
-                ProductInit: '',
-                ProductReceived: require('@/assets/bar-icons/unassigned.png'),
-                ProductDev: require('@/assets/bar-icons/under-development.png'),
-                ProductMissing: require('@/assets/bar-icons/information-missing.png'),
-                ProductQAMissing: require('@/assets/bar-icons/client-info-miss.png'),
-                ProductReview: require('@/assets/bar-icons/qa-review.png'),
-                ProductRefine: require('@/assets/bar-icons/review-revision.png'),
-                ClientProductReceived: require('@/assets/bar-icons/client-review.png'),
-                ClientFeedback: require('@/assets/bar-icons/client-feedback.png'),
-                Done: require('@/assets/bar-icons/complete.png'),
-                Error: require('@/assets/bar-icons/error.png')
-
-            },
-            clientbaricons:{
-                ProductInit: "",
-                ProductReceived: require('@/assets/bar-icons/review-revision.png'),
-                ProductDev: require('@/assets/bar-icons/under-development.png'),
-                ProductMissing: require('@/assets/bar-icons/under-development.png'),
-                ProductQAMissing: require('@/assets/bar-icons/information-missing.png'),
-                ProductReview: require('@/assets/bar-icons/under-development.png'),
-                ProductRefine: require('@/assets/bar-icons/under-development.png'),
-                ClientProductReceived: require('@/assets/bar-icons/client-review.png'),
-                ClientFeedback: require('@/assets/bar-icons/client-feedback.png'),
-                Done: require('@/assets/bar-icons/complete.png'),
-                Error: require('@/assets/bar-icons/error.png')
-            },
+            }
         };
     },
     
@@ -188,19 +160,14 @@ export default {
             
             //create an array with the same number of items as the product states
             //this way we don't get text as labels, only icons
-            for (let i=0; i<this.orderedStates.length ; i++) {dataObj.labels[i] = ''}
+            for (let i=0; i<this.orderedstates.length ; i++) {dataObj.labels[i] = ''}
 
-            dataObj.datasets[0].data = this.orderedStates.map(state => state.count)
+            dataObj.datasets[0].data = this.orderedstates.map(state => state.count)
 
             //dynamically set colors for each bar
-            dataObj.datasets[0].backgroundColor = this.orderedStates.map(state => this.colorFromAccount(state.stateafter))
+            dataObj.datasets[0].backgroundColor = this.orderedstates.map(state => this.colorFromAccount(state.stateafter))
 
             return dataObj
-        },
-
-        orderedStates() {
-            //sort the states to always get them in the same order and with correct data
-            return Object.values(this.productdata).sort(this.stateSort)
         },
         
         plugins() {
@@ -219,7 +186,7 @@ export default {
 
                         //images will need to be saved in a folder in our project;
                         //can't be vuetify icons using mdi-...
-                        var images = this.orderedStates.map(state => this.iconFromAccount(state.stateafter));
+                        var images = this.orderedstates.map(state => this.iconFromAccount(state.stateafter));
                         image.src = images[index];
                         ctx.drawImage(image, x - 12, yAxis.bottom + 10);
                     });
@@ -231,19 +198,19 @@ export default {
 
         statusMessage() {
             //display as tooltip title in bar graph
-            return this.orderedStates.map(state => 
+            return this.orderedstates.map(state => 
                 backend.messageFromStatus(state.stateafter, this.account.usertype)
             )
         },
 
-        total() {
-            var sum = 0;
-            Object.values(this.productdata).forEach(state => {
-                sum += parseInt(state.count);
-            })
+        // total() {
+        //     var sum = 0;
+        //     Object.values(this.productdata).forEach(state => {
+        //         sum += parseInt(state.count);
+        //     })
 
-            return sum
-        },
+        //     return sum
+        // },
 
     /* The following code will not be used as long as we are using vue-chartjs library */
 
@@ -297,17 +264,7 @@ export default {
                 return this.clientbaricons[state]
             }
             return this.baricons[state]
-        },
-        
-        stateSort( a, b ) {
-            if ( a.stateafter < b.stateafter ){
-                return -1;
-            }
-            if ( a.stateafter > b.stateafter ){
-                return 1;
-            }
-            return 0;
-            }
+        }
     }
 }
 </script>
