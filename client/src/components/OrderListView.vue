@@ -40,6 +40,7 @@
                     </v-list>
                 </v-menu>
             </div>
+            
             <v-data-table
                 id="table"
                 :headers="filteredHeaders"
@@ -104,6 +105,7 @@ export default {
     data() {
         return {
             orders: {},
+            initialOrderId: "", //might be passed down from parent as prop
             userOrders: false,
             headers: [
                 { text: "ID", value: "orderid" },
@@ -142,8 +144,9 @@ export default {
             return sum;
         },
         handleClick(order) {
-            this.$router.push("/order/" + order.orderid);
-            //instead of pushing a route, use the id as a prop to populate order view component
+            this.$emit('clicked-order', order.orderid)  
+        /* instead of pushing a route, use the id as a prop to populate order view component */        
+        // this.$router.push("/order/" + order.orderid);
         },
         newOrder() {
             var vm = this;
@@ -153,13 +156,16 @@ export default {
                 });
             }
         },
-        getOrders() {
+        getOrders() { //move to parent?
             var vm = this;
             if (vm.isAdminView) {
             backend
                 .getAllOrders()
                 .then(orders => {
                     vm.orders = orders;
+
+                    //dynamically get the first order to show details for
+                    vm.initialOrderId = Object.values(orders)[0].orderid
                 })
                 .catch(error => {
                     vm.error = error;
@@ -169,9 +175,13 @@ export default {
                 vm.user.userid = vm.$route.params.id;
                 backend.getOrders(vm.user.userid).then(orders => {
                     vm.orders = orders;
+
+                    //dynamically get the first order to show details for
+                    vm.initialOrderId = Object.values(orders)[0].orderid
                 });
             }
-        }
+
+        },
     },
     mounted() {
         var vm = this;
@@ -179,7 +189,7 @@ export default {
             vm.filters[vm.account.name] = "Assigned to";
             vm.filters['OrderReceived'] = "Unassigned";
         }
-        vm.getOrders();
+        vm.getOrders(); //move to parent ?
     }
 };
 </script>

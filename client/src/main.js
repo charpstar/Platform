@@ -33,6 +33,7 @@ import loginView from './components/LoginView'
 import adminView from "./components/AdminView";
 import orderListView from "./components/OrderListView";
 import orderView from "./components/OrderView";
+import orderOverview from "./components/OrderOverview";
 import modelListView from "./components/ModelListView";
 import modelView from "./components/ModelView";
 import userListView from "./components/UserListView";
@@ -51,7 +52,7 @@ const router = new VueRouter({
     { path: '/user/:id', component: userView },
   
     //the component for this path will probably need to be the new orderOverview component
-    { path: '/user/:id/orders', component: orderListView },
+    { path: '/user/:id/orders', component: orderOverview },
     { path: '/user/:id/models', component: modelListView },
     { path: '/order/:id', component: orderView },
     { path: '/order/:id/models', component: modelListView },

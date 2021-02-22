@@ -16,9 +16,9 @@
         </v-dialog>
         <div class="flexrow" id="topRow">
             <div class="flexrow">
-                <v-btn icon class="hidden-xs-only" >
+                <!-- <v-btn icon class="hidden-xs-only" >
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
-                </v-btn>
+                </v-btn> -->
                 <h2>Order</h2>
             </div>
         </div>
@@ -172,7 +172,8 @@ export default {
         ProductStates
     },
     props: {
-        account: { type: Object, required: true }
+        account: { type: Object, required: true },
+        orderid: { type: Number, required: true }
     },
 
     computed: {
@@ -299,8 +300,8 @@ export default {
     },
     mounted() {
         var vm = this;
-        var orderid = vm.$route.params.id; //replace with prop 
-        backend.getOrder(orderid).then(order => {
+        // var orderid = vm.$route.params.id; //replace with prop 
+        backend.getOrder(this.orderid).then(order => {
             vm.order = order;
         });
         if(vm.account.usertype == 'Admin') {
