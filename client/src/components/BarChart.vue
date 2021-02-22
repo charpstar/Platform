@@ -106,6 +106,9 @@ export default {
                     xAxes: [{
                         gridLines: {
                             display: false,
+                        },
+                        ticks: {
+                            padding: 30
                         }
                     }],
                     yAxes: [{
@@ -153,7 +156,7 @@ export default {
                     datasets: [{
                         backgroundColor: [],
                         barThickness: 'flex',
-                        maxBarThickness: 60,
+                        maxBarThickness: 70,
                         data: []
                     }]
             }
@@ -188,6 +191,7 @@ export default {
                         //can't be vuetify icons using mdi-...
                         var images = this.orderedstates.map(state => this.iconFromAccount(state.stateafter));
                         image.src = images[index];
+                        image.style= 'height: 50px';
                         ctx.drawImage(image, x - 12, yAxis.bottom + 10);
                     });
                 }
