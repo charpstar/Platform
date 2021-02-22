@@ -45,10 +45,12 @@ const router = new VueRouter({
     { path: '/', component: loginView },
     { path: '/home', component: adminView },
     { path: '/admin/users', component: userListView },
-    { path: '/admin/orders', component: orderListView },
+    { path: '/admin/orders', component: orderListView }, //this path doesn't work properly
     { path: '/admin/models', component: modelListView },
     { path: '/modeller/:id', component: modelListView },
     { path: '/user/:id', component: userView },
+  
+    //the component for this path will probably need to be the new orderOverview component
     { path: '/user/:id/orders', component: orderListView },
     { path: '/user/:id/models', component: modelListView },
     { path: '/order/:id', component: orderView },

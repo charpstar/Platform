@@ -143,6 +143,7 @@ export default {
         },
         handleClick(order) {
             this.$router.push("/order/" + order.orderid);
+            //instead of pushing a route, use the id as a prop to populate order view component
         },
         newOrder() {
             var vm = this;

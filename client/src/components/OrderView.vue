@@ -299,7 +299,7 @@ export default {
     },
     mounted() {
         var vm = this;
-        var orderid = vm.$route.params.id;
+        var orderid = vm.$route.params.id; //replace with prop 
         backend.getOrder(orderid).then(order => {
             vm.order = order;
         });
