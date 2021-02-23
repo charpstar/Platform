@@ -31,14 +31,8 @@
             }
         },
         props: {
-            account: {
-                type: Object,
-                required: true
-            },
-            isAdminView: {
-                type: Boolean,
-                default: false
-            }
+            account: { type: Object, required: true },
+            isAdminView: { type: Boolean, default: false }
         },
         components: {
             OrderListView,
@@ -57,7 +51,7 @@
                         .then(orders => {
                             vm.orders = orders;
 
-                            //dynamically get the first order to show details for
+                            //dynamically get the first/ default order to show details for
                             vm.orderid = Object.values(orders)[0].orderid
                         })
                         .catch(error => {
@@ -69,7 +63,7 @@
                     backend.getOrders(vm.user.userid).then(orders => {
                         vm.orders = orders;
 
-                        //dynamically get the first order to show details for
+                        //dynamically get the first/ default order to show details for
                         vm.orderid = Object.values(orders)[0].orderid
                     });
                 }

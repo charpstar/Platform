@@ -4,6 +4,7 @@
             :chart-data="barData"
             :options="barOptions"
             :plugins="plugins"
+            height="300px"
             />
         <!-- Previous code for creating a progress bar -->
 
@@ -156,7 +157,7 @@ export default {
                     datasets: [{
                         backgroundColor: [],
                         barThickness: 'flex',
-                        maxBarThickness: 70,
+                        maxBarThickness: 60,
                         data: []
                     }]
             }
