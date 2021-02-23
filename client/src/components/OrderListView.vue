@@ -97,7 +97,6 @@ export default {
     props: {
         account: { type: Object,  required: true },
         isAdminView : { type: Boolean, default: false},
-        orderid: { type: Number, required: true},
         orders: { type: Object, required: true}
     },
     components: {

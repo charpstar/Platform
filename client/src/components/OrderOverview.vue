@@ -5,7 +5,6 @@
             :account="account" 
             :isAdminView="isAdminView" 
             @clicked-order="getOrderId" 
-            :orderid="orderid"
             :orders="orders"/>
 
         <!-- 'key' re-renders the child component when orderid changes-->
