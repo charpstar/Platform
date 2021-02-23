@@ -52,6 +52,7 @@ const router = new VueRouter({
     { path: '/user/:id', component: userView },
   
     //the component for this path will probably need to be the new orderOverview component
+    //{ path: '/user/:id/orders', component: orderListView },
     { path: '/user/:id/orders', component: orderOverview },
     { path: '/user/:id/models', component: modelListView },
     { path: '/order/:id', component: orderView },

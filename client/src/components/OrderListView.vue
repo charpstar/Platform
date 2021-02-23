@@ -95,8 +95,10 @@ import excelupload from './ExcelUpload'
 
 export default {
     props: {
-        account: { required: true, type: Object },
-        isAdminView : { type: Boolean, default: false}
+        account: { type: Object,  required: true },
+        isAdminView : { type: Boolean, default: false},
+        orderid: { type: Number, required: true},
+        orders: { type: Object, required: true}
     },
     components: {
         // barchart,
@@ -104,8 +106,7 @@ export default {
     },
     data() {
         return {
-            orders: {},
-            initialOrderId: "", //might be passed down from parent as prop
+            // orders: {},
             userOrders: false,
             headers: [
                 { text: "ID", value: "orderid" },
@@ -156,32 +157,32 @@ export default {
                 });
             }
         },
-        getOrders() { //move to parent?
-            var vm = this;
-            if (vm.isAdminView) {
-            backend
-                .getAllOrders()
-                .then(orders => {
-                    vm.orders = orders;
+        // getOrders() { 
+        //     var vm = this;
+        //     if (vm.isAdminView) {
+        //     backend
+        //         .getAllOrders()
+        //         .then(orders => {
+        //             vm.orders = orders;
 
-                    //dynamically get the first order to show details for
-                    vm.initialOrderId = Object.values(orders)[0].orderid
-                })
-                .catch(error => {
-                    vm.error = error;
-                });
-            } else {
-                vm.userOrders = true;
-                vm.user.userid = vm.$route.params.id;
-                backend.getOrders(vm.user.userid).then(orders => {
-                    vm.orders = orders;
+        //             //dynamically get the first order to show details for
+        //             vm.initialOrderId = Object.values(orders)[0].orderid
+        //         })
+        //         .catch(error => {
+        //             vm.error = error;
+        //         });
+        //     } else {
+        //         vm.userOrders = true;
+        //         vm.user.userid = vm.$route.params.id;
+        //         backend.getOrders(vm.user.userid).then(orders => {
+        //             vm.orders = orders;
 
-                    //dynamically get the first order to show details for
-                    vm.initialOrderId = Object.values(orders)[0].orderid
-                });
-            }
+        //             //dynamically get the first order to show details for
+        //             vm.initialOrderId = Object.values(orders)[0].orderid
+        //         });
+        //     }
 
-        },
+        // },
     },
     mounted() {
         var vm = this;
@@ -189,7 +190,7 @@ export default {
             vm.filters[vm.account.name] = "Assigned to";
             vm.filters['OrderReceived'] = "Unassigned";
         }
-        vm.getOrders(); //move to parent ?
+        // vm.getOrders(); //move to parent ?
     }
 };
 </script>
