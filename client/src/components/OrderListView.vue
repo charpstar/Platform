@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="order-list">
 
         <div class="flexrow" id="topRow">
             <div class="flexrow">
@@ -124,7 +124,7 @@ export default {
             search: "",
             backend: backend,
             menuOpen: false,
-            user: {}
+            // user: {} // has moved to parent (OrderOverview.vue)
         };
     },
     computed: {
@@ -146,7 +146,7 @@ export default {
         },
         handleClick(order) {
             this.$emit('clicked-order', order.orderid)  
-        /* instead of pushing a route, use the id as a prop to populate order view component */        
+        /* instead of pushing a route, use the id as a prop to populate OrderView component */        
         // this.$router.push("/order/" + order.orderid);
         },
         newOrder() {
@@ -157,6 +157,8 @@ export default {
                 });
             }
         },
+        /* has moved to parent (OrderOverview.vue) */
+
         // getOrders() { 
         //     var vm = this;
         //     if (vm.isAdminView) {
@@ -190,7 +192,7 @@ export default {
             vm.filters[vm.account.name] = "Assigned to";
             vm.filters['OrderReceived'] = "Unassigned";
         }
-        // vm.getOrders(); //move to parent ?
+        // vm.getOrders(); // has moved to parent (OrderOverview.vue)
     }
 };
 </script>
@@ -203,7 +205,8 @@ export default {
 #table {
     max-height: 70vh;
     overflow: auto;
-    width: 80vw;
+    width: 50vw // to fit both order list and order details
+    // width: 80vw;
 }
 
 .error {
@@ -212,5 +215,11 @@ export default {
 }
 .filterbutton {
     margin-left: 10px;
+}
+
+#order-list {
+    /* Not sure about this border, but it felt good to separate the two sections*/
+    padding-right: 1em;
+    border-right: 2px solid rgb(179, 179, 179);
 }
 </style>

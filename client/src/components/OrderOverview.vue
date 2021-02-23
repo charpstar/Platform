@@ -26,7 +26,8 @@
         data() {
             return {
                 orderid: "",
-                orders: {}
+                orders: {},
+                user: {}
             }
         },
         props: {
@@ -76,10 +77,8 @@
             },
         },
 
-        //If I use mounted, the id is rendered as empty string first and we get console error
-        created() {
-            var vm = this;
-            vm.getOrders(); 
+        mounted() {
+            this.getOrders(); 
         }
     }
 </script>

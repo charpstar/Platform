@@ -5,7 +5,7 @@
             <v-tab :href="'#orders'">Orders</v-tab>
             <v-tab :href="'#users'">Users</v-tab>
             <v-tab-item :value="'orders'">
-                <!-- replace order list view with new component that shows both the order 
+                <!-- replace OrderListView with new component that shows both the order 
                 list and the details-->
                 <order-overview :account="account" :isAdminView="true"/>
                 <!-- <orderlistview :account="account" :isAdminView="true"/> -->
