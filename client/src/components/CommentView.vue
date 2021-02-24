@@ -1,6 +1,29 @@
 <template>
     <div>
-        <div class="flexrow" id="addCommentRow">
+        <div id="comments">
+            <div v-if="error != ''" class="error-text">{{error}}</div>
+            <div class="comment" v-for="(comment, index) in comments" :key="index">
+                <div>
+					<!-- adding icon for comments-->
+					<v-icon color="#1FB1A9" large>mdi-account-circle</v-icon>
+                    <span
+                        :class="'name ' + (comment.usertype ? comment.usertype.toLowerCase() : 'client')"
+                    >{{comment.name}}</span>
+                    <span class="timestamp">{{$formatTime(comment.time)}}</span>
+                    <v-icon
+                        :class="{
+                            reject: comment.commentclass=='Reject' || comment.commentclass=='Info',
+                            approve: comment.commentclass=='Approve' || comment.commentclass=='Done' || comment.commentclass=='Resolve',
+                            rejectIcon: comment.commentclass=='Reject'
+                        }"
+                    >{{icons[comment.commentclass]}}</v-icon>
+                </div>
+                <div class="commentText">{{comment.comment}}</div>
+				<v-divider></v-divider>
+            </div>
+        </div>
+		<div class="flexrow" id="addCommentRow">
+			<v-icon color="#1FB1A9" large>mdi-account-circle</v-icon>
             <v-textarea
                 id="addComment"
                 v-model="addComment"
@@ -8,8 +31,14 @@
                 placeholder="Message"
                 :full-width="true"
                 :hide-details="true"
+				outlined
+				color="#1FB1A9"
+				append-icon="mdi-comment"
+				rows="3"
+				row-height="25"
             ></v-textarea>
-            <div class="flexcol" id="sendButtons">
+        </div>
+		<div class="flexcol" id="sendButtons">
                 <commentmodal
                     :title="'Confirm approve'"
                     :text="'You will not be able to revert this action'"
@@ -21,7 +50,7 @@
                         block
                         @click="modalapprove = true"
                         :loading="loading['Approve']"
-                        class="approve"
+                        class="approve" rounded dark small
                     >
                         Approve
                         <v-icon right>mdi-check</v-icon>
@@ -38,7 +67,7 @@
                         @click="modaldone = true"
                         :loading="loading['Done']"
                         class="approve"
-                        :disabled="markdonedisabled"
+                        :disabled="markdonedisabled" rounded dark small
                     >
                         Done
                         <v-icon right>mdi-check</v-icon>
@@ -54,7 +83,7 @@
                         block
                         @click="modalresolve = true"
                         :loading="loading['Resolve']"
-                        class="approve"
+                        class="approve" rounded dark small
                     >
                         Resolve
                         <v-icon right>mdi-check</v-icon>
@@ -65,46 +94,28 @@
                     block
                     @click="() => sendComment('Reject')"
                     :loading="loading['Reject']"
-                    class="reject"
+                    class="reject" rounded dark small
                 >
                     Reject
                     <v-icon right class="rejectIcon">mdi-refresh</v-icon>
                 </v-btn>
-                <v-btn
+				<div class="buttons">
+                <v-btn @click="() => sendComment('Comment')" :loading="loading['Comment']" color="#1FB1A9" rounded dark small>
+                    Add
+                    <v-icon right dark>mdi-plus-circle</v-icon>
+                </v-btn>
+				<v-btn
                     v-if="markinfo"
-                    block
                     @click="() => sendComment('Info')"
                     :loading="loading['Info']"
-                    class="reject"
+                    class="reject" 
+					rounded dark small
                 >
                     Info
                     <v-icon right class="rejectIcon">mdi-information</v-icon>
                 </v-btn>
-                <v-btn block @click="() => sendComment('Comment')" :loading="loading['Comment']">
-                    Send
-                    <v-icon right>mdi-send</v-icon>
-                </v-btn>
             </div>
-        </div>
-        <div id="comments">
-            <div v-if="error != ''" class="error-text">{{error}}</div>
-            <div class="comment" v-for="(comment, index) in comments" :key="index">
-                <div>
-                    <span
-                        :class="'name ' + (comment.usertype ? comment.usertype.toLowerCase() : 'client')"
-                    >{{comment.name}}</span>
-                    <span class="timestamp">{{$formatTime(comment.time)}}</span>
-                    <v-icon
-                        :class="{
-                            reject: comment.commentclass=='Reject' || comment.commentclass=='Info',
-                            approve: comment.commentclass=='Approve' || comment.commentclass=='Done' || comment.commentclass=='Resolve',
-                            rejectIcon: comment.commentclass=='Reject'
-                        }"
-                    >{{icons[comment.commentclass]}}</v-icon>
-                </div>
-                <div>{{comment.comment}}</div>
-            </div>
-        </div>
+			</div>
         <v-snackbar v-model="snackbar" :timeout="3000">Please add a comment</v-snackbar>
     </div>
 </template>
@@ -259,10 +270,14 @@ export default {
     .name {
         font-size: 16px;
         padding-right: 5px;
+		padding-left: 5px; //added for styling
     }
     margin-top: 10px;
 }
-
+//added for styling
+.commentText {
+		padding-left: 40px;
+	}
 .column {
     display: flex;
     flex-direction: column;
@@ -283,24 +298,33 @@ export default {
 }
 
 #addCommentRow {
-    width: 40vw;
-    align-items: flex-end;
+    width: 35vw;
+   /*  align-items: flex-end; */
+   align-items: flex-start;
     .material-icons {
         color: grey;
         margin-left: 10px;
     }
-    margin-left: 5px;
+   /*  margin-left: 5px; */
+	margin-top: 15px;// added to give margin at the top of text area
 }
 
 #sendButtons {
-    justify-content: flex-end;
+    justify-content: flex-end; 
     align-items: flex-start;
     .v-btn {
-        margin-top: 10px;
+        margin-top: 20px; // changed from 10px to 20px
         display: block;
         margin-left: 10px;
     }
 }
+// added class for info and send button
+.buttons {
+	display: flex;
+	flex-direction: row;
+	margin-left: 40px;
+}
+
 
 .approve {
     &.v-btn {
