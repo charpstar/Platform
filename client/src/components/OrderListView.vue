@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="order-list">
 
         <div class="flexrow" id="topRow">
             <div class="flexrow">
@@ -40,6 +40,7 @@
                     </v-list>
                 </v-menu>
             </div>
+            
             <v-data-table
                 id="table"
                 :headers="filteredHeaders"
@@ -94,8 +95,9 @@ import excelupload from './ExcelUpload'
 
 export default {
     props: {
-        account: { required: true, type: Object },
-        isAdminView : { type: Boolean, default: false}
+        account: { type: Object,  required: true },
+        isAdminView : { type: Boolean, default: false},
+        orders: { type: Object, required: true}
     },
     components: {
         // barchart,
@@ -103,7 +105,7 @@ export default {
     },
     data() {
         return {
-            orders: {},
+            // orders: {},
             userOrders: false,
             headers: [
                 { text: "ID", value: "orderid" },
@@ -121,7 +123,7 @@ export default {
             search: "",
             backend: backend,
             menuOpen: false,
-            user: {}
+            // user: {} // has moved to parent (OrderOverview.vue)
         };
     },
     computed: {
@@ -142,7 +144,9 @@ export default {
             return sum;
         },
         handleClick(order) {
-            this.$router.push("/order/" + order.orderid);
+            this.$emit('clicked-order', order.orderid)  
+        /* instead of pushing a route, use the id as a prop to populate OrderView component */        
+        // this.$router.push("/order/" + order.orderid);
         },
         newOrder() {
             var vm = this;
@@ -152,25 +156,34 @@ export default {
                 });
             }
         },
-        getOrders() {
-            var vm = this;
-            if (vm.isAdminView) {
-            backend
-                .getAllOrders()
-                .then(orders => {
-                    vm.orders = orders;
-                })
-                .catch(error => {
-                    vm.error = error;
-                });
-            } else {
-                vm.userOrders = true;
-                vm.user.userid = vm.$route.params.id;
-                backend.getOrders(vm.user.userid).then(orders => {
-                    vm.orders = orders;
-                });
-            }
-        }
+        /* has moved to parent (OrderOverview.vue) */
+
+        // getOrders() { 
+        //     var vm = this;
+        //     if (vm.isAdminView) {
+        //     backend
+        //         .getAllOrders()
+        //         .then(orders => {
+        //             vm.orders = orders;
+
+        //             //dynamically get the first order to show details for
+        //             vm.initialOrderId = Object.values(orders)[0].orderid
+        //         })
+        //         .catch(error => {
+        //             vm.error = error;
+        //         });
+        //     } else {
+        //         vm.userOrders = true;
+        //         vm.user.userid = vm.$route.params.id;
+        //         backend.getOrders(vm.user.userid).then(orders => {
+        //             vm.orders = orders;
+
+        //             //dynamically get the first order to show details for
+        //             vm.initialOrderId = Object.values(orders)[0].orderid
+        //         });
+        //     }
+
+        // },
     },
     mounted() {
         var vm = this;
@@ -178,7 +191,7 @@ export default {
             vm.filters[vm.account.name] = "Assigned to";
             vm.filters['OrderReceived'] = "Unassigned";
         }
-        vm.getOrders();
+        // vm.getOrders(); // has moved to parent (OrderOverview.vue)
     }
 };
 </script>
@@ -191,7 +204,8 @@ export default {
 #table {
     max-height: 70vh;
     overflow: auto;
-    width: 80vw;
+    width: 50vw // to fit both order list and order details
+    // width: 80vw;
 }
 
 .error {
@@ -200,5 +214,11 @@ export default {
 }
 .filterbutton {
     margin-left: 10px;
+}
+
+#order-list {
+    /* Not sure about this border, but it felt good to separate the two sections*/
+    padding-right: 1em;
+    border-right: 2px solid rgb(179, 179, 179);
 }
 </style>

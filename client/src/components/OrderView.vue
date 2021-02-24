@@ -15,15 +15,24 @@
             </div>
         </v-dialog>
         <div class="flexrow" id="topRow">
-            <div class="flexrow">
-                <v-btn icon class="hidden-xs-only" >
+            <div>
+                <!-- It is probably best to leave the following button out, as user
+                won't need to go back to the order list -->
+
+                <!-- <v-btn icon class="hidden-xs-only" >
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
-                </v-btn>
-                <h2>Order</h2>
+                </v-btn> -->
+
+                <!-- Temporary solution to display which order is displayed -->
+                <h2>Order details - {{orderid}} </h2>
             </div>
         </div>
         <div class="flexrow" id="order">
-            <div class="flexcolumn">
+            <!-- Most of the following code is not necessary when orders' list is displayed 
+            next to the order details; modals and other necessary code will be in expansion
+            panels instead, like for "Product states" -->
+
+            <!-- <div class="flexcolumn">
                 <table>
                     <tr>
                         <td>ID</td>
@@ -82,13 +91,13 @@
                     <tr>
                         <td>Products</td>
                         <td>{{products}}</td>
-                    </tr>
+                    </tr> -->
                     <!-- <tr>
                         <td>Product states</td>
                         <td><barchart v-if="order" :account="account" :productdata="order.partitiondata"/></td>
                     </tr> -->
-                </table>
-                <div class="flexcol" id="buttons">
+                <!-- </table> -->
+                <!-- <div class="flexcol" id="buttons">
                     <v-btn @click="viewModels">View Models</v-btn>
                     <v-btn @click="downloadExcel">
                         Export Models
@@ -107,7 +116,7 @@
                         Add models
                         <v-icon right>mdi-file-plus</v-icon>
                     </excelupload>
-                </div>
+                </div> -->
             </div>
             <div class="d-flex">
                 <div>
@@ -153,26 +162,31 @@
                 </div>  
             </div>
         </div>
-    </div>
+    <!-- </div> -->
 </template>
 <script>
 import backend from "./../backend";
 import comments from "./CommentView";
-import confirmmodal from "./ConfirmModal";
 import barchart from './BarChart';
-import excelupload from './ExcelUpload';
 import ProductStates from './ProductStates.vue';
+
+/* Import when we use the modals */
+// import confirmmodal from "./ConfirmModal";
+// import excelupload from './ExcelUpload';
 
 export default {
     components: {
         comments,
-        confirmmodal,
         barchart,
-        excelupload,
         ProductStates
+        
+        /* Import when we use the modals */
+        // confirmmodal,
+        // excelupload,
     },
     props: {
-        account: { type: Object, required: true }
+        account: { type: Object, required: true },
+        orderid: { type: Number, required: true }
     },
 
     computed: {
@@ -299,8 +313,8 @@ export default {
     },
     mounted() {
         var vm = this;
-        var orderid = vm.$route.params.id;
-        backend.getOrder(orderid).then(order => {
+        // var orderid = vm.$route.params.id; //replace with prop 
+        backend.getOrder(this.orderid).then(order => {
             vm.order = order;
         });
         if(vm.account.usertype == 'Admin') {
@@ -339,6 +353,13 @@ table {
 }
 
 #topRow {
-    justify-content: flex-start;
+    // justify-content: flex-start;
+    justify-content: center;
 }
+
+.view {
+    width: 40vw;
+    margin-left: 1em;
+}
+
 </style>

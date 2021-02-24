@@ -32,7 +32,8 @@ Vue.use(customPlugin)
 import loginView from './components/LoginView'
 import adminView from "./components/AdminView";
 import orderListView from "./components/OrderListView";
-import orderView from "./components/OrderView";
+// import orderView from "./components/OrderView";
+import orderOverview from "./components/OrderOverview";
 import modelListView from "./components/ModelListView";
 import modelView from "./components/ModelView";
 import userListView from "./components/UserListView";
@@ -45,13 +46,18 @@ const router = new VueRouter({
     { path: '/', component: loginView },
     { path: '/home', component: adminView },
     { path: '/admin/users', component: userListView },
-    { path: '/admin/orders', component: orderListView },
+    { path: '/admin/orders', component: orderListView }, //this path doesn't work properly
     { path: '/admin/models', component: modelListView },
     { path: '/modeller/:id', component: modelListView },
     { path: '/user/:id', component: userView },
-    { path: '/user/:id/orders', component: orderListView },
+  
+    //the component for this path will probably need to be the new OrderOverview component
+    //{ path: '/user/:id/orders', component: orderListView },
+    { path: '/user/:id/orders', component: orderOverview },
     { path: '/user/:id/models', component: modelListView },
-    { path: '/order/:id', component: orderView },
+
+    // this path will not work when we use the OrderOverview component
+    // { path: '/order/:id', component: orderView }, 
     { path: '/order/:id/models', component: modelListView },
     { path: '/model/:id', component: modelView },
 

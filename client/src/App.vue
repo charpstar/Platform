@@ -129,14 +129,14 @@ h2 {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
+    // align-items: center;
 }
 
 .flexcol {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    // align-items: center;
 }
 
 .v-data-footer {

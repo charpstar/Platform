@@ -5,17 +5,22 @@
             <v-tab :href="'#orders'">Orders</v-tab>
             <v-tab :href="'#users'">Users</v-tab>
             <v-tab-item :value="'orders'">
-                <orderlistview :account="account" :isAdminView="true"/>
+                <!-- replace OrderListView with new component that shows both the order 
+                list and the details-->
+                <order-overview :account="account" :isAdminView="true"/>
+                <!-- <orderlistview :account="account" :isAdminView="true"/> -->
             </v-tab-item>
             <v-tab-item :value="'users'">
                 <userlistview :account="account"/>
             </v-tab-item>
         </v-tabs>
+        
     </div>
 </template>
 
 <script>
-import orderlistview from './OrderListView'
+// import orderlistview from './OrderListView'
+import OrderOverview from './OrderOverview.vue';
 import userlistview from './UserListView'
 
 export default {
@@ -23,8 +28,9 @@ export default {
         account: { type: Object, required: true }
     },
     components: {
-        orderlistview,
-        userlistview
+        // orderlistview,
+        userlistview,
+        OrderOverview
     },
     data() {
         return {
