@@ -90,6 +90,7 @@ export default {
         //options configuration for bar graph
         barOptions() {
             var optionsObj = {
+                defaultFontFamily: "Montserrat",
                 legend: {
                     display: false
                 },
@@ -113,24 +114,30 @@ export default {
                         }
                     }],
                     yAxes: [{
+                        
                         scaleLabel: {
                             display: true,
                             fontSize: 16, //default is 12, kind of small
-                            labelString: 'Products'
+                            labelString: 'Products',
+                            fontFamily: "Montserrat"
                         },
                         ticks: {
                             min: 0,
                             max: this.total,
-                            stepSize: 1 //scale up by 1 on y-axis; shows only integers
+                            stepSize: 1, //scale up by 1 on y-axis; shows only integers
+                            fontFamily: "Montserrat"
                         },
                     }],
                 },
                 title: {
                     display: true,
-                    fontSize: 16, //default is 12, kind of small
+                    fontSize: 16, //default is 12, kind of small,
+                    fontFamily: "Montserrat",
                     text: `Order status: ${this.status}`
                 },
                 tooltips: {
+                    titleFontFamily: "Montserrat",
+                    bodyFontFamily: "Montserrat",
                     //custom tooltip
                     callbacks: {
 
