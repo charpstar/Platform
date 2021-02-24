@@ -131,7 +131,7 @@
                         :total="products"
                         :status="backend.messageFromStatus(order.state, account.usertype)"/>
                 </div>
-                <v-expansion-panels>
+                <v-expansion-panels focusable>
                     <v-expansion-panel>
                         <v-expansion-panel-header>
                             Product states
@@ -147,19 +147,23 @@
                             />
                         </v-expansion-panel-content>
                     </v-expansion-panel>
+					<!--added expansion panel for comments-->
+					<v-expansion-panel>
+			<v-expansion-panel-header disable-icon-rotate expand-icon="mdi-wechat" >Comments
+			
+			</v-expansion-panel-header>
+			<v-expansion-panel-content>
+				<comments
+                    v-if="order"
+                    :idobj="{orderid: order.orderid}"
+                    :type="'Order'"
+                    :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
+                    :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
+                    @state="order.state = $event.orderstatus"
+                />
+			</v-expansion-panel-content>
+		</v-expansion-panel>
                 </v-expansion-panels>
-                    
-                <div>
-                    <h2 id="commentsLabel">Comments</h2>
-                    <comments
-                        v-if="order"
-                        :idobj="{orderid: order.orderid}"
-                        :type="'Order'"
-                        :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
-                        :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
-                        @state="order.state = $event.orderstatus"
-                    />
-                </div>  
             </div>
         </div>
     <!-- </div> -->
