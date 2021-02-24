@@ -3,8 +3,9 @@
         <div class="flexrow">
             <img src="charpstar2.png" id="logo" />
         </div>
-        <v-text-field label="email" v-model="email" />
+        <v-text-field label="email" v-model="email" color="#1FB1A9" />
         <v-text-field
+		color="#1FB1A9"
             label="password"
             v-model="password"
             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
@@ -15,7 +16,8 @@
         <transitionexpandheight>
             <p class="error" v-if="button.error">{{button.error}}</p>
         </transitionexpandheight>
-        <v-btn
+        <v-btn rounded color="#1FB1A9"
+		dark small
             @click="button.execute"
             :loading="button.loading"
             :disabled="!email || !password"

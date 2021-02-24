@@ -81,7 +81,9 @@ body {
     padding: 0;
     background-color: #e8e8e8;
     height: 100vh;
-    font-family: "Roboto";
+	//font family in style guide is Montserrat//
+   /*  font-family: "Roboto"; */
+	font-family: "Montserrat";
 }
 
 .view {
@@ -148,9 +150,11 @@ th {
 .iconColor {
     color: #2196f3 !important;
 }
-.v-btn:not(.v-btn--icon) {
-    background-color: #2196f3 !important;
-}
+//To change the button color to green, need to change this default button color from blue to green//
+
+ .v-btn:not(.v-btn--icon) {
+    background-color: #1FB1A9 !important;
+} 
 .v-btn--icon {
     background-color: none !important;
 }
