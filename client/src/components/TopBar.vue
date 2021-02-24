@@ -4,16 +4,20 @@
             <img src="/charpstar3.png" class="logosmall" />
             <p>3D asset management system</p>
         </div>
-        <div v-if="$route.path != '/'">
+        <div v-if="$route.path != '/'" >
             <v-menu id="menu" offset-y v-model="menuOpen" :close-on-content-click="false">
                 <template v-slot:activator="{ on }">
-                    <v-btn text id="menuButton" v-on="on">
+					<!-- added fab to make button round, color,dark-->
+                    <v-btn text id="menuButton" v-on="on" fab dark color="#1FB1A9" >
                         <p
                             class="notification-badge"
                             v-if="Object.values(notifications).length > 0"
                         >{{Object.values(notifications).length}}</p>
-                        <p>{{account.name}}</p>
-                        <i class="material-icons" id="acountIcon">account_circle</i>
+						<!-- Div created for styling of p and icon-->
+                        <div class="account">
+                        <!-- <i class="material-icons" id="acountIcon" color="#1FB1A9" >account_circle</i> -->
+						<v-icon large >mdi-account</v-icon>
+						<p class="accountName">{{account.name}}</p></div>
                     </v-btn>
                 </template>
                 <v-list>
@@ -136,14 +140,20 @@ export default {
     color: black !important;
     font-weight: normal !important;
 }
-
-#acountIcon {
-    color: grey;
-    font-size: 24px;
-}
+// To change icon color from grey to green
+/*#acountIcon {
+     color: grey;
+    font-size: 24px ;
+}*/
 
 .logosmall {
     height: 30px;
     margin-left: 10px;
 }
+//Added To style p (account.name)
+.accountName {
+	font-size: 10px  !important;
+	margin-right: 10px; 
+} 
+
 </style>
