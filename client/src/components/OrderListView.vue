@@ -82,7 +82,7 @@
                 <template v-slot:item.products="{item}">
                     {{sumProducts(item)}}
                 </template>
-                <template v-slot:item.time="{value}">{{$formatTime(value)}}</template>
+                <!-- <template v-slot:item.time="{value}">{{$formatTime(value)}}</template> -->
             </v-data-table>
         </div>
     </div>
@@ -107,12 +107,15 @@ export default {
         return {
             // orders: {},
             userOrders: false,
+
+            //Manually adjusted with in some headers in order to align them at the same height
+            //Does not work properly though for smaller screens
             headers: [
-                { text: "ID", value: "orderid" },
-                { text: "Date", value: "time" },
+                { text: "ID", value: "orderid"},
+                // { text: "Date", value: "time" },
                 { text: "Client", value: "clientname", hideClient: true},
-                { text: "Assigned QA", value: "qaownername" },
-                { text: "Status", value: "state" },
+                { text: "Assigned QA", value: "qaownername"},
+                { text: "Status", value: "state"},
                 { text: "Models", value: "models"},
                 { text: "Products", value: "products"},
                 // { text: "Product states", value: "partitiondata"},
@@ -208,6 +211,10 @@ export default {
     // width: 80vw;
 }
 
+#table.v-data-table-header th {
+  width: 10%
+}
+
 .error {
     color: #d12300;
     margin-bottom: 5px;
@@ -217,7 +224,7 @@ export default {
 }
 
 #order-list {
-    /* Not sure about this border, but it felt good to separate the two sections*/
+    /* Not sure about this border, but it felt right to separate the two sections*/
     padding-right: 1em;
     border-right: 2px solid rgb(179, 179, 179);
 }
