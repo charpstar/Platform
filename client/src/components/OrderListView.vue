@@ -82,7 +82,7 @@
                 <template v-slot:item.products="{item}">
                     {{sumProducts(item)}}
                 </template>
-                <!-- <template v-slot:item.time="{value}">{{$formatTime(value)}}</template> -->
+                <template v-slot:item.time="{value}">{{$formatDate(value)}}</template>
             </v-data-table>
         </div>
     </div>
@@ -112,7 +112,7 @@ export default {
             //Does not work properly though for smaller screens
             headers: [
                 { text: "ID", value: "orderid"},
-                // { text: "Date", value: "time" },
+                { text: "Date", value: "time" },
                 { text: "Client", value: "clientname", hideClient: true},
                 { text: "Assigned QA", value: "qaownername"},
                 { text: "Status", value: "state"},

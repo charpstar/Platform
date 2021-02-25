@@ -16,6 +16,14 @@ const customPlugin = {
       }
       return date.join("/") + " " + time.join(":")
     }
+
+    /* Separate function to get only date */
+    Vue.prototype.$formatDate = function (timestamp) {
+      var now = new Date(Date.parse(timestamp));
+      var date = [now.getFullYear(), now.getMonth() + 1, now.getDate()];
+      return date.join("/")
+    }
+    
     Vue.prototype.$emptyObj = function (obj) {
         return Object.keys(obj).length === 0
     }
