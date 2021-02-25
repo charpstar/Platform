@@ -4,7 +4,7 @@
             :chart-data="barData"
             :options="barOptions"
             :plugins="plugins"
-            height="300px"
+            :height="300"
             />
         <!-- Previous code for creating a progress bar -->
 

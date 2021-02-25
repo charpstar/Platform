@@ -97,9 +97,9 @@
                         <td><barchart v-if="order" :account="account" :productdata="order.partitiondata"/></td>
                     </tr> -->
                 <!-- </table> -->
-                <!-- <div class="flexcol" id="buttons">
+                <!-- <div class="flexcol" id="buttons"> -->
                     <v-btn @click="viewModels">View Models</v-btn>
-                    <v-btn @click="downloadExcel">
+                    <!--<v-btn @click="downloadExcel">
                         Export Models
                         <v-icon right>mdi-microsoft-excel</v-icon>
                     </v-btn>
@@ -149,20 +149,20 @@
                     </v-expansion-panel>
 					<!--added expansion panel for comments-->
 					<v-expansion-panel>
-			<v-expansion-panel-header disable-icon-rotate expand-icon="mdi-wechat" >Comments
-			
-			</v-expansion-panel-header>
-			<v-expansion-panel-content>
-				<comments
-                    v-if="order"
-                    :idobj="{orderid: order.orderid}"
-                    :type="'Order'"
-                    :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
-                    :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
-                    @state="order.state = $event.orderstatus"
-                />
-			</v-expansion-panel-content>
-		</v-expansion-panel>
+                        <v-expansion-panel-header disable-icon-rotate expand-icon="mdi-wechat" >
+                            Comments
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <comments
+                                v-if="order"
+                                :idobj="{orderid: order.orderid}"
+                                :type="'Order'"
+                                :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
+                                :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
+                                @state="order.state = $event.orderstatus"
+                            />
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
                 </v-expansion-panels>
             </div>
         </div>

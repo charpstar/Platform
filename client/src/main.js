@@ -31,7 +31,7 @@ Vue.use(customPlugin)
 
 import loginView from './components/LoginView'
 import adminView from "./components/AdminView";
-import orderListView from "./components/OrderListView";
+// import orderListView from "./components/OrderListView";
 // import orderView from "./components/OrderView";
 import orderOverview from "./components/OrderOverview";
 import modelListView from "./components/ModelListView";
@@ -46,12 +46,13 @@ const router = new VueRouter({
     { path: '/', component: loginView },
     { path: '/home', component: adminView },
     { path: '/admin/users', component: userListView },
-    { path: '/admin/orders', component: orderListView }, //this path doesn't work properly
+    //{ path: '/admin/orders', component: orderListView }, //this path doesn't work properly
+    { path: '/admin/orders', component: adminView }, //use this path instead to show order list and details according to admin view
     { path: '/admin/models', component: modelListView },
     { path: '/modeller/:id', component: modelListView },
     { path: '/user/:id', component: userView },
   
-    //the component for this path will probably need to be the new OrderOverview component
+    //the component for this path probably needs to be the new OrderOverview component
     //{ path: '/user/:id/orders', component: orderListView },
     { path: '/user/:id/orders', component: orderOverview },
     { path: '/user/:id/models', component: modelListView },
