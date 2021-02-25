@@ -107,14 +107,17 @@ export default {
         return {
             // orders: {},
             userOrders: false,
+
+            //Manually adjusted with in some headers in order to align them at the same height
+            //Does not work properly though for smaller screens
             headers: [
-                { text: "ID", value: "orderid" },
+                { text: "ID", value: "orderid", width: "10%"},
                 { text: "Date", value: "time" },
                 { text: "Client", value: "clientname", hideClient: true},
-                { text: "Assigned QA", value: "qaownername" },
-                { text: "Status", value: "state" },
-                { text: "Models", value: "models"},
-                { text: "Products", value: "products"},
+                { text: "Assigned QA", value: "qaownername", width: "20%" },
+                { text: "Status", value: "state", width: "20%" },
+                { text: "Models", value: "models", width: "15%"},
+                { text: "Products", value: "products", width: "15%"},
                 // { text: "Product states", value: "partitiondata"},
             ],
             filters: {},
@@ -208,6 +211,10 @@ export default {
     // width: 80vw;
 }
 
+#table.v-data-table-header th {
+  width: 10%
+}
+
 .error {
     color: #d12300;
     margin-bottom: 5px;
@@ -217,7 +224,7 @@ export default {
 }
 
 #order-list {
-    /* Not sure about this border, but it felt good to separate the two sections*/
+    /* Not sure about this border, but it felt right to separate the two sections*/
     padding-right: 1em;
     border-right: 2px solid rgb(179, 179, 179);
 }
