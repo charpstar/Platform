@@ -82,7 +82,7 @@
                 <template v-slot:item.products="{item}">
                     {{sumProducts(item)}}
                 </template>
-                <template v-slot:item.time="{value}">{{$formatTime(value)}}</template>
+                <!-- <template v-slot:item.time="{value}">{{$formatTime(value)}}</template> -->
             </v-data-table>
         </div>
     </div>
@@ -111,13 +111,13 @@ export default {
             //Manually adjusted with in some headers in order to align them at the same height
             //Does not work properly though for smaller screens
             headers: [
-                { text: "ID", value: "orderid", width: "10%"},
-                { text: "Date", value: "time" },
+                { text: "ID", value: "orderid"},
+                // { text: "Date", value: "time" },
                 { text: "Client", value: "clientname", hideClient: true},
-                { text: "Assigned QA", value: "qaownername", width: "20%" },
-                { text: "Status", value: "state", width: "20%" },
-                { text: "Models", value: "models", width: "15%"},
-                { text: "Products", value: "products", width: "15%"},
+                { text: "Assigned QA", value: "qaownername"},
+                { text: "Status", value: "state"},
+                { text: "Models", value: "models"},
+                { text: "Products", value: "products"},
                 // { text: "Product states", value: "partitiondata"},
             ],
             filters: {},
