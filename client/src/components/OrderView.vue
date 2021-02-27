@@ -1,6 +1,7 @@
 <template>
     <div class="view">
-        <v-dialog v-model="assign.modal" width="500">
+		<!-- commenting off as it has moved to expansion panel (can eb deleted later)-->
+        <!-- <v-dialog v-model="assign.modal" width="500">
             <div class="card">
                 <v-select :items="qas" label="QA" v-model="qa">
                     <template v-slot:item="{item}">
@@ -13,7 +14,7 @@
                 <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!qa">Assign</v-btn>
                 <p class="error-text" v-if="assign.error">{{assign.error}}</p>
             </div>
-        </v-dialog>
+        </v-dialog> -->
         <div class="flexrow" id="topRow">
             <div>
                 <!-- It is probably best to leave the following button out, as user
@@ -116,7 +117,7 @@
                         Add models
                         <v-icon right>mdi-file-plus</v-icon>
                     </excelupload>
-                </div> -->
+                </div>  -->
             </div>
             <div class="d-flex">
                 <div>
@@ -131,6 +132,26 @@
                         :total="products"
                         :status="backend.messageFromStatus(order.state, account.usertype)"/>
                 </div>
+				<div class="flexcol" id="buttons">
+                    <v-btn @click="viewModels" color="#1FB1A9" rounded dark small>View Models <v-icon right>mdi-file-image-outline</v-icon></v-btn>
+                    <v-btn @click="downloadExcel" color="#1FB1A9" rounded  dark small>
+                        Export Models
+                        <v-icon right>mdi-file-export-outline</v-icon>
+                    </v-btn>
+                    <confirmmodal 
+                        v-if ="account.usertype == 'QA' || account.usertype == 'Admin'" 
+                        :handler="del" 
+                        :title="'Confirm order delete'"
+                        :text="'This will also delete all related models and products'"
+                        :buttonText="'Delete order'"
+                        :icon="'mdi-delete'"
+                        :color="'#d12300'"
+                    />
+                    <excelupload :handler="add" @file="file=$event" v-if="account.usertype == 'Client' && order.state != 'Done'">
+                        Add models
+                        <v-icon right>mdi-file-plus</v-icon>
+                    </excelupload>
+                </div> 
                 <v-expansion-panels focusable>
                     <v-expansion-panel>
                         <v-expansion-panel-header>
@@ -162,6 +183,28 @@
                     @state="order.state = $event.orderstatus"
                 />
 			</v-expansion-panel-content>
+			<!--added expansion panel for AssignQA-->
+		</v-expansion-panel>
+		<v-expansion-panel v-on="on"  @click="assign.modal = true">
+			<v-expansion-panel-header disable-icon-rotate expand-icon="mdi-account-plus" >
+				Assign QA
+			</v-expansion-panel-header>
+			<v-expansion-panel-content  >
+			<v-layout v-model="assign.modal" width="500" >
+            <div class="card">
+                <v-select :items="qas" label="QA" v-model="qa">
+                    <template v-slot:item="{item}">
+                        <span>{{item.name}}</span>
+                    </template>
+                    <template v-slot:selection="{item}">
+                        <span>{{item.name}}</span>
+                    </template>
+                </v-select>
+                <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!qa"   rounded color="#1FB1A9" small dark>Assign</v-btn>
+                <p class="error-text" v-if="assign.error">{{assign.error}}</p>
+            </div>
+        </v-layout> 
+		</v-expansion-panel-content>
 		</v-expansion-panel>
                 </v-expansion-panels>
             </div>
@@ -175,17 +218,17 @@ import barchart from './BarChart';
 import ProductStates from './ProductStates.vue';
 
 /* Import when we use the modals */
-// import confirmmodal from "./ConfirmModal";
+import confirmmodal from "./ConfirmModal";
 // import excelupload from './ExcelUpload';
 
 export default {
     components: {
         comments,
         barchart,
-        ProductStates
+        ProductStates,
         
         /* Import when we use the modals */
-        // confirmmodal,
+         confirmmodal
         // excelupload,
     },
     props: {
@@ -336,9 +379,12 @@ export default {
 
 <style lang="scss" scoped>
 #buttons {
+	flex-direction:row;
+	justify-content: space-between;
     align-items: flex-start;
     > * {
-        margin-bottom: 10px;
+        margin-bottom: 20px;
+		margin-top: 15px;
     }
 }
 #order {
