@@ -42,7 +42,8 @@ import adminView from "./components/AdminView";
 // import orderListView from "./components/OrderListView";
 // import orderView from "./components/OrderView";
 import orderOverview from "./components/OrderOverview";
-import modelListView from "./components/ModelListView";
+// import modelListView from "./components/ModelListView";
+import modelOverview from "./components/ModelOverview";
 import modelView from "./components/ModelView";
 import userListView from "./components/UserListView";
 import userView from "./components/UserView";
@@ -56,18 +57,18 @@ const router = new VueRouter({
     { path: '/admin/users', component: userListView },
     //{ path: '/admin/orders', component: orderListView }, //this path doesn't work properly
     { path: '/admin/orders', component: adminView }, //use this path instead to show order list and details according to admin view
-    { path: '/admin/models', component: modelListView },
-    { path: '/modeller/:id', component: modelListView },
+    { path: '/admin/models', component: modelOverview },
+    { path: '/modeller/:id', component: modelOverview },
     { path: '/user/:id', component: userView },
   
     //the component for this path probably needs to be the new OrderOverview component
     //{ path: '/user/:id/orders', component: orderListView },
     { path: '/user/:id/orders', component: orderOverview },
-    { path: '/user/:id/models', component: modelListView },
+    { path: '/user/:id/models', component: modelOverview },
 
     // this path will not work when we use the OrderOverview component
     // { path: '/order/:id', component: orderView }, 
-    { path: '/order/:id/models', component: modelListView },
+    { path: '/order/:id/models', component: modelOverview },
     { path: '/model/:id', component: modelView },
 
   ]

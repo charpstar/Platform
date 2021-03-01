@@ -2,7 +2,8 @@
     <div id="item">
         <edittextmodal :label="'link'" :handler="edit" :text="product.link">Edit product link</edittextmodal>
         <edittextmodal :label="'model id'" :handler="editId" :text="product.modelid">Edit product parent model</edittextmodal>
-        <div class="flexrow" id="itemsrow">
+        <!-- <div class="flexrow" id="itemsrow"> -->
+        <div id="itemsrow">
             <div style="position:relative;">
                 <v-btn icon @click="reload" class="reloadIcon">
                     <v-icon>mdi-reload</v-icon>

@@ -75,14 +75,15 @@ import backend from "../backend";
 
 export default {
     props: {
-        account: { required: true, type: Object }
+        account: { required: true, type: Object },
+        models: { required: true, type: Object}
     },
     // components: {
     //     barchart
     // },
     data() {
         return {
-            models: {},
+            // models: {},
             headers: [
                 { text: "", sortable: false, value: "thumb"},
                 { text: "ID", value: "modelid" },
@@ -98,7 +99,7 @@ export default {
             search: "",
             backend: backend,
             menuOpen: false,
-            order: false
+            // order: false
         };
     },
     methods: {
@@ -111,7 +112,10 @@ export default {
             return sum;
         },
         handleClick(model) {
-            this.$router.push("/model/" + model.modelid);
+            this.$emit('clicked-model', model.modelid)  
+            /* instead of pushing a route, use the id as a prop to populate OrderView component */        
+            // this.$router.push("/order/" + order.orderid);
+            // this.$router.push("/model/" + model.modelid);
         }
     },
     computed: {
@@ -133,21 +137,22 @@ export default {
             vm.filters["ProductQAMissing"] = "Missing information";
             vm.filters["ClientProductReceived"] = "Awaiting review";
         }
-        if (vm.$route.path.includes("/modeller/")) {
-            var id = vm.$route.params.id;
-            backend.getModellerModels(id).then(models => {
-                vm.models = models;
-            });
-        } else if (vm.$route.path == "/admin/models") {
-            backend.getAllModels().then(models => {
-                vm.models = models;
-            });
-        } else {
-            vm.order = vm.$route.params.id;
-            backend.getModels(vm.order).then(models => {
-                vm.models = models;
-            });
-        }
+    //     if (vm.$route.path.includes("/modeller/")) {
+    //         var id = vm.$route.params.id;
+    //         backend.getModellerModels(id).then(models => {
+    //             vm.models = models;
+    //         });
+    //     } else if (vm.$route.path == "/admin/models") {
+    //         backend.getAllModels().then(models => {
+    //             vm.models = models;
+    //         });
+    //     } else {
+    //         vm.order = vm.$route.params.id;
+    //         backend.getModels(vm.order).then(models => {
+    //             vm.models = models;
+    //         });
+    //     }
+    // }
     }
 };
 </script>
@@ -158,9 +163,12 @@ export default {
     margin-bottom: 10px;
 }
 #table {
-    max-height: 70vh;
+    max-height: 100vh;
+    // max-height: 70vh;
     overflow: auto;
-    width: 80vw;
+    // width: 80vw;
+    width: 50vw // to fit both order list and order details
+
 }
 
 .thumbnail {

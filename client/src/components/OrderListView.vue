@@ -205,7 +205,8 @@ export default {
     margin-bottom: 10px;
 }
 #table {
-    max-height: 70vh;
+    max-height: 100vh;
+    // max-height: 70vh;
     overflow: auto;
     width: 50vw // to fit both order list and order details
     // width: 80vw;

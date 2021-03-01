@@ -1,9 +1,9 @@
 <template>
     <div id="item">
         <div class="row" id="topRow">
-            <v-btn icon class="hidden-xs-only">
+            <!-- <v-btn icon class="hidden-xs-only">
                 <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
-            </v-btn>
+            </v-btn> -->
             <excelupload id="buttonNew" :handler="addProducts" v-if="account.usertype == 'Client' && model.state != 'Done' && false" @file="file = $event">
                 Add products
                 <v-icon right>mdi-file-plus</v-icon>
@@ -37,7 +37,8 @@ export default {
         excelupload
     },
     props: {
-        account: { type: Object, required: true }
+        account: { type: Object, required: true },
+        modelid: { type: Number, required: true }
     },
     data() {
         return {
@@ -72,12 +73,12 @@ export default {
     },
     mounted() {
         var vm = this;
-        var modelid = vm.$route.params.id;
-        backend.getModel(modelid).then(model => {
+        // var modelid = vm.$route.params.id;
+        backend.getModel(vm.modelid).then(model => {
             model.files = [];
             vm.model = model;
         });
-        backend.getProducts(modelid).then(products => {
+        backend.getProducts(vm.modelid).then(products => {
             Vue.set(vm, "products", products);
         })
     }
@@ -86,7 +87,9 @@ export default {
 
 <style lang="scss" scoped>
 #item {
-    width: 80vw;
+    // width: 80vw;
+    width: 40vw;
+    margin-left: 1em;
 }
 
 #topRow {
