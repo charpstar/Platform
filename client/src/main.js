@@ -39,14 +39,14 @@ Vue.use(customPlugin)
 
 import loginView from './components/LoginView'
 import adminView from "./components/AdminView";
-// import orderListView from "./components/OrderListView";
-// import orderView from "./components/OrderView";
 import orderOverview from "./components/OrderOverview";
-// import modelListView from "./components/ModelListView";
 import modelOverview from "./components/ModelOverview";
-import modelView from "./components/ModelView";
 import userListView from "./components/UserListView";
 import userView from "./components/UserView";
+// import modelListView from "./components/ModelListView";
+// import modelView from "./components/ModelView";
+// import orderListView from "./components/OrderListView";
+// import orderView from "./components/OrderView";
 
 const router = new VueRouter({
   mode: 'history',
@@ -54,22 +54,28 @@ const router = new VueRouter({
   routes: [
     { path: '/', component: loginView },
     { path: '/home', component: adminView },
-    { path: '/admin/users', component: userListView },
-    //{ path: '/admin/orders', component: orderListView }, //this path doesn't work properly
-    { path: '/admin/orders', component: adminView }, //use this path instead to show order list and details according to admin view
+    { path: '/admin/users', component: userListView }, 
+    { path: '/admin/orders', component: adminView }, 
+    // { path: '/admin/orders', component: orderListView },
     { path: '/admin/models', component: modelOverview },
+    // { path: '/admin/models', component: modelListView },
     { path: '/modeller/:id', component: modelOverview },
+    // { path: '/modeller/:id', component: modelListView },
     { path: '/user/:id', component: userView },
   
-    //the component for this path probably needs to be the new OrderOverview component
-    //{ path: '/user/:id/orders', component: orderListView },
     { path: '/user/:id/orders', component: orderOverview },
-    { path: '/user/:id/models', component: modelOverview },
-
-    // this path will not work when we use the OrderOverview component
-    // { path: '/order/:id', component: orderView }, 
+    // { path: '/user/:id/orders', component: orderListView },
+    { path: '/user/:id/models', component: modelOverview }, //does not work ??
+    // { path: '/user/:id/models', component: modelListView },
     { path: '/order/:id/models', component: modelOverview },
-    { path: '/model/:id', component: modelView },
+    // { path: '/order/:id/models', component: modelListView },
+    
+
+    /* this path is not necessary when we use the OrderOverview component */
+    // { path: '/order/:id', component: orderView }
+
+    /* this path is not necessary when we use the ModelOverview component */
+    // { path: '/model/:id', component: modelView }
 
   ]
 })

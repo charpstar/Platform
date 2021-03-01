@@ -1,5 +1,6 @@
 <template>
     <div id="item">
+        <h2> {{model.modelname}} </h2>
         <div class="row" id="topRow">
             <!-- <v-btn icon class="hidden-xs-only">
                 <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>

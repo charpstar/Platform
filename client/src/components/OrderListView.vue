@@ -227,6 +227,7 @@ export default {
 #order-list {
     /* Not sure about this border, but it felt right to separate the two sections*/
     padding-right: 1em;
+    margin-right: 1em;
     border-right: 2px solid rgb(179, 179, 179);
 }
 </style>
