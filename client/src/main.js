@@ -43,6 +43,9 @@ import orderOverview from "./components/OrderOverview";
 import modelOverview from "./components/ModelOverview";
 import userListView from "./components/UserListView";
 import userView from "./components/UserView";
+
+/* Previously used components that are replaced here by ModelOverview and OrderOverview */
+
 // import modelListView from "./components/ModelListView";
 // import modelView from "./components/ModelView";
 // import orderListView from "./components/OrderListView";
@@ -65,12 +68,14 @@ const router = new VueRouter({
   
     { path: '/user/:id/orders', component: orderOverview },
     // { path: '/user/:id/orders', component: orderListView },
-    { path: '/user/:id/models', component: modelOverview }, //does not work ??
-    // { path: '/user/:id/models', component: modelListView },
+
     { path: '/order/:id/models', component: modelOverview },
     // { path: '/order/:id/models', component: modelListView },
-    
 
+    /* Where is this route used? */
+    /* replace with component: modelOverview if route is used */
+    // { path: '/user/:id/models', component: modelListView },
+    
     /* this path is not necessary when we use the OrderOverview component */
     // { path: '/order/:id', component: orderView }
 
