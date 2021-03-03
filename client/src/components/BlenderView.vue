@@ -1,7 +1,7 @@
 <template>
     <div id="item">
         <edittextmodal :label="'model name'" :handler="editname" :text="model.modelname">Edit product parent model</edittextmodal>
-        <v-dialog v-model="assign.modal" width="500">
+        <!-- <v-dialog v-model="assign.modal" width="500">
             <div class="card">
                 <v-select :items="modelers" label="Modeler" v-model="modeler">
                     <template v-slot:item="{item}">
@@ -14,7 +14,7 @@
                 <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!modeler">Assign</v-btn>
                 <p class="error-text" v-if="assign.error">{{assign.error}}</p>
             </div>
-        </v-dialog>
+        </v-dialog> -->
         <v-dialog v-model="upload.modal" width="500">
             <div class="card">
                 <v-file-input :label="'Select file'" @change="onFileChange"></v-file-input>
@@ -36,12 +36,19 @@
         <!-- <div class="flexrow" id="itemsrow"> -->
         <div id="itemsrow">
             <div class="column">
-                <div class="flexrow">
+                <p>
+                    Assigned modeler: {{model.modelowner ? model.modelowner : 'None'}}
+                </p>
+                <p>
+                    Status: {{backend.messageFromStatus(model.state, account.usertype)}}
+                    <!-- <v-icon>{{backend.iconFromStatus(model.state, account.usertype)}}</v-icon> --> 
+                </p>
+                <!-- <div class="flexrow">
                     <p>Files</p>
                     <v-btn icon @click="upload.modal = true">
                         <v-icon class="iconColor">mdi-cloud-upload</v-icon>
                     </v-btn>
-                </div>
+                </div> -->
                 <table class="fileList">
                     <tr v-if="model.files.length == 0">
                         <td>
@@ -64,32 +71,81 @@
                         </td>
                     </tr>
                 </table>
+                <v-btn id="uploadBtn" rounded @click="upload.modal = true">
+                    <span>Upload</span>
+                    <v-icon color="#FFFFFF">mdi-cloud-upload</v-icon>
+                    <!-- <v-icon class="iconColor">mdi-cloud-upload</v-icon> -->
+                </v-btn>
             </div>
-            <div class="column">
-                <table id="itemTable">
-                    <tr>
+            <div class="expansionPanels">
+                <v-expansion-panels focusable>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header disable-icon-rotate expand-icon="mdi-wechat">
+                            Comments
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <comments
+                                v-if="model.modelid"
+                                :idobj="{modelid: model.modelid}"
+                                :type="'Model'"
+                                :review="account.usertype != 'Modeller' && model.state == 'ProductReview' && model.modelowner != null"
+                                :markdone="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(model.state)"
+                                :markdonedisabled="model.files.length == 0"
+                                :markinfo="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(model.state)"
+                                :markresolve="account.usertype != 'Modeller' && model.state == 'ProductMissing'"
+                                @state="$emit('state', $event)"
+                            />
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel v-if="account.usertype != 'Modeller'">
+                        <v-expansion-panel-header disable-icon-rotate expand-icon="mdi-account-plus">
+                            Assign Modeller
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <div class="card">
+                                <v-select :items="modelers" label="Modeler" v-model="modeler">
+                                    <template v-slot:item="{item}">
+                                        <span>{{item.name}}</span>
+                                    </template>
+                                    <template v-slot:selection="{item}">
+                                        <span>{{item.name}}</span>
+                                    </template>
+                                </v-select>
+                                <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!modeler">Assign</v-btn>
+                                <p class="error-text" v-if="assign.error">{{assign.error}}</p>
+                            </div>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+
+                <!-- <table id="itemTable"> -->
+                    <!-- <tr>
                         <td>Status</td>
                         <td>
                             {{backend.messageFromStatus(model.state, account.usertype)}}
                             <v-icon>{{backend.iconFromStatus(model.state, account.usertype)}}</v-icon>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>Assigned modeler:</td>
+                    </tr> 
+                    <tr>-->
+                        <!-- Assign modeller via expansion panel instead of modal -->
+
+                        <!--<td>Assigned modeler:</td>
                         <td>
                             {{model.modelowner ? model.modelowner : 'None'}}
-                            <v-btn
+                             <v-btn
                                 v-if="account.usertype != 'Modeller'"
                                 icon
                                 @click="assign.modal = true"
                             >
                                 <v-icon class="iconColor">mdi-account-plus</v-icon>
-                            </v-btn>
-                        </td>
-                    </tr>
-                </table>
+                            </v-btn> -->
 
-                <h2 id="commentsLabel">Comments</h2>
+                        <!-- </td>
+                    </tr> -->
+                <!-- </table> -->
+
+                <!-- Moved code for comments in an expansion panel: -->
+                <!-- <h2 id="commentsLabel">Comments</h2>
                 <comments
                     v-if="model.modelid"
                     :idobj="{modelid: model.modelid}"
@@ -100,7 +156,7 @@
                     :markinfo="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(model.state)"
                     :markresolve="account.usertype != 'Modeller' && model.state == 'ProductMissing'"
                     @state="$emit('state', $event)"
-                />
+                /> -->
             </div>
         </div>
         <v-snackbar v-model="assignSnackbar" :timeout="3000">Cannot assign modeller until order is claimed by a QA</v-snackbar>
@@ -264,4 +320,20 @@ export default {
 .buttons {
     margin-top: 10px;
 }
+
+#uploadBtn {
+    color: white;
+    span {
+        margin-right: 0.5em;
+    }
+}
+
+.expansionPanels{
+    margin-top: 1em;
+    margin-right: 1em;
+    .v-expansion-panel-header{
+        margin-right: 1em
+    }
+}
+
 </style>

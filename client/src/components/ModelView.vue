@@ -1,6 +1,6 @@
 <template>
     <div id="item">
-        <h2> {{model.modelname}} </h2>
+        <h3> {{model.modelname}} </h3>
         <div class="row" id="topRow">
             <!-- <v-btn icon class="hidden-xs-only">
                 <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
@@ -87,6 +87,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+h3 {
+    text-align: center;
+    background-color: rgba(134, 134, 134, 0.2);
+    color: #515151;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+}
+
 #item {
     // width: 80vw;
     width: 40vw;
