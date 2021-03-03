@@ -97,9 +97,9 @@
                         <td><barchart v-if="order" :account="account" :productdata="order.partitiondata"/></td>
                     </tr> -->
                 <!-- </table> -->
-                <!-- <div class="flexcol" id="buttons">
-                    <v-btn @click="viewModels">View Models</v-btn>
-                    <v-btn @click="downloadExcel">
+                <!-- <div class="flexcol" id="buttons"> -->
+                    <!-- <v-btn @click="viewModels">View Models</v-btn>  -->
+                    <!--<v-btn @click="downloadExcel">
                         Export Models
                         <v-icon right>mdi-microsoft-excel</v-icon>
                     </v-btn>
@@ -131,6 +131,7 @@
                         :total="products"
                         :status="backend.messageFromStatus(order.state, account.usertype)"/>
                 </div>
+                <v-btn @click="viewModels">View Models</v-btn>
                 <v-expansion-panels focusable>
                     <v-expansion-panel>
                         <v-expansion-panel-header>
@@ -149,20 +150,20 @@
                     </v-expansion-panel>
 					<!--added expansion panel for comments-->
 					<v-expansion-panel>
-			<v-expansion-panel-header disable-icon-rotate expand-icon="mdi-wechat" >Comments
-			
-			</v-expansion-panel-header>
-			<v-expansion-panel-content>
-				<comments
-                    v-if="order"
-                    :idobj="{orderid: order.orderid}"
-                    :type="'Order'"
-                    :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
-                    :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
-                    @state="order.state = $event.orderstatus"
-                />
-			</v-expansion-panel-content>
-		</v-expansion-panel>
+                        <v-expansion-panel-header disable-icon-rotate expand-icon="mdi-wechat" >
+                            Comments
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <comments
+                                v-if="order"
+                                :idobj="{orderid: order.orderid}"
+                                :type="'Order'"
+                                :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
+                                :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
+                                @state="order.state = $event.orderstatus"
+                            />
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
                 </v-expansion-panels>
             </div>
         </div>
@@ -317,7 +318,7 @@ export default {
     },
     mounted() {
         var vm = this;
-        // var orderid = vm.$route.params.id; //replace with prop 
+        // var orderid = vm.$route.params.id; //replaced with prop 
         backend.getOrder(this.orderid).then(order => {
             vm.order = order;
         });

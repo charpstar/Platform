@@ -4,7 +4,7 @@
             :chart-data="barData"
             :options="barOptions"
             :plugins="plugins"
-            height="300px"
+            :height="300"
             />
         <!-- Previous code for creating a progress bar -->
 
@@ -90,7 +90,6 @@ export default {
         //options configuration for bar graph
         barOptions() {
             var optionsObj = {
-                defaultFontFamily: "Montserrat",
                 legend: {
                     display: false
                 },
@@ -119,25 +118,25 @@ export default {
                             display: true,
                             fontSize: 16, //default is 12, kind of small
                             labelString: 'Products',
-                            fontFamily: "Montserrat"
+                            fontFamily: "Montserrat, sans-serif"
                         },
                         ticks: {
                             min: 0,
                             max: this.total,
                             stepSize: 1, //scale up by 1 on y-axis; shows only integers
-                            fontFamily: "Montserrat"
+                            fontFamily: "Montserrat, sans-serif"
                         },
                     }],
                 },
                 title: {
                     display: true,
                     fontSize: 16, //default is 12, kind of small,
-                    fontFamily: "Montserrat",
+                    fontFamily: "Montserrat, sans-serif",
                     text: `Order status: ${this.status}`
                 },
                 tooltips: {
-                    titleFontFamily: "Montserrat",
-                    bodyFontFamily: "Montserrat",
+                    titleFontFamily: "Montserrat, sans-serif",
+                    bodyFontFamily: "Montserrat, sans-serif",
                     //custom tooltip
                     callbacks: {
 

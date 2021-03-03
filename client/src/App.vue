@@ -82,8 +82,9 @@ body {
     background-color: #e8e8e8;
     height: 100vh;
 	//font family in style guide is Montserrat//
-   /*  font-family: "Roboto"; */
-	font-family: "Montserrat";
+    //alternative sans-serif, if Montserrat is not loading//
+	font-family: "Montserrat", sans-serif;
+    /*  font-family: "Roboto"; */
 }
 
 .view {

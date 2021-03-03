@@ -1,13 +1,14 @@
 <template>
-    <div>
-        <div class="flexrow" id="topRow">
+    <div class="modelsList">
+        <!-- <div class="flexrow" id="topRow">
             <div class="flexrow">
                 <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Modeller'">
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
-                <h2>Models</h2>
+                
             </div>
-        </div>
+        </div> -->
+        <h2>Models</h2> 
         <div id="itemsView">
             <div class="flexrow">
                 <v-text-field
@@ -75,22 +76,25 @@ import backend from "../backend";
 
 export default {
     props: {
-        account: { required: true, type: Object }
+        account: { required: true, type: Object },
+        models: { required: true, type: Object}
     },
     // components: {
     //     barchart
     // },
+
     data() {
         return {
-            models: {},
+            /* Added 'sortable: false' to ID and Products columns, as we probably do not
+            need to sort these attributes and it frees up space in the table */
             headers: [
                 { text: "", sortable: false, value: "thumb"},
-                { text: "ID", value: "modelid" },
+                { text: "ID", sortable: false, value: "modelid" },
                 { text: "Name", value: "modelname" },
                 { text: "Client", value: "client", hideClient: true},
-                { text: "Modeller", value: "modelowner", hideClient: true},
+                { text: "Modeller", value: "modelowner", hideClient: true, hideModeller: true},
                 { text: "Status", value: "state" },
-                { text: "Products", value: "products" },
+                { text: "Products", sortable: false, value: "products" },
                 // { text: "Product states", value: "partitiondata" }
             ],
             filters: {},
@@ -98,7 +102,8 @@ export default {
             search: "",
             backend: backend,
             menuOpen: false,
-            order: false
+            // order: false,
+            // models: {},
         };
     },
     methods: {
@@ -111,13 +116,18 @@ export default {
             return sum;
         },
         handleClick(model) {
-            this.$router.push("/model/" + model.modelid);
+            this.$emit('clicked-model', model.modelid)  
+            /* instead of pushing a route, use the id as a prop to populate OrderView component */        
+            // this.$router.push("/model/" + model.modelid);
         }
     },
     computed: {
         filteredHeaders() {
             if(this.account.usertype == 'Client') {
                 return this.headers.filter(header => header.hideClient != true);
+            }
+            else if(this.account.usertype == 'Modeller') {
+                return this.headers.filter(header => header.hideModeller != true);
             }
             return this.headers
         }
@@ -133,21 +143,24 @@ export default {
             vm.filters["ProductQAMissing"] = "Missing information";
             vm.filters["ClientProductReceived"] = "Awaiting review";
         }
-        if (vm.$route.path.includes("/modeller/")) {
-            var id = vm.$route.params.id;
-            backend.getModellerModels(id).then(models => {
-                vm.models = models;
-            });
-        } else if (vm.$route.path == "/admin/models") {
-            backend.getAllModels().then(models => {
-                vm.models = models;
-            });
-        } else {
-            vm.order = vm.$route.params.id;
-            backend.getModels(vm.order).then(models => {
-                vm.models = models;
-            });
-        }
+
+    /* Moved to parent component (ModelOverview) */
+    //     if (vm.$route.path.includes("/modeller/")) {
+    //         var id = vm.$route.params.id;
+    //         backend.getModellerModels(id).then(models => {
+    //             vm.models = models;
+    //         });
+    //     } else if (vm.$route.path == "/admin/models") {
+    //         backend.getAllModels().then(models => {
+    //             vm.models = models;
+    //         });
+    //     } else {
+    //         vm.order = vm.$route.params.id;
+    //         backend.getModels(vm.order).then(models => {
+    //             vm.models = models;
+    //         });
+    //     }
+    // }
     }
 };
 </script>
@@ -158,9 +171,11 @@ export default {
     margin-bottom: 10px;
 }
 #table {
-    max-height: 70vh;
+    max-height: 100vh;
+    // max-height: 70vh;
     overflow: auto;
-    width: 80vw;
+    // width: 80vw;
+    width: 50vw; // to fit both order list and order details
 }
 
 .thumbnail {
@@ -171,5 +186,11 @@ th {
 }
 .filterbutton {
     margin-left: 10px;
+}
+
+.modelsList {
+    margin-right: 1em;
+    padding-right: 1em;
+    border-right: 2px solid rgb(179, 179, 179);
 }
 </style>
