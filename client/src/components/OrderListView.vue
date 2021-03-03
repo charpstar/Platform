@@ -22,7 +22,9 @@
                     single-line
                     hide-details
                 ></v-text-field>
-                <v-menu offset-y v-model="menuOpen" v-if="!$emptyObj(filters)">
+                <v-menu offset-y v-model="menuOpen" v-if="account.usertype != 'Client'">
+                <!-- Previous code: filter button does not appear until user writes text in input field -->
+                <!-- <v-menu offset-y v-model="menuOpen" v-if="!$emptyObj(filters)"> -->
                     <template v-slot:activator="{ on }">
                         <v-btn v-on="on" class="filterbutton">
                             Filter
@@ -97,7 +99,8 @@ export default {
     props: {
         account: { type: Object,  required: true },
         isAdminView : { type: Boolean, default: false},
-        orders: { type: Object, required: true}
+        orders: { type: Object, required: true},
+        userOrders: { type: Boolean, required: true}
     },
     components: {
         // barchart,
@@ -105,11 +108,6 @@ export default {
     },
     data() {
         return {
-            // orders: {},
-            userOrders: false,
-
-            //Manually adjusted with in some headers in order to align them at the same height
-            //Does not work properly though for smaller screens
             headers: [
                 { text: "ID", value: "orderid"},
                 { text: "Date", value: "time" },
@@ -126,7 +124,11 @@ export default {
             search: "",
             backend: backend,
             menuOpen: false,
-            // user: {} // has moved to parent (OrderOverview.vue)
+
+            /* Have moved to parent (OrderOverview.vue): */
+            // orders: {} 
+            // user: {}, 
+            // userOrders: false
         };
     },
     computed: {

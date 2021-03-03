@@ -92,7 +92,7 @@ export default {
                 { text: "ID", sortable: false, value: "modelid" },
                 { text: "Name", value: "modelname" },
                 { text: "Client", value: "client", hideClient: true},
-                { text: "Modeller", value: "modelowner", hideClient: true},
+                { text: "Modeller", value: "modelowner", hideClient: true, hideModeller: true},
                 { text: "Status", value: "state" },
                 { text: "Products", sortable: false, value: "products" },
                 // { text: "Product states", value: "partitiondata" }
@@ -118,7 +118,6 @@ export default {
         handleClick(model) {
             this.$emit('clicked-model', model.modelid)  
             /* instead of pushing a route, use the id as a prop to populate OrderView component */        
-            // this.$router.push("/order/" + order.orderid);
             // this.$router.push("/model/" + model.modelid);
         }
     },
@@ -126,6 +125,9 @@ export default {
         filteredHeaders() {
             if(this.account.usertype == 'Client') {
                 return this.headers.filter(header => header.hideClient != true);
+            }
+            else if(this.account.usertype == 'Modeller') {
+                return this.headers.filter(header => header.hideModeller != true);
             }
             return this.headers
         }
@@ -141,6 +143,8 @@ export default {
             vm.filters["ProductQAMissing"] = "Missing information";
             vm.filters["ClientProductReceived"] = "Awaiting review";
         }
+
+    /* Moved to parent component (ModelOverview) */
     //     if (vm.$route.path.includes("/modeller/")) {
     //         var id = vm.$route.params.id;
     //         backend.getModellerModels(id).then(models => {
