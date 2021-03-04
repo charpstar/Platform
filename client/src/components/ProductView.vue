@@ -4,7 +4,26 @@
         <edittextmodal :label="'model id'" :handler="editId" :text="product.modelid">Edit product parent model</edittextmodal>
         <!-- <div class="flexrow" id="itemsrow"> -->
         <div id="itemsrow">
-            <div style="position:relative;">
+            <div id="productTitle">
+                <p>{{product.color}}</p>
+                <a :href="product.link" target="_blank">
+                    <v-btn rounded class="actionBtn">
+                        <span>Product page</span>
+                        <v-icon>mdi-link</v-icon>     
+                    </v-btn>
+                </a>
+                <!-- Replaced the tooltip for editing product page with a button -->
+                <v-btn 
+                rounded 
+                class="actionBtn" 
+                @click="edit.modal = true" 
+                v-if="account.usertype == 'Client'">
+                    <span>Edit</span>
+                    <v-icon class="iconColor">mdi-border-color</v-icon>
+                </v-btn>
+            </div>
+           
+            <div class="column" style="position:relative;">
                 <v-btn icon @click="reload" class="reloadIcon">
                     <v-icon>mdi-reload</v-icon>
                 </v-btn>
@@ -17,6 +36,7 @@
                     v-if="!hideMv"
                 ></model-viewer>
                 <div id="modelViewer" v-else></div>
+                
             </div>
 
             <div class="column">
@@ -33,14 +53,14 @@
                             </v-tooltip>
                         </td>
                     </tr>
-                    <tr>
+                    <!-- <tr>
                         <td>Status</td>
                         <td>
                             {{backend.messageFromStatus(product.state, account.usertype)}}
                             <v-icon>{{backend.iconFromStatus(product.state, account.usertype)}}</v-icon>
                         </td>
-                    </tr>
-                    <tr>
+                    </tr> -->
+                    <!-- <tr>
                         <td>Product page</td>
                         <td>
                             <a :href="product.link" target="_blank">
@@ -55,7 +75,7 @@
                                 <span>Edit</span>
                             </v-tooltip>
                         </td>
-                    </tr>
+                    </tr> -->
                     <tr>
                         <td>Android link</td>
                         <td>
@@ -113,7 +133,46 @@
                         </td>
                     </tr>
                 </table>
-                <v-tabs v-model="commentsTab">
+                <v-expansion-panels>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header
+                            v-if="account.usertype != 'Client'"
+                            disable-icon-rotate 
+                            expand-icon="mdi-wechat">
+                            Internal Comments
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <comments
+                            :idobj="{productid: product.productid}"
+                            :type="'Product'"
+                            :review="account.usertype != 'Modeller' && product.state == 'ProductReview' && model.modelowner != null"
+                            :markdone="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(product.state)"
+                            :markdonedisabled="model.files.length == 0"
+                            :markinfo="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(product.state)"
+                            :markresolve="account.usertype != 'Modeller' && product.state == 'ProductMissing'"
+                            :internal="true"
+                            @state="$emit('state', $event)"
+                            />
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel v-if="account.usertype != 'Modeller'">
+                        <v-expansion-panel-header disable-icon-rotate expand-icon="mdi-wechat">
+                            {{account.usertype == 'Client' ? 'Comments' : 'Client Comments'}}
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <comments
+                            :idobj="{productid: product.productid}"
+                            :type="'Product'"
+                            :review="account.usertype == 'Client' && product.state == 'ClientProductReceived'"
+                            :markdone="account.usertype != 'Client' && product.state == 'ProductReview'"
+                            :markinfo="account.usertype != 'Client' && !(['Done', 'ProductQAMissing', 'ClientProductReceived'].includes(product.state))"
+                            :markresolve="account.usertype != 'Client' && product.state == 'ProductQAMissing'"
+                            @state="$emit('state', $event)"
+                            />
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+                <!-- <v-tabs v-model="commentsTab">
                     <v-tabs-slider></v-tabs-slider>
                     <v-tab v-if="account.usertype != 'Client'" :href="`#qa`">Internal Comments</v-tab>
                     <v-tab v-if="account.usertype != 'Modeller'" :href="`#client`">{{account.usertype == 'Client' ? 'Comments' : 'Client Comments'}}</v-tab>
@@ -141,7 +200,7 @@
                             @state="$emit('state', $event)"
                         />
                     </v-tab-item>
-                </v-tabs>
+                </v-tabs> -->
             </div>
         </div>
         <v-snackbar v-model="snackbar" :timeout="3000">Link copied to clipboard</v-snackbar>
@@ -264,7 +323,8 @@ export default {
 .column {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    // align-items: flex-start;
 }
 
 #default-progress-bar {
@@ -288,6 +348,20 @@ export default {
 
 .modelid {
     padding-right: 10px;
+}
+
+#productTitle {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.actionBtn {
+    color: white;
+    span {
+        margin-right: 0.5em;
+    }
 }
 
 </style>

@@ -88,14 +88,14 @@
                         <p>
                             <v-btn id="deleteBtn" rounded @click="() => {deleteFile(index)}">
                                 <span>Delete</span> 
-                                <v-icon color="#1FB1A9">mdi-delete</v-icon>
+                                <v-icon>mdi-delete</v-icon>
                             </v-btn>
                         </p>
                     </div>
                 </div> 
                 <v-btn class="actionBtn" rounded @click="upload.modal = true">
                     <span>Upload</span>
-                    <v-icon color="#FFFFFF">mdi-cloud-upload</v-icon>
+                    <v-icon>mdi-cloud-upload</v-icon>
                     <!-- <v-icon class="iconColor">mdi-cloud-upload</v-icon> -->
                 </v-btn>
             </div>
