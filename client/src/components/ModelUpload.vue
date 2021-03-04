@@ -2,7 +2,7 @@
     <div class="modelUpload">
         <v-dialog v-model="handler.modal" width="500">
             <template v-slot:activator="{ on }">
-                <v-btn class="uploadBtn" rounded v-on="on">
+                <v-btn class="uploadBtn" outlined rounded v-on="on">
                     <span>Upload</span>
                     <v-icon class="iconColor">mdi-cloud-upload</v-icon>
                 </v-btn>

@@ -86,7 +86,11 @@
                             </v-btn>
                         </p>
                         <p>
-                            <v-btn id="deleteBtn" rounded @click="() => {deleteFile(index)}">
+                            <v-btn 
+                            id="deleteBtn" 
+                            outlined 
+                            rounded 
+                            @click="() => {deleteFile(index)}">
                                 <span>Delete</span> 
                                 <v-icon>mdi-delete</v-icon>
                             </v-btn>
