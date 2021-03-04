@@ -36,10 +36,11 @@
         <!-- <div class="flexrow" id="itemsrow"> -->
         <div id="itemsrow">
             <div class="column">
-                <p>
+                <p id="modeller">
                     Assigned modeler: {{model.modelowner ? model.modelowner : 'None'}}
                 </p>
-                <p>
+                <!-- If we want to display model status -->
+                <p id="status">
                     Status: {{backend.messageFromStatus(model.state, account.usertype)}}
                     <!-- <v-icon>{{backend.iconFromStatus(model.state, account.usertype)}}</v-icon> --> 
                 </p>
@@ -49,7 +50,7 @@
                         <v-icon class="iconColor">mdi-cloud-upload</v-icon>
                     </v-btn>
                 </div> -->
-                <table class="fileList">
+                <!-- <table class="fileList">
                     <tr v-if="model.files.length == 0">
                         <td>
                             <p class="emptyFiles">No files uploaded</p>
@@ -67,11 +68,32 @@
                         <td>
                             <v-btn icon @click="() => {deleteFile(index)}">
                                 <v-icon>mdi-close</v-icon>
-                            </v-btn>
+                            </v-btn> 
                         </td>
                     </tr>
-                </table>
-                <v-btn id="uploadBtn" rounded @click="upload.modal = true">
+                </table> -->
+                <!-- Replaced with: -->
+                <div class="fileList">
+                    <p class="emptyFiles" v-if="model.files.length == 0">
+                        No files uploaded
+                    </p>
+                    <div class="flexrow" v-for="(file, index) in model.files" :key="file">
+                        <p class="fileName">{{file}}</p>
+                        <p>
+                            <v-btn class="actionBtn" rounded @click="downloadModel(file)">
+                                <span>Download</span> 
+                                <v-icon>mdi-cloud-download</v-icon>
+                            </v-btn>
+                        </p>
+                        <p>
+                            <v-btn id="deleteBtn" rounded @click="() => {deleteFile(index)}">
+                                <span>Delete</span> 
+                                <v-icon color="#1FB1A9">mdi-delete</v-icon>
+                            </v-btn>
+                        </p>
+                    </div>
+                </div> 
+                <v-btn class="actionBtn" rounded @click="upload.modal = true">
                     <span>Upload</span>
                     <v-icon color="#FFFFFF">mdi-cloud-upload</v-icon>
                     <!-- <v-icon class="iconColor">mdi-cloud-upload</v-icon> -->
@@ -265,13 +287,13 @@ export default {
 #item {
     width: 80vw;
 }
-#itemTable {
-    font-size: 20px;
-    color: grey;
-    td {
-        padding-right: 20px;
-    }
-}
+// #itemTable {
+//     font-size: 20px;
+//     color: grey;
+//     td {
+//         padding-right: 20px;
+//     }
+// }
 #modelView {
     width: 400px;
     height: 400px;
@@ -289,6 +311,15 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
+    p {
+        margin-bottom: 20px;
+    }
+    p#modeller{
+        font-size: 1.3em;
+    }
+    p#status{
+        font-size: 1.1em;
+    }
 }
 
 #default-progress-bar {
@@ -296,19 +327,26 @@ export default {
 }
 
 .fileList {
-    // width: 400px;
-    background-color: #cccccc;
-    td {
-        border: none;
-    }
-    max-height: 60px;
-    overflow-y: scroll;
-    margin-right: 20px;
+    width: 400px;
+    margin: 20px 20px 20px 0;
+    // background-color: #cccccc;
+    // td {
+    //     border: none;
+    // }
+    // max-height: 60px;
+    // overflow-y: scroll;
+    // margin-right: 20px;
+  
 }
 
 .fileName {
     // width: 300px;
     padding-left: 10px;
+}
+
+.flexrow {
+    justify-content: space-between;
+    align-items: center;
 }
 
 .emptyFiles {
@@ -321,19 +359,22 @@ export default {
     margin-top: 10px;
 }
 
-#uploadBtn {
+.actionBtn {
     color: white;
     span {
         margin-right: 0.5em;
     }
 }
 
+#deleteBtn {
+    background-color: white !important;
+    color: #1FB1A9;
+
+}
+
 .expansionPanels{
     margin-top: 1em;
     margin-right: 1em;
-    .v-expansion-panel-header{
-        margin-right: 1em
-    }
 }
 
 </style>
