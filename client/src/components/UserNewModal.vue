@@ -3,11 +3,11 @@
         <div class="card">
             <h2>New User</h2>
             <v-form v-model="valid">
-                <v-text-field v-model="name" label="Name" :rules="nameRules"></v-text-field>
-                <v-text-field v-model="email" label="Email" :rules="emailRules"></v-text-field>
-                <v-select :items="accountTypes" label="Type" v-model="usertype"></v-select>
+                <v-text-field v-model="name" label="Name" :rules="nameRules" color="#1FB1A9"></v-text-field>
+                <v-text-field v-model="email" label="Email" :rules="emailRules" color="#1FB1A9"></v-text-field>
+                <v-select :items="accountTypes" label="Type" v-model="usertype" color="#1FB1A9"></v-select>
                 <p class="error-text" v-if="handler.error">{{handler.error}}</p>
-                <v-btn :loading="handler.loading" :disabled="!valid" @click="handler.execute">Create</v-btn>
+                <v-btn :loading="handler.loading" :disabled="!valid" @click="handler.execute" rounded small color="#1FB1A9"  text--white class="createBtn">Create</v-btn>
             </v-form>
         </div>
     </v-dialog>
@@ -59,3 +59,10 @@ export default {
     }
 };
 </script>
+
+<style lang="scss" scoped>
+.createBtn {
+	color: white;
+	margin-top: 15px;
+}
+</style>

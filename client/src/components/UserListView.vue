@@ -5,7 +5,7 @@
             <div class="flexrow">
                 <h2>Users</h2>
             </div>
-            <v-btn id="buttonNew" @click="newUserHandler.modal = true" v-if="account.usertype == 'Admin'">
+            <v-btn id="buttonNew" @click="newUserHandler.modal = true" v-if="account.usertype == 'Admin'" color="#1FB1A9" rounded  dark small>
                 New User
                 <v-icon right>mdi-account-plus</v-icon>
             </v-btn>
@@ -17,6 +17,7 @@
                 label="Filter"
                 single-line
                 hide-details
+				color="#1FB1A9"
             ></v-text-field>
             <v-data-table
                 id="table"
@@ -29,7 +30,10 @@
                 @click:row="handleClick"
             >
                 <template v-slot:item.active="{value}">
-                    <i class="material-icons">{{value ? 'check' : ''}}</i>
+					<!--removed check mark from active state-->
+                    <!-- <i class="material-icons">{{value ? 'check' : ''}}</i> --> 
+					<!--replaced check mark by text-Active and i-tag by v-chip tag-->
+					<v-chip color="#41BF4D" label dark>{{value ? 'Active' : ''}} </v-chip>
                 </template>
             </v-data-table>
         </div>
