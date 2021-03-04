@@ -21,12 +21,13 @@
                     label="Filter"
                     single-line
                     hide-details
+					color="#1FB1A9" 
                 ></v-text-field>
                 <v-menu offset-y v-model="menuOpen" v-if="account.usertype != 'Client'">
                 <!-- Previous code: filter button does not appear until user writes text in input field -->
                 <!-- <v-menu offset-y v-model="menuOpen" v-if="!$emptyObj(filters)"> -->
                     <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" class="filterbutton">
+                        <v-btn v-on="on" class="filterbutton" small rounded dark>
                             Filter
                             <v-icon right>mdi-menu-down</v-icon>
                         </v-btn>
