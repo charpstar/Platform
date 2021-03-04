@@ -152,6 +152,7 @@
                         <v-icon right>mdi-file-plus</v-icon>
                     </excelupload>
                 </div> 
+
                 <v-expansion-panels focusable>
                     <v-expansion-panel>
                         <v-expansion-panel-header>
@@ -170,20 +171,21 @@
                     </v-expansion-panel>
 					<!--added expansion panel for comments-->
 					<v-expansion-panel>
-                        <v-expansion-panel-header disable-icon-rotate expand-icon="mdi-wechat" >
-                            Comments
-                        </v-expansion-panel-header>
-                        <v-expansion-panel-content>
-                            <comments
-                                v-if="order"
-                                :idobj="{orderid: order.orderid}"
-                                :type="'Order'"
-                                :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
-                                :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
-                                @state="order.state = $event.orderstatus"
-                            />
-                        </v-expansion-panel-content>
-                   <!--added expansion panel for AssignQA-->
+
+			<v-expansion-panel-header disable-icon-rotate expand-icon="mdi-wechat" >Comments
+			
+			</v-expansion-panel-header>
+			<v-expansion-panel-content>
+				<comments
+                    v-if="order"
+                    :idobj="{orderid: order.orderid}"
+                    :type="'Order'"
+                    :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
+                    :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
+                    @state="order.state = $event.orderstatus"
+                />
+			</v-expansion-panel-content>
+			<!--added expansion panel for AssignQA-->
 		</v-expansion-panel>
 		<v-expansion-panel v-on="on"  @click="assign.modal = true">
 			<v-expansion-panel-header disable-icon-rotate expand-icon="mdi-account-plus" >
@@ -206,6 +208,7 @@
         </v-layout> 
 		</v-expansion-panel-content>
 		</v-expansion-panel>
+
                 </v-expansion-panels>
             </div>
         </div>
