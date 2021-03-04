@@ -2,7 +2,8 @@
     <div class="modelUpload">
         <v-dialog v-model="handler.modal" width="500">
             <template v-slot:activator="{ on }">
-                <v-btn v-on="on" icon>
+                <v-btn class="uploadBtn" rounded v-on="on">
+                    <span>Upload</span>
                     <v-icon class="iconColor">mdi-cloud-upload</v-icon>
                 </v-btn>
             </template>
@@ -112,5 +113,13 @@ export default {
 .buttons {
     margin-right: 10px;
     margin-left: 10px;
+}
+
+.uploadBtn {
+    background-color: white !important;
+    color: #1FB1A9;
+    span {
+        margin-right: 5px
+    }
 }
 </style>

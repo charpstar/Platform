@@ -369,12 +369,11 @@ export default {
 #deleteBtn {
     background-color: white !important;
     color: #1FB1A9;
-
 }
 
 .expansionPanels{
-    margin-top: 1em;
-    margin-right: 1em;
+    margin-top: 20px;
+    margin-right: 20px;
 }
 
 </style>

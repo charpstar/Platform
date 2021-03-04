@@ -15,7 +15,7 @@
                 <!-- Replaced the tooltip for editing product page with a button -->
                 <v-btn 
                 rounded 
-                class="actionBtn" 
+                id="editBtn"
                 @click="edit.modal = true" 
                 v-if="account.usertype == 'Client'">
                     <span>Edit</span>
@@ -40,8 +40,8 @@
             </div>
 
             <div class="column">
-                <table id="itemTable">
-                    <tr v-if="account.usertype == 'QA' || account.usertype == 'Admin'">
+                <!-- <table id="itemTable"> -->
+                    <!-- <tr v-if="account.usertype == 'QA' || account.usertype == 'Admin'">
                         <td class="modelid">Parent Modelid</td>
                         <td >
                             {{product.modelid}}
@@ -52,7 +52,7 @@
                                 <span>Change parent model</span>
                             </v-tooltip>
                         </td>
-                    </tr>
+                    </tr> -->
                     <!-- <tr>
                         <td>Status</td>
                         <td>
@@ -76,7 +76,7 @@
                             </v-tooltip>
                         </td>
                     </tr> -->
-                    <tr>
+                    <!-- <tr>
                         <td>Android link</td>
                         <td>
                             <v-btn
@@ -117,8 +117,8 @@
                                 @opened="hideMv = $event"
                             />
                         </td>
-                    </tr>
-                    <tr>
+                    </tr> -->
+                    <!-- <tr>
                         <td>
                             <modelversions :product="product" @opened="hideMv = $event" v-if="product.oldandroidlink"></modelversions>
                             <confirmmodal 
@@ -131,9 +131,101 @@
                                 :color="'#d12300'"
                             />
                         </td>
-                    </tr>
-                </table>
-                <v-expansion-panels>
+                    </tr> -->
+                <!-- </table> -->
+                </div>
+                
+                <!-- <v-tabs v-model="commentsTab">
+                    <v-tabs-slider></v-tabs-slider>
+                    <v-tab v-if="account.usertype != 'Client'" :href="`#qa`">Internal Comments</v-tab>
+                    <v-tab v-if="account.usertype != 'Modeller'" :href="`#client`">{{account.usertype == 'Client' ? 'Comments' : 'Client Comments'}}</v-tab>
+                    <v-tab-item :value="'qa'" class="tab">
+                        <comments
+                            :idobj="{productid: product.productid}"
+                            :type="'Product'"
+                            :review="account.usertype != 'Modeller' && product.state == 'ProductReview' && model.modelowner != null"
+                            :markdone="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(product.state)"
+                            :markdonedisabled="model.files.length == 0"
+                            :markinfo="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(product.state)"
+                            :markresolve="account.usertype != 'Modeller' && product.state == 'ProductMissing'"
+                            :internal="true"
+                            @state="$emit('state', $event)"
+                        />
+                    </v-tab-item>
+                    <v-tab-item :value="'client'" class="tab">
+                        <comments
+                            :idobj="{productid: product.productid}"
+                            :type="'Product'"
+                            :review="account.usertype == 'Client' && product.state == 'ClientProductReceived'"
+                            :markdone="account.usertype != 'Client' && product.state == 'ProductReview'"
+                            :markinfo="account.usertype != 'Client' && !(['Done', 'ProductQAMissing', 'ClientProductReceived'].includes(product.state))"
+                            :markresolve="account.usertype != 'Client' && product.state == 'ProductQAMissing'"
+                            @state="$emit('state', $event)"
+                        />
+                    </v-tab-item>
+                </v-tabs> -->
+                <div :id="account.usertype == 'Client' ? 'versionsClient': 'versions'">
+                    <div class="links">
+                        <p class="copy">
+                            <v-btn 
+                                @click="() => {toClipboard(product.newandroidlink)}"
+                                rounded 
+                                class="actionBtn"
+                                :disabled="!product.newandroidlink">
+                                    <span>Android Link</span>
+                                    <v-icon>mdi-android</v-icon>
+                            </v-btn> 
+                        </p>
+                        <p>
+                            <modelupload
+                                v-if="account.usertype != 'Client'"
+                                :model="model"
+                                :product="product"
+                                :uploadfun="androidUploadFun"
+                                :filetype="'glb'"
+                                @upload="uploadedAndroid"
+                                @opened="hideMv = $event"
+                            />                
+                        </p>
+                    </div>
+                    <div class="links">
+                        <p class="copy">
+                            <v-btn 
+                            @click="() => {toClipboard(product.newioslink)}" 
+                            rounded 
+                            class="actionBtn"
+                            :disabled="!product.newioslink">
+                                <span>iOS Link</span>
+                                <v-icon>mdi-apple</v-icon>
+                            </v-btn>
+                        </p>
+                        <p>
+                            <modelupload
+                                v-if="account.usertype != 'Client'"
+                                :model="model"
+                                :product="product"
+                                :uploadfun="iosUploadFun"
+                                :filetype="'usdz'"
+                                @upload="uploadedIos"
+                                @opened="hideMv = $event"
+                            />
+                        </p>
+                    </div>
+
+                        <modelversions :product="product" @opened="hideMv = $event" v-if="product.oldandroidlink"></modelversions>
+                        <confirmmodal 
+                            v-if ="(account.usertype == 'QA' || account.usertype == 'Admin') && false" 
+                            :handler="del" 
+                            :title="'Confirm product delete'"
+                            :text="'This will delete the product and related files and comments'"
+                            :buttonText="'Delete product'"
+                            :icon="'mdi-delete'"
+                            :color="'#d12300'"
+                        />
+                </div>   
+                
+                
+                <v-expansion-panels class="expansionPanels">
                     <v-expansion-panel>
                         <v-expansion-panel-header
                             v-if="account.usertype != 'Client'"
@@ -172,36 +264,6 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                 </v-expansion-panels>
-                <!-- <v-tabs v-model="commentsTab">
-                    <v-tabs-slider></v-tabs-slider>
-                    <v-tab v-if="account.usertype != 'Client'" :href="`#qa`">Internal Comments</v-tab>
-                    <v-tab v-if="account.usertype != 'Modeller'" :href="`#client`">{{account.usertype == 'Client' ? 'Comments' : 'Client Comments'}}</v-tab>
-                    <v-tab-item :value="'qa'" class="tab">
-                        <comments
-                            :idobj="{productid: product.productid}"
-                            :type="'Product'"
-                            :review="account.usertype != 'Modeller' && product.state == 'ProductReview' && model.modelowner != null"
-                            :markdone="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(product.state)"
-                            :markdonedisabled="model.files.length == 0"
-                            :markinfo="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(product.state)"
-                            :markresolve="account.usertype != 'Modeller' && product.state == 'ProductMissing'"
-                            :internal="true"
-                            @state="$emit('state', $event)"
-                        />
-                    </v-tab-item>
-                    <v-tab-item :value="'client'" class="tab">
-                        <comments
-                            :idobj="{productid: product.productid}"
-                            :type="'Product'"
-                            :review="account.usertype == 'Client' && product.state == 'ClientProductReceived'"
-                            :markdone="account.usertype != 'Client' && product.state == 'ProductReview'"
-                            :markinfo="account.usertype != 'Client' && !(['Done', 'ProductQAMissing', 'ClientProductReceived'].includes(product.state))"
-                            :markresolve="account.usertype != 'Client' && product.state == 'ProductQAMissing'"
-                            @state="$emit('state', $event)"
-                        />
-                    </v-tab-item>
-                </v-tabs> -->
-            </div>
         </div>
         <v-snackbar v-model="snackbar" :timeout="3000">Link copied to clipboard</v-snackbar>
     </div>
@@ -357,6 +419,33 @@ export default {
     margin-bottom: 5px;
 }
 
+#versions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .links {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 20px;
+    }
+    .copy {
+        margin-right: 5px
+    }
+}
+
+#versionsClient {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+}
+
+
+.compareVersions {
+    margin-top: 10px;
+}
+
+
 .actionBtn {
     color: white;
     span {
@@ -364,4 +453,13 @@ export default {
     }
 }
 
+#editBtn {
+    background-color: white !important;
+    color: #1FB1A9;
+}
+
+.expansionPanels{
+    margin-top: 20px;
+    padding-right: 20px;
+}
 </style>

@@ -20,7 +20,7 @@
                 ></v-text-field>
                 <v-menu offset-y v-model="menuOpen">
                     <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" class="filterbutton">
+                        <v-btn v-on="on" class="filterbutton" small rounded dark>
                             Filter
                             <v-icon right>mdi-menu-down</v-icon>
                         </v-btn>
