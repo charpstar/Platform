@@ -23,7 +23,9 @@
                     hide-details
 					color="#1FB1A9" 
                 ></v-text-field>
-                <v-menu offset-y v-model="menuOpen" v-if="!$emptyObj(filters)">
+                <v-menu offset-y v-model="menuOpen" v-if="account.usertype != 'Client'">
+                <!-- Previous code: filter button does not appear until user writes text in input field -->
+                <!-- <v-menu offset-y v-model="menuOpen" v-if="!$emptyObj(filters)"> -->
                     <template v-slot:activator="{ on }">
                         <v-btn v-on="on" class="filterbutton" small rounded dark>
                             Filter
@@ -83,7 +85,7 @@
                 <template v-slot:item.products="{item}">
                     {{sumProducts(item)}}
                 </template>
-                <!-- <template v-slot:item.time="{value}">{{$formatTime(value)}}</template> -->
+                <template v-slot:item.time="{value}">{{$formatDate(value)}}</template>
             </v-data-table>
         </div>
     </div>
@@ -98,7 +100,8 @@ export default {
     props: {
         account: { type: Object,  required: true },
         isAdminView : { type: Boolean, default: false},
-        orders: { type: Object, required: true}
+        orders: { type: Object, required: true},
+        userOrders: { type: Boolean, required: true}
     },
     components: {
         // barchart,
@@ -106,14 +109,9 @@ export default {
     },
     data() {
         return {
-            // orders: {},
-            userOrders: false,
-
-            //Manually adjusted with in some headers in order to align them at the same height
-            //Does not work properly though for smaller screens
             headers: [
                 { text: "ID", value: "orderid"},
-                // { text: "Date", value: "time" },
+                { text: "Date", value: "time" },
                 { text: "Client", value: "clientname", hideClient: true},
                 { text: "Assigned QA", value: "qaownername"},
                 { text: "Status", value: "state"},
@@ -127,7 +125,11 @@ export default {
             search: "",
             backend: backend,
             menuOpen: false,
-            // user: {} // has moved to parent (OrderOverview.vue)
+
+            /* Have moved to parent (OrderOverview.vue): */
+            // orders: {} 
+            // user: {}, 
+            // userOrders: false
         };
     },
     computed: {
@@ -206,7 +208,8 @@ export default {
     margin-bottom: 10px;
 }
 #table {
-    max-height: 70vh;
+    max-height: 100vh;
+    // max-height: 70vh;
     overflow: auto;
     width: 50vw // to fit both order list and order details
     // width: 80vw;
@@ -227,6 +230,7 @@ export default {
 #order-list {
     /* Not sure about this border, but it felt right to separate the two sections*/
     padding-right: 1em;
+    margin-right: 1em;
     border-right: 2px solid rgb(179, 179, 179);
 }
 </style>

@@ -16,6 +16,14 @@ const customPlugin = {
       }
       return date.join("/") + " " + time.join(":")
     }
+
+    /* Separate function to get only date */
+    Vue.prototype.$formatDate = function (timestamp) {
+      var now = new Date(Date.parse(timestamp));
+      var date = [now.getFullYear(), now.getMonth() + 1, now.getDate()];
+      return date.join("/")
+    }
+    
     Vue.prototype.$emptyObj = function (obj) {
         return Object.keys(obj).length === 0
     }
@@ -31,13 +39,17 @@ Vue.use(customPlugin)
 
 import loginView from './components/LoginView'
 import adminView from "./components/AdminView";
-import orderListView from "./components/OrderListView";
-// import orderView from "./components/OrderView";
 import orderOverview from "./components/OrderOverview";
-import modelListView from "./components/ModelListView";
-import modelView from "./components/ModelView";
+import modelOverview from "./components/ModelOverview";
 import userListView from "./components/UserListView";
 import userView from "./components/UserView";
+
+/* Previously used components that are replaced here by ModelOverview and OrderOverview */
+
+// import modelListView from "./components/ModelListView";
+// import modelView from "./components/ModelView";
+// import orderListView from "./components/OrderListView";
+// import orderView from "./components/OrderView";
 
 const router = new VueRouter({
   mode: 'history',
@@ -45,21 +57,30 @@ const router = new VueRouter({
   routes: [
     { path: '/', component: loginView },
     { path: '/home', component: adminView },
-    { path: '/admin/users', component: userListView },
-    { path: '/admin/orders', component: orderListView }, //this path doesn't work properly
-    { path: '/admin/models', component: modelListView },
-    { path: '/modeller/:id', component: modelListView },
+    { path: '/admin/users', component: userListView }, 
+    { path: '/admin/orders', component: adminView }, 
+    // { path: '/admin/orders', component: orderListView },
+    { path: '/admin/models', component: modelOverview },
+    // { path: '/admin/models', component: modelListView },
+    { path: '/modeller/:id', component: modelOverview },
+    // { path: '/modeller/:id', component: modelListView },
     { path: '/user/:id', component: userView },
   
-    //the component for this path will probably need to be the new OrderOverview component
-    //{ path: '/user/:id/orders', component: orderListView },
     { path: '/user/:id/orders', component: orderOverview },
-    { path: '/user/:id/models', component: modelListView },
+    // { path: '/user/:id/orders', component: orderListView },
 
-    // this path will not work when we use the OrderOverview component
-    // { path: '/order/:id', component: orderView }, 
-    { path: '/order/:id/models', component: modelListView },
-    { path: '/model/:id', component: modelView },
+    { path: '/order/:id/models', component: modelOverview },
+    // { path: '/order/:id/models', component: modelListView },
+
+    /* Where is this route used? */
+    /* replace with component: modelOverview if route is used */
+    // { path: '/user/:id/models', component: modelListView },
+    
+    /* this path is not necessary when we use the OrderOverview component */
+    // { path: '/order/:id', component: orderView }
+
+    /* this path is not necessary when we use the ModelOverview component */
+    // { path: '/model/:id', component: modelView }
 
   ]
 })

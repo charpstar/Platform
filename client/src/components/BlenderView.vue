@@ -33,7 +33,8 @@
                 <v-btn @click="deleteHandler.modal = false" class="buttons">Cancel</v-btn>
             </div>
         </v-dialog>
-        <div class="flexrow" id="itemsrow">
+        <!-- <div class="flexrow" id="itemsrow"> -->
+        <div id="itemsrow">
             <div class="column">
                 <div class="flexrow">
                     <p>Files</p>
@@ -239,7 +240,7 @@ export default {
 }
 
 .fileList {
-    width: 400px;
+    // width: 400px;
     background-color: #cccccc;
     td {
         border: none;
@@ -250,7 +251,7 @@ export default {
 }
 
 .fileName {
-    width: 300px;
+    // width: 300px;
     padding-left: 10px;
 }
 

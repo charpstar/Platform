@@ -5,7 +5,8 @@
             :account="account" 
             :isAdminView="isAdminView" 
             @clicked-order="getOrderId" 
-            :orders="orders"/>
+            :orders="orders"
+            :userOrders="userOrders"/>
 
         <!-- 'key' re-renders the child component when orderid changes-->
         <order-view 
@@ -26,7 +27,8 @@
             return {
                 orderid: "",
                 orders: {},
-                user: {}
+                user: {},
+                userOrders: false,
             }
         },
         props: {
