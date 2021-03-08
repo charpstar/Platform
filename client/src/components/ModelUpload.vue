@@ -2,14 +2,16 @@
     <div class="modelUpload">
         <v-dialog v-model="handler.modal" width="500">
             <template v-slot:activator="{ on }">
-                <v-btn class="uploadBtn" outlined rounded v-on="on">
+                <v-btn class="secondaryBtn" outlined rounded v-on="on">
                     <span>Upload</span>
-                    <v-icon class="iconColor">mdi-cloud-upload</v-icon>
+                    <v-icon>mdi-cloud-upload</v-icon>
+                    <!-- <v-icon class="iconColor">mdi-cloud-upload</v-icon> -->
                 </v-btn>
             </template>
 
             <v-card>
-                <v-card-title class="headline grey lighten-2" primary-title>Upload Model</v-card-title>
+                <v-card-title>Upload Model</v-card-title>
+                <!-- <v-card-title class="headline grey lighten-2" primary-title>Upload Model</v-card-title> -->
                 <div id="fileInput">
                     <fileinputmodel v-model="modelFile" />
                     <div class="flexrow"></div>
@@ -21,12 +23,23 @@
                     <v-checkbox v-model="thumbnail" :label="' Update Thumbnail'" color="#2196f3"></v-checkbox>
                     <v-spacer></v-spacer>
                     <v-btn
-                        class="buttons"
+                        class="uploadBtn"
+                        rounded
                         @click="handler.execute"
                         :loading="handler.loading"
                         :disabled="!modelFile.file || !(!thumbnail || modelFile.image) ||!!error"
-                    >Upload</v-btn>
-                    <v-btn class="buttons" @click="handler.modal = false">Cancel</v-btn>
+                    >
+                        <!-- Upload -->
+                        Upload
+                    </v-btn>
+                    <v-btn 
+                        class="secondaryBtn"
+                        rounded 
+                        outlined
+                        @click="handler.modal = false"
+                    >
+                        Cancel
+                    </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -110,16 +123,31 @@ export default {
     padding-left: 20px;
 }
 
-.buttons {
+// .buttons {
+//     margin-right: 10px;
+//     margin-left: 10px;
+// }
+
+.v-card__title{
+    justify-content: center;
+    color: #515151;
+    font-weight: normal;
+}
+.uploadBtn {
+    color: white;
     margin-right: 10px;
-    margin-left: 10px;
+    margin-left: 10px;  
 }
 
-.uploadBtn {
+.secondaryBtn {
     background-color: white !important;
     color: #1FB1A9;
+    margin-right: 10px;
+    margin-left: 10px;
     span {
-        margin-right: 5px
+        margin-right: 0.5em;
     }
 }
+
+
 </style>

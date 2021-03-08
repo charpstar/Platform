@@ -110,7 +110,7 @@
         modelupload,
         confirmmodal 
       },
-      
+
       props: {
         account: { type: Object, required: true },
         model: { type: Object, required: true },
@@ -119,6 +119,7 @@
 
       data () {
         return {
+          hideMv: true,
           snackbar: false,
           androidUploadFun: backend.uploadAndroidModel,
           iosUploadFun: backend.uploadIosModel,

@@ -17,8 +17,16 @@
         </v-dialog> -->
         <v-dialog v-model="upload.modal" width="500">
             <div class="card">
-                <v-file-input :label="'Select file'" @change="onFileChange"></v-file-input>
-                <v-btn :loading="upload.loading" @click="upload.execute" :disabled="!file">Upload</v-btn>
+                <h3>Upload File</h3>
+                <v-file-input :label="'Select file'" @change="onFileChange" color="#1FB1A9"></v-file-input>
+                <v-btn 
+                    class="uploadBtn"
+                    rounded
+                    :loading="upload.loading" 
+                    @click="upload.execute" 
+                    :disabled="!file">
+                    Upload
+                </v-btn>
             </div>
         </v-dialog>
         <v-dialog v-model="deleteHandler.modal" width="250px">
@@ -382,6 +390,18 @@ export default {
 #deleteBtn {
     background-color: white !important;
     color: #1FB1A9;
+}
+
+.uploadBtn {
+    color: white;
+    margin: 10px 10px 0 10px;
+}
+
+h3 {
+    color: #515151;
+    font-weight: normal;
+    margin-bottom: 10px;
+    text-align: center;
 }
 
 .expansionPanels{
