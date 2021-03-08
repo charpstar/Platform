@@ -44,7 +44,9 @@
         <div id="modelViewer" v-else></div>
       </div>
 
-      <div class="column">
+      <!-- <div class="column"> -->
+        <!-- Table replaced with new 'div' structure in component 'ProductVersions'-->
+
         <!-- <table id="itemTable"> -->
         <!-- <tr v-if="account.usertype == 'QA' || account.usertype == 'Admin'">
                         <td class="modelid">Parent Modelid</td>
@@ -138,7 +140,9 @@
                         </td>
                     </tr> -->
         <!-- </table> -->
-      </div>
+      <!-- </div> -->
+
+      <!-- Tabs replaced with expansion panels:  -->
 
       <!-- <v-tabs v-model="commentsTab">
                     <v-tabs-slider></v-tabs-slider>
@@ -251,6 +255,7 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </div>
+    <!-- Moved to  ProductVersions.vue -->
     <!-- <v-snackbar v-model="snackbar" :timeout="3000">
       Link copied to clipboard
     </v-snackbar> -->
@@ -261,7 +266,9 @@
   import backend from './../backend'
   import comments from './CommentView'
   import edittextmodal from './EditTextModal'
-  import productVersions from './ProductVersions.vue'
+  import productVersions from './ProductVersions'
+
+  /* Moved to ProductVersions.vue */
 
   // import confirmmodal from './ConfirmModal'
   // import modelupload from './ModelUpload'
@@ -272,19 +279,20 @@
       comments,
       edittextmodal,
       productVersions
+
+      /* Moved to ProductVersions.vue */
+
       // confirmmodal,
       // modelupload,
       // modelversions,
-
     },
     props: {
-      product: { type: Object, required: true },
+      account: { type: Object, required: true },
       model: { type: Object, required: true },
-      account: { type: Object, required: true }
+      product: { type: Object, required: true }
     },
     data() {
       return {
-        // snackbar: false,
         androidUploadFun: backend.uploadAndroidModel,
         iosUploadFun: backend.uploadIosModel,
         commentsTab: '',
@@ -293,12 +301,16 @@
         editId: backend.promiseHandler(this.editIdFun),
         del: backend.promiseHandler(this.deleteProduct),
         backend: backend
+        /* Moved to ProductVersions.vue */
+        // snackbar: false,
       }
     },
     methods: {
       deleteProduct() {
         var vm = this
         return backend.deleteProduct(vm.product.productid).then(() => {
+          // How is this going to work with the new display of models' list
+          // next to model details? Should we remove the following code?
           vm.$router.go(-1)
         })
       },
@@ -318,6 +330,9 @@
             vm.product.modelid = newid
           })
       },
+
+      /* Moved to ProductVersions.vue */
+
       // uploadedAndroid(values) {
       //   this.product.newandroidlink = values[0].new.androidlink
       //   if (values[1] != null) {
