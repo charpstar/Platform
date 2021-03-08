@@ -16,7 +16,7 @@
             <v-icon>mdi-link</v-icon>
           </v-btn>
         </a>
-        <!-- Replaced the tooltip for editing product page with a button -->
+        <!-- Replaced the tooltip for editing the product page with a button -->
         <v-btn
           outlined
           rounded
@@ -169,81 +169,11 @@
                         />
                     </v-tab-item>
                 </v-tabs> -->
-      <div :id="account.usertype == 'Client' ? 'versionsClient' : 'versions'">
-        <div class="links">
-          <p class="copy">
-            <v-btn
-              @click="
-                () => {
-                  toClipboard(product.newandroidlink)
-                }
-              "
-              rounded
-              class="actionBtn"
-              :disabled="!product.newandroidlink"
-            >
-              <span>Android Link</span>
-              <v-icon>mdi-android</v-icon>
-            </v-btn>
-          </p>
-          <p>
-            <modelupload
-              v-if="account.usertype != 'Client'"
-              :model="model"
-              :product="product"
-              :uploadfun="androidUploadFun"
-              :filetype="'glb'"
-              @upload="uploadedAndroid"
-              @opened="hideMv = $event"
-            />
-          </p>
-        </div>
-        <div class="links">
-          <p class="copy">
-            <v-btn
-              @click="
-                () => {
-                  toClipboard(product.newioslink)
-                }
-              "
-              rounded
-              class="actionBtn"
-              :disabled="!product.newioslink"
-            >
-              <span>iOS Link</span>
-              <v-icon>mdi-apple</v-icon>
-            </v-btn>
-          </p>
-          <p>
-            <modelupload
-              v-if="account.usertype != 'Client'"
-              :model="model"
-              :product="product"
-              :uploadfun="iosUploadFun"
-              :filetype="'usdz'"
-              @upload="uploadedIos"
-              @opened="hideMv = $event"
-            />
-          </p>
-        </div>
-
-        <modelversions
+        <product-versions 
+          :account="account"
           :product="product"
-          @opened="hideMv = $event"
-          v-if="product.oldandroidlink"
-        ></modelversions>
-        <confirmmodal
-          v-if="
-            (account.usertype == 'QA' || account.usertype == 'Admin') && false
-          "
-          :handler="del"
-          :title="'Confirm product delete'"
-          :text="'This will delete the product and related files and comments'"
-          :buttonText="'Delete product'"
-          :icon="'mdi-delete'"
-          :color="'#d12300'"
+          :model="model"
         />
-      </div>
 
       <v-expansion-panels class="expansionPanels">
         <v-expansion-panel>
@@ -321,26 +251,31 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </div>
-    <v-snackbar v-model="snackbar" :timeout="3000"
-      >Link copied to clipboard</v-snackbar
-    >
+    <!-- <v-snackbar v-model="snackbar" :timeout="3000">
+      Link copied to clipboard
+    </v-snackbar> -->
   </div>
 </template>
 <script>
-  import modelupload from './ModelUpload'
+  
   import backend from './../backend'
   import comments from './CommentView'
-  import modelversions from './VersionModal'
   import edittextmodal from './EditTextModal'
-  import confirmmodal from './ConfirmModal'
+  import productVersions from './ProductVersions.vue'
+
+  // import confirmmodal from './ConfirmModal'
+  // import modelupload from './ModelUpload'
+  // import modelversions from './VersionModal'
 
   export default {
     components: {
-      modelupload,
       comments,
-      modelversions,
       edittextmodal,
-      confirmmodal
+      productVersions
+      // confirmmodal,
+      // modelupload,
+      // modelversions,
+
     },
     props: {
       product: { type: Object, required: true },
@@ -349,7 +284,7 @@
     },
     data() {
       return {
-        snackbar: false,
+        // snackbar: false,
         androidUploadFun: backend.uploadAndroidModel,
         iosUploadFun: backend.uploadIosModel,
         commentsTab: '',
@@ -383,29 +318,29 @@
             vm.product.modelid = newid
           })
       },
-      uploadedAndroid(values) {
-        this.product.newandroidlink = values[0].new.androidlink
-        if (values[1] != null) {
-          this.model.thumbnail = values[1]
-        }
-      },
-      uploadedIos(values) {
-        this.product.newioslink = values[0].new.ioslink
-        if (values[1] != null) {
-          this.model.thumbnail = values[1]
-        }
-      },
-      toClipboard(text) {
-        var vm = this
-        vm.$copyText(text).then(
-          () => {
-            vm.snackbar = true
-          },
-          () => {
-            alert('Could not copy')
-          }
-        )
-      },
+      // uploadedAndroid(values) {
+      //   this.product.newandroidlink = values[0].new.androidlink
+      //   if (values[1] != null) {
+      //     this.model.thumbnail = values[1]
+      //   }
+      // },
+      // uploadedIos(values) {
+      //   this.product.newioslink = values[0].new.ioslink
+      //   if (values[1] != null) {
+      //     this.model.thumbnail = values[1]
+      //   }
+      // },
+      // toClipboard(text) {
+      //   var vm = this
+      //   vm.$copyText(text).then(
+      //     () => {
+      //       vm.snackbar = true
+      //     },
+      //     () => {
+      //       alert('Could not copy')
+      //     }
+      //   )
+      // },
       reload() {
         var vm = this
         vm.hideMv = true
@@ -480,30 +415,6 @@
     justify-content: space-around;
     align-items: center;
     margin-bottom: 5px;
-  }
-
-  #versions {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    .links {
-      display: flex;
-      flex-direction: row;
-      margin-bottom: 20px;
-    }
-    .copy {
-      margin-right: 5px;
-    }
-  }
-
-  #versionsClient {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-  }
-
-  .compareVersions {
-    margin-top: 10px;
   }
 
   .actionBtn {

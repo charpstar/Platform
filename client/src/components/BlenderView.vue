@@ -79,7 +79,8 @@
                     </p>
                     <div class="flexrow" v-for="(file, index) in model.files" :key="file">
                         <p class="fileName">{{file}}</p>
-                        <p>
+                        <div class="fileButtons">
+                            <p>
                             <v-btn class="actionBtn" rounded @click="downloadModel(file)">
                                 <span>Download</span> 
                                 <v-icon>mdi-cloud-download</v-icon>
@@ -95,6 +96,8 @@
                                 <v-icon>mdi-delete</v-icon>
                             </v-btn>
                         </p>
+                        </div>
+                        
                     </div>
                 </div> 
                 <v-btn class="actionBtn" rounded @click="upload.modal = true">
@@ -331,8 +334,8 @@ export default {
 }
 
 .fileList {
-    width: 400px;
-    margin: 20px 20px 20px 0;
+    width: 100%;
+    margin: 40px 0;
     // background-color: #cccccc;
     // td {
     //     border: none;
@@ -344,13 +347,18 @@ export default {
 }
 
 .fileName {
-    // width: 300px;
     padding-left: 10px;
+    // width: 300px;
 }
 
 .flexrow {
-    justify-content: space-between;
+    display: flex;
+    justify-content: space-around;
     align-items: center;
+}
+
+.fileButtons {
+    display: flex;
 }
 
 .emptyFiles {
@@ -368,6 +376,7 @@ export default {
     span {
         margin-right: 0.5em;
     }
+    margin-right: 10px;
 }
 
 #deleteBtn {
