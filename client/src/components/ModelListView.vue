@@ -44,27 +44,59 @@
                 :must-sort="true"
                 :sort-by="'name'"
                 :search="search"
-                @click:row="handleClick"
             >
-                <template v-slot:item.thumb="{item}">
+            <!-- Code inspired by solution on https://codepen.io/huntleth/pen/eYOrWog.
+            Replaced the code using v-slots for the table with simple <tr> and <td> because:
+                    First: it gave many eslint errors
+                    Second: to be able to highlight a single row -->
+                <template v-slot:body="{ items }">
+                    <tbody>
+                        <tr 
+                        :class="key === selectedRow ? 'highlightedRow' : ''" 
+                        @click="rowSelect(key); handleClick(item.modelid)" 
+                        v-for="(item, key) in items" 
+                        :key="item.modelid">
+                            <td>
+                                <img
+                                    :src="backend.getThumbURL(item.modelid)"
+                                    class="thumbnail"
+                                    onerror="this.style.display='none'"
+                                />
+                            </td>
+                            <td>{{item.modelid}}</td>
+                            <td>{{item.modelname}}</td>
+                            <!-- Use v-if to render these cells for specific user types -->
+                            <td v-if="account.usertype!=='Client'">{{item.client}}</td>
+                            <td 
+                            v-if="account.usertype!=='Client' 
+                            && account.usertype!=='Modeller'">
+                                <span v-if="item.modelowner">{{item.modelowner}}</span>
+                                <span v-else ><i>Unassigned</i></span>    
+                            </td>
+                            <td>{{backend.messageFromStatus(item.state, account.usertype)}}</td>
+                            <td>{{sumProducts(item)}}</td>
+                        </tr>
+                    </tbody>
+                </template>
+                <!-- <template v-slot:item.thumb="{item}">
                     <img
                         :src="backend.getThumbURL(item.modelid)"
                         class="thumbnail"
                         onerror="this.style.display='none'"
                     />
-                </template>
-                <template v-slot:item.state="{value}">
+                </template> -->
+                <!-- <template v-slot:item.state="{value}">
                     {{backend.messageFromStatus(value, account.usertype)}}
                     <v-icon>{{backend.iconFromStatus(value, account.usertype)}}</v-icon>
-                </template>
-                <!-- <template v-slot:item.partitiondata="{value}">
-                    <barchart :productdata="value" :account="account" />
                 </template> -->
-                <template v-slot:item.products="{item}">{{sumProducts(item)}}</template>
+                            <!-- <template v-slot:item.partitiondata="{value}">
+                                <barchart :productdata="value" :account="account" />
+                            </template> -->
+                <!-- <template v-slot:item.products="{item}">{{sumProducts(item)}}</template>
                 <template v-slot:item.modelowner="{value}">
                     <span v-if="value">{{value}}</span>
                     <span v-else ><i>Unassigned</i></span>
-                </template>
+                </template> -->
             </v-data-table>
         </div>
     </div>
@@ -102,6 +134,7 @@ export default {
             search: "",
             backend: backend,
             menuOpen: false,
+            selectedRow: 0
             // order: false,
             // models: {},
         };
@@ -115,10 +148,13 @@ export default {
             });
             return sum;
         },
-        handleClick(model) {
-            this.$emit('clicked-model', model.modelid)  
+        handleClick(modelid) {
+            this.$emit('clicked-model', modelid)  
             /* instead of pushing a route, use the id as a prop to populate OrderView component */        
             // this.$router.push("/model/" + model.modelid);
+        },
+        rowSelect(index) {
+            this.selectedRow = index;
         }
     },
     computed: {
@@ -192,5 +228,9 @@ th {
     margin-right: 1em;
     padding-right: 1em;
     border-right: 2px solid rgb(179, 179, 179);
+}
+
+.highlightedRow {
+    background-color: rgba(31, 177, 169, 0.1);
 }
 </style>
