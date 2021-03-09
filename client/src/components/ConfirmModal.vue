@@ -42,4 +42,8 @@ export default {
 	color:#1FB1A9;
 	border: 1px solid #1FB1A9;
 }
+// added margin-top for butttons
+.flexrow{
+	margin-top: 10px;
+}
 </style>
