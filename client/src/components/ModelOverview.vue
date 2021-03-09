@@ -12,7 +12,8 @@
             v-if="modelid"
             :account="account" 
             :modelid="modelid" 
-            :key="modelid"/>
+            :key="modelid"
+        />
     </div>  
  
 </template>

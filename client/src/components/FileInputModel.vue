@@ -10,7 +10,7 @@
                 @model-visibility="onModelLoad"
             ></model-viewer>
         </div>
-        <v-file-input :label="value.label" @change="onFileChange"></v-file-input>
+        <v-file-input :label="value.label" @change="onFileChange" color="#1FB1A9"></v-file-input>
     </div>
 </template>
 

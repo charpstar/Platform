@@ -147,10 +147,11 @@ h2 {
 th {
     text-align: start;
 }
+/* We can adjust icon color via v-icon instead */
+// .iconColor {
+//     color: #2196f3 !important;
+// }
 
-.iconColor {
-    color: #2196f3 !important;
-}
 //To change the button color to green, need to change this default button color from blue to green//
 
  .v-btn:not(.v-btn--icon) {
@@ -158,6 +159,9 @@ th {
 } 
 .v-btn--icon {
     background-color: none !important;
+}
+.v-btn {
+    text-transform: none;
 }
 a {
     text-decoration: none;

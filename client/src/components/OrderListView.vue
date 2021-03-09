@@ -54,7 +54,33 @@
                 :search="search"
                 @click:row="handleClick"
             >
-                <template v-slot:item.complete="{item}">
+                <!-- Code inspired by solution on https://codepen.io/huntleth/pen/eYOrWog.
+                Replaced the code using v-slots for the table with simple <tr> and <td> because:
+                    First: it gave many eslint errors
+                    Second: to be able to highlight a single row -->
+                <template v-slot:body="{ items }">
+                    <tbody>
+                        <tr 
+                        :class="key === selectedRow ? 'highlightedRow' : ''" 
+                        @click="rowSelect(key); handleClick(item.orderid)" 
+                        v-for="(item, key) in items" 
+                        :key="item.orderid">
+                            <td>{{item.orderid}}</td>
+                            <td>{{$formatDate(item.time)}}</td>
+                            <td v-if="account.usertype!=='Client'">{{item.clientname}}</td>
+                            <td>
+                                <span v-if="item.qaownername">{{item.qaownername}}</span>
+                                <span v-else ><i>Unassigned</i></span>
+                            </td>
+                            <td>
+                                {{backend.messageFromStatus(item.state, account.usertype)}}
+                            </td>
+                            <td>{{item.models}}</td>
+                            <td>{{sumProducts(item)}}</td>
+                        </tr>
+                    </tbody>
+                </template>
+                <!-- <template v-slot:item.complete="{item}">
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on }">
                             <v-progress-linear
@@ -76,16 +102,17 @@
                 <template v-slot:item.state="{value}">
                     {{backend.messageFromStatus(value, account.usertype)}}
                     <v-icon>{{backend.iconFromStatus(value, account.usertype)}}</v-icon>
-                </template>
-                <!-- <template v-slot:item.partitiondata="{value}"> -->
-                    <!-- this bar chart will not be displayed when OrderView is displayed
-                    next to the orders list -->
-                    <!-- <barchart :productdata="value" :account="account"/>
                 </template> -->
-                <template v-slot:item.products="{item}">
+                            <!-- This template for barchart is not used anymore: -->
+                            <!-- <template v-slot:item.partitiondata="{value}"> -->
+                                <!-- this bar chart will not be displayed when OrderView is displayed
+                                next to the orders list -->
+                                <!-- <barchart :productdata="value" :account="account"/>
+                            </template> -->
+                <!-- <template v-slot:item.products="{item}">
                     {{sumProducts(item)}}
                 </template>
-                <template v-slot:item.time="{value}">{{$formatDate(value)}}</template>
+                <template v-slot:item.time="{value}">{{$formatDate(value)}}</template> -->
             </v-data-table>
         </div>
     </div>
@@ -125,6 +152,7 @@ export default {
             search: "",
             backend: backend,
             menuOpen: false,
+            selectedRow: 0
 
             /* Have moved to parent (OrderOverview.vue): */
             // orders: {} 
@@ -149,10 +177,13 @@ export default {
             })
             return sum;
         },
-        handleClick(order) {
-            this.$emit('clicked-order', order.orderid)  
+        handleClick(orderid) {
+            this.$emit('clicked-order', orderid)  
         /* instead of pushing a route, use the id as a prop to populate OrderView component */        
         // this.$router.push("/order/" + order.orderid);
+        },
+        rowSelect(index) {
+            this.selectedRow = index;
         },
         newOrder() {
             var vm = this;
@@ -204,7 +235,8 @@ export default {
 
 <style lang="scss" scoped>
 #topRow {
-    justify-content: space-between;
+    justify-content: center;
+    // justify-content: space-between;
     margin-bottom: 10px;
 }
 #table {
@@ -233,4 +265,9 @@ export default {
     margin-right: 1em;
     border-right: 2px solid rgb(179, 179, 179);
 }
+
+.highlightedRow {
+    background-color: rgba(31, 177, 169, 0.1);
+}
+
 </style>

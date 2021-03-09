@@ -1,7 +1,7 @@
 <template>
     <div>
-        <v-btn @click="open = true">
-            Compare versions
+        <v-btn rounded class="actionBtn" @click="open = true">
+            <span>Compare versions</span> 
             <v-icon right>mdi-file-compare</v-icon>
         </v-btn>
         <v-dialog v-model="open" width="600">
@@ -43,5 +43,12 @@ export default {
     width: 250px;
     height: 250px;
     margin: 20px;
+}
+
+.actionBtn {
+    color: white;
+    span {
+        margin-right: 0.5em;
+    }
 }
 </style>
