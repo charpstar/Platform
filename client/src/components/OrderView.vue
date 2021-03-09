@@ -147,7 +147,10 @@
                         :icon="'mdi-delete'"
                         :color="'#d12300'"
                     />
-                    <excelupload :handler="add" @file="file=$event" v-if="account.usertype == 'Client' && order.state != 'Done'">
+                    <excelupload 
+                    :handler="add" 
+                    @file="file=$event" 
+                    v-if="account.usertype == 'Client' && order.state != 'Done'">
                         Add models
                         <v-icon right>mdi-file-plus</v-icon>
                     </excelupload>
@@ -222,17 +225,15 @@ import ProductStates from './ProductStates.vue';
 
 /* Import when we use the modals */
 import confirmmodal from "./ConfirmModal";
-// import excelupload from './ExcelUpload';
+import excelupload from './ExcelUpload';
 
 export default {
     components: {
         comments,
         barchart,
         ProductStates,
-        
-        /* Import when we use the modals */
-         confirmmodal
-        // excelupload,
+        confirmmodal,
+        excelupload
     },
     props: {
         account: { type: Object, required: true },
@@ -388,6 +389,10 @@ export default {
     > * {
         margin-bottom: 20px;
 		margin-top: 15px;
+    }
+    .v-btn {
+        padding-top: 20px;
+        padding-bottom: 20px;
     }
 }
 #order {

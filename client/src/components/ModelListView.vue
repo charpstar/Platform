@@ -1,14 +1,14 @@
 <template>
     <div class="modelsList">
-        <!-- <div class="flexrow" id="topRow">
-            <div class="flexrow">
+        <div class="flexrow" id="topRow">
+            <div class="flexrow" id="arrowBack">
                 <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Modeller'">
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
-                
-            </div>
-        </div> -->
-        <h2>Models</h2> 
+            </div>    
+            <h2>Models</h2>
+        </div>
+        
         <div id="itemsView">
             <div class="flexrow">
                 <v-text-field
@@ -205,8 +205,16 @@ export default {
 
 <style lang="scss" scoped>
 #topRow {
-    justify-content: space-between;
+    // justify-content: center;
     margin-bottom: 10px;
+    // to display the arrow on the left of the component, and title in the center:
+    #arrowBack {
+        width: 40%;
+        justify-content: start
+    }
+    h2 {
+        width: 60%;
+    }
 }
 #table {
     max-height: 100vh;
@@ -236,7 +244,4 @@ th {
     background-color: rgba(31, 177, 169, 0.1);
 }
 
-h2 {
-    text-align: center;
-}
 </style>

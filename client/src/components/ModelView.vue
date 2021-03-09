@@ -102,7 +102,7 @@ h3 {
 }
 
 #topRow {
-    justify-content: space-between;
+    // justify-content: space-between;
     margin-bottom: 10px;
 }
 
