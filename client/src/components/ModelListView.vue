@@ -89,9 +89,11 @@
                     {{backend.messageFromStatus(value, account.usertype)}}
                     <v-icon>{{backend.iconFromStatus(value, account.usertype)}}</v-icon>
                 </template> -->
+                            <!-- This template for barchart is not used anymore: -->
                             <!-- <template v-slot:item.partitiondata="{value}">
                                 <barchart :productdata="value" :account="account" />
                             </template> -->
+                            <!-- ------ -->
                 <!-- <template v-slot:item.products="{item}">{{sumProducts(item)}}</template>
                 <template v-slot:item.modelowner="{value}">
                     <span v-if="value">{{value}}</span>
@@ -232,5 +234,9 @@ th {
 
 .highlightedRow {
     background-color: rgba(31, 177, 169, 0.1);
+}
+
+h2 {
+    text-align: center;
 }
 </style>

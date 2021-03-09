@@ -25,7 +25,7 @@
                 </v-btn> -->
 
                 <!-- Temporary solution to display which order is displayed -->
-                <h2>Order details - {{orderid}} </h2>
+                <h3>Order details - {{orderid}} </h3>
             </div>
         </div>
         <div class="flexrow" id="order">
@@ -408,6 +408,12 @@ table {
 #topRow {
     // justify-content: flex-start;
     justify-content: center;
+    background-color: rgba(134, 134, 134, 0.2);
+    h3 {
+        color: #515151;
+        padding-top: 0.3em;
+        padding-bottom: 0.3em;
+    }
 }
 
 .view {
