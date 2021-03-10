@@ -47,7 +47,7 @@ export default {
 .v-btn {
    padding-top: 20px !important;
    padding-bottom: 20px !important;
-
+}
 // added margin-top for butttons
 .flexrow{
 	margin-top: 10px;
