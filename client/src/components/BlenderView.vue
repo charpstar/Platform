@@ -117,8 +117,13 @@
             <div class="expansionPanels">
                 <v-expansion-panels focusable>
                     <v-expansion-panel>
-                        <v-expansion-panel-header disable-icon-rotate expand-icon="mdi-wechat">
+                        <v-expansion-panel-header disable-icon-rotate>
                             Comments
+                            <template v-slot:actions>
+                                <v-icon class="expansionIcon">
+                                    mdi-wechat
+                                </v-icon>
+                            </template>		
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <comments
@@ -135,8 +140,13 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel v-if="account.usertype != 'Modeller'">
-                        <v-expansion-panel-header disable-icon-rotate expand-icon="mdi-account-plus">
+                        <v-expansion-panel-header disable-icon-rotate>
                             Assign Modeller
+                            <template v-slot:actions>
+                                <v-icon class="expansionIcon">
+                                    mdi-account-plus
+                                </v-icon>
+                            </template>	
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <div class="card">
@@ -380,6 +390,7 @@ export default {
 }
 
 .actionBtn {
+    /* Buttons with a class do not seem to accept the "dark" prop */
     color: white;
     span {
         margin-right: 0.5em;
@@ -393,6 +404,8 @@ export default {
 }
 
 .uploadBtn {
+    /* Buttons with the "dark" prop disappear when disabled 
+    so adjusted the text color in CSS instead*/
     color: white;
     margin: 10px 10px 0 10px;
 }
@@ -409,4 +422,8 @@ h3 {
     margin-right: 20px;
 }
 
+.expansionIcon {
+    margin-left: 10px;
+    color: #515151!important;
+}
 </style>

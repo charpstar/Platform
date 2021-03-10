@@ -8,20 +8,22 @@
                 </v-btn>
                 <h2>Orders</h2>
             </div>
-            <excelupload id="buttonNew" :handler="newOrderHandler" v-if="userOrders && account.usertype != 'Modeller'" @file="file = $event">
+            <!-- <excelupload id="buttonNew" :handler="newOrderHandler" v-if="userOrders && account.usertype != 'Modeller'" @file="file = $event">
                 New Order
                 <v-icon right>mdi-file-plus</v-icon>
-            </excelupload>
+            </excelupload> -->
         </div>
         <div id="itemsView">
-            <div class="flexrow">
+            <div class="flexrow" id="filtering">
                 <v-text-field
                     v-model="search"
                     append-icon="search"
                     label="Filter"
                     single-line
                     hide-details
+                    clearable
 					color="#1FB1A9" 
+                    class="filter"
                 ></v-text-field>
                 <v-menu offset-y v-model="menuOpen" v-if="account.usertype != 'Client'">
                 <!-- Previous code: filter button does not appear until user writes text in input field -->
@@ -115,6 +117,13 @@
                 <template v-slot:item.time="{value}">{{$formatDate(value)}}</template> -->
             </v-data-table>
         </div>
+        <div class="newOrder" v-if="account.usertype=='Client'">
+            <excelupload id="buttonNew" :handler="newOrderHandler" v-if="userOrders && account.usertype != 'Modeller'" @file="file = $event">
+                New Order
+                <v-icon right>mdi-file-plus</v-icon>
+            </excelupload>    
+        </div>
+        
     </div>
 </template>
 
@@ -255,8 +264,14 @@ export default {
     color: #d12300;
     margin-bottom: 5px;
 }
+.filter {
+    margin-bottom: 15px;
+}
 .filterbutton {
     margin-left: 10px;
+}
+.flexrow#filtering {
+    align-items: center;
 }
 
 #order-list {
@@ -270,4 +285,9 @@ export default {
     background-color: rgba(31, 177, 169, 0.1);
 }
 
+div.newOrder {
+    margin-top: 50px;
+    display: flex;
+    justify-content: flex-end;
+}
 </style>

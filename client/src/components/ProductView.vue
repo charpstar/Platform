@@ -184,9 +184,13 @@
           <v-expansion-panel-header
             v-if="account.usertype != 'Client'"
             disable-icon-rotate
-            expand-icon="mdi-wechat"
           >
             Internal Comments
+             <template v-slot:actions>
+                  <v-icon class="expansionIcon">
+                      mdi-wechat
+                  </v-icon>
+              </template>	
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <comments
@@ -222,9 +226,13 @@
         <v-expansion-panel v-if="account.usertype != 'Modeller'">
           <v-expansion-panel-header
             disable-icon-rotate
-            expand-icon="mdi-wechat"
           >
             {{ account.usertype == 'Client' ? 'Comments' : 'Client Comments' }}
+             <template v-slot:actions>
+                  <v-icon class="expansionIcon">
+                      mdi-wechat
+                  </v-icon>
+              </template>	
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <comments
@@ -447,5 +455,10 @@
   .expansionPanels {
     margin-top: 20px;
     padding-right: 20px;
+  }
+
+  .expansionIcon {
+    margin-left: 10px;
+    color: #515151!important;
   }
 </style>

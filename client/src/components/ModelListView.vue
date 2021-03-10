@@ -10,13 +10,16 @@
         </div>
         
         <div id="itemsView">
-            <div class="flexrow">
+            <div class="flexrow" id="filtering">
                 <v-text-field
                     v-model="search"
                     append-icon="search"
                     label="Filter"
                     single-line
                     hide-details
+                    clearable
+                    color="#1FB1A9"
+                    class="filter"
                 ></v-text-field>
                 <v-menu offset-y v-model="menuOpen">
                     <template v-slot:activator="{ on }">
@@ -230,8 +233,16 @@ export default {
 th {
     text-align: start;
 }
+
+.filter {
+    margin-bottom: 15px;
+}
 .filterbutton {
     margin-left: 10px;
+}
+
+.flexrow#filtering {
+    align-items: center;
 }
 
 .modelsList {
