@@ -16,7 +16,7 @@
                     <v-icon>mdi-android</v-icon>
                 </v-btn>
             </p>
-            <p>
+            <p class="upload">
               <modelupload v-if="account.usertype != 'Client'" :model="model" :product="product"
                   :uploadfun="androidUploadFun" :filetype="'glb'" @upload="uploadedAndroid"
                   @opened="hideMv = $event" />
@@ -33,7 +33,7 @@
                     <v-icon>mdi-apple</v-icon>
                 </v-btn>
             </p>
-            <p>
+            <p class="upload">
               <modelupload v-if="account.usertype != 'Client'" :model="model" :product="product"
                   :uploadfun="iosUploadFun" :filetype="'usdz'" @upload="uploadedIos" @opened="hideMv = $event" />
             </p>
@@ -158,10 +158,15 @@
 
 <style lang="scss" scoped>
     .actionBtn {
-    color: white;
+      color: white;
       span {
         margin-right: 0.5em;
       }
+    }
+
+    .upload {
+      margin-right: 20px;
+      margin-left: 5px;
     }
 
     /*  Styling of the links and 'compare versions' layout for non-client view*/

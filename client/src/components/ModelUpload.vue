@@ -142,8 +142,6 @@ export default {
 .secondaryBtn {
     background-color: white !important;
     color: #1FB1A9;
-    margin-right: 20px;
-    margin-left: 5px;
     span {
         margin-right: 0.5em;
     }
