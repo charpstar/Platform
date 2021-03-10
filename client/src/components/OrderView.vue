@@ -134,7 +134,7 @@
                 </div>
 				<div class="flexcol" id="buttons">
                     <v-btn @click="viewModels" color="#1FB1A9" rounded dark small>View Models <v-icon right>mdi-file-image-outline</v-icon></v-btn>
-                    <v-btn @click="downloadExcel" color="#1FB1A9" rounded  dark small>
+                    <v-btn @click="downloadExcel" color="#1FB1A9" rounded dark small>
                         Export Models
                         <v-icon right>mdi-file-export-outline</v-icon>
                     </v-btn>
@@ -147,7 +147,10 @@
                         :icon="'mdi-delete'"
                         :color="'#d12300'"
                     />
-                    <excelupload :handler="add" @file="file=$event" v-if="account.usertype == 'Client' && order.state != 'Done'">
+                    <excelupload 
+                    :handler="add" 
+                    @file="file=$event" 
+                    v-if="account.usertype == 'Client' && order.state != 'Done'">
                         Add models
                         <v-icon right>mdi-file-plus</v-icon>
                     </excelupload>
@@ -155,8 +158,13 @@
 
                 <v-expansion-panels focusable>
                     <v-expansion-panel>
-                        <v-expansion-panel-header>
+                        <v-expansion-panel-header disable-icon-rotate>
                             Product states
+                            <template v-slot:actions>
+                                <v-icon class="expansionIcon">
+                                    mdi-chart-box
+                                </v-icon>
+                            </template>
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <product-states 
@@ -172,8 +180,13 @@
 					<!--added expansion panel for comments-->
 					<v-expansion-panel>
 
-			<v-expansion-panel-header disable-icon-rotate expand-icon="mdi-wechat" >Comments
-			
+			<v-expansion-panel-header disable-icon-rotate>
+                Comments
+                <template v-slot:actions>
+                    <v-icon class="expansionIcon">
+                        mdi-wechat
+                    </v-icon>
+                </template>			
 			</v-expansion-panel-header>
 			<v-expansion-panel-content>
 				<comments
@@ -188,8 +201,13 @@
 			<!--added expansion panel for AssignQA-->
 		</v-expansion-panel>
 		<v-expansion-panel v-on="on"  @click="assign.modal = true">
-			<v-expansion-panel-header disable-icon-rotate expand-icon="mdi-account-plus" >
+			<v-expansion-panel-header disable-icon-rotate>
 				Assign QA
+                <template v-slot:actions>
+                    <v-icon class="expansionIcon">
+                        mdi-account-plus
+                    </v-icon>
+                </template>	
 			</v-expansion-panel-header>
 			<v-expansion-panel-content  >
 			<v-layout v-model="assign.modal" width="500" >
@@ -222,17 +240,15 @@ import ProductStates from './ProductStates.vue';
 
 /* Import when we use the modals */
 import confirmmodal from "./ConfirmModal";
-// import excelupload from './ExcelUpload';
+import excelupload from './ExcelUpload';
 
 export default {
     components: {
         comments,
         barchart,
         ProductStates,
-        
-        /* Import when we use the modals */
-         confirmmodal
-        // excelupload,
+        confirmmodal,
+        excelupload
     },
     props: {
         account: { type: Object, required: true },
@@ -389,6 +405,10 @@ export default {
         margin-bottom: 20px;
 		margin-top: 15px;
     }
+    .v-btn {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
 }
 #order {
     align-items: flex-start;
@@ -421,4 +441,8 @@ table {
     margin-left: 1em;
 }
 
+.expansionIcon {
+    margin-left: 10px;
+    color: #515151!important;
+}
 </style>

@@ -2,17 +2,23 @@
     <div>
         <v-dialog v-model="handler.modal" width="500">
             <div class="card">
-                <v-file-input :label="'Select Excel Document'" @change="$emit('file',$event); file = $event"></v-file-input>
+                <v-file-input 
+                    :label="'Select Excel Document'" 
+                    @change="$emit('file',$event); file = $event"
+                    color="#1FB1A9">
+                </v-file-input>
                 <p v-if="handler.error">{{handler.error}}</p>
                 <p v-if="!fileIsExcel">Must be a .xlsx file</p>
                 <v-btn
                     :disabled="!file || !fileIsExcel"
                     :loading="handler.loading"
                     @click="handler.execute"
+                    class="uploadBtn"
+                    rounded
                 >Upload</v-btn>
             </div>
         </v-dialog>
-        <v-btn @click="handler.modal=true">
+        <v-btn rounded dark small id="handlerBtn" @click="handler.modal=true">
             <slot></slot>
         </v-btn>
     </div>
@@ -41,3 +47,16 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+    #handlerBtn {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    .uploadBtn {
+        /* Buttons with the "dark" prop disappear when disabled 
+        so adjusted the text color in CSS instead*/
+        color: white;
+        margin-top: 10px
+    }
+</style>

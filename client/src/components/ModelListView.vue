@@ -1,22 +1,25 @@
 <template>
     <div class="modelsList">
-        <!-- <div class="flexrow" id="topRow">
-            <div class="flexrow">
+        <div class="flexrow" id="topRow">
+            <div class="flexrow" id="arrowBack">
                 <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Modeller'">
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
-                
-            </div>
-        </div> -->
-        <h2>Models</h2> 
+            </div>    
+            <h2>Models</h2>
+        </div>
+        
         <div id="itemsView">
-            <div class="flexrow">
+            <div class="flexrow" id="filtering">
                 <v-text-field
                     v-model="search"
                     append-icon="search"
                     label="Filter"
                     single-line
                     hide-details
+                    clearable
+                    color="#1FB1A9"
+                    class="filter"
                 ></v-text-field>
                 <v-menu offset-y v-model="menuOpen">
                     <template v-slot:activator="{ on }">
@@ -205,8 +208,16 @@ export default {
 
 <style lang="scss" scoped>
 #topRow {
-    justify-content: space-between;
+    // justify-content: center;
     margin-bottom: 10px;
+    // to display the arrow on the left of the component, and title in the center:
+    #arrowBack {
+        width: 40%;
+        justify-content: start
+    }
+    h2 {
+        width: 60%;
+    }
 }
 #table {
     max-height: 100vh;
@@ -222,8 +233,16 @@ export default {
 th {
     text-align: start;
 }
+
+.filter {
+    margin-bottom: 15px;
+}
 .filterbutton {
     margin-left: 10px;
+}
+
+.flexrow#filtering {
+    align-items: center;
 }
 
 .modelsList {
@@ -236,7 +255,4 @@ th {
     background-color: rgba(31, 177, 169, 0.1);
 }
 
-h2 {
-    text-align: center;
-}
 </style>

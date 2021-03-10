@@ -6,7 +6,7 @@
                 <p v-if="text != ''" class="text">{{text}}</p>
                 <div class="flexrow buttons">
                     <v-btn class="confirm" :loading="handler.loading" @click="handler.execute" rounded outlined 
-     small>Confirm</v-btn>
+                    small>Confirm</v-btn>
                     <v-btn @click="handler.modal = false" rounded color="#1FB1A9" small dark >Cancel</v-btn>
                 </div>
                 <p class="error-text" v-if="handler.error">{{handler.error}}</p>
@@ -42,8 +42,15 @@ export default {
 	color:#1FB1A9;
 	border: 1px solid #1FB1A9;
 }
+
+
+.v-btn {
+   padding-top: 20px !important;
+   padding-bottom: 20px !important;
+
 // added margin-top for butttons
 .flexrow{
 	margin-top: 10px;
+
 }
 </style>
