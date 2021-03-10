@@ -51,11 +51,6 @@
                   <v-icon>mdi-android</v-icon>
               </v-btn>
           </p>
-          <p>
-            <modelupload v-if="account.usertype != 'Client'" :model="model" :product="product"
-                :uploadfun="androidUploadFun" :filetype="'glb'" @upload="uploadedAndroid"
-                @opened="hideMv = $event" />
-          </p>
       </div>
       <div v-if="account.usertype == 'Client'" class="link">
           <p class="copy">
@@ -67,11 +62,7 @@
                   <span>iOS Link</span>
                   <v-icon>mdi-apple</v-icon>
               </v-btn>
-          </p>
-          <p>
-            <modelupload v-if="account.usertype != 'Client'" :model="model" :product="product"
-                :uploadfun="iosUploadFun" :filetype="'usdz'" @upload="uploadedIos" @opened="hideMv = $event" />
-          </p>
+          </p> 
       </div>
       <!-- The following components exist for all users but are displayed differently 
         for client, as specified in styling section -->
