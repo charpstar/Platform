@@ -142,6 +142,7 @@ export default {
 
 #user {
     justify-content: flex-start;
+	margin-top: 10px;
 }
 #data {
 	display: flex;
@@ -189,6 +190,11 @@ export default {
 .textBold{
 	font-weight: bold;
 }
+
+/* .v-btn {
+   padding-top: 20px !important;
+   padding-bottom: 20px !important;
+} */
 
 
 </style>
