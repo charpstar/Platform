@@ -50,8 +50,8 @@ export default {
 
 <style lang="scss" scoped>
     #handlerBtn {
-        padding-top: 20px;
-        padding-bottom: 20px;
+        padding-top: 16px;
+        padding-bottom: 16px;
     }
     .uploadBtn {
         /* Buttons with the "dark" prop disappear when disabled 

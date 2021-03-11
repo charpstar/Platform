@@ -404,8 +404,8 @@ export default {
 		margin-top: 15px;
     }
      .v-btn {
-        padding-top: 10px;
-        padding-bottom: 10px;
+        padding-top: 16px;
+        padding-bottom: 16px;
     } 
 }
 #order {
