@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Total products: {{total}}</h2> 
+    <h3>Total products: {{total}}</h3> 
     <v-layout v-for="state in orderedstates" :key="state.stateafter" >
           <div id="state-icon">
             <v-img :src="iconFromAccount(state.stateafter)" class="custom-icon" />
@@ -63,12 +63,25 @@
     width: 40px
   }
 
-  h2 {
+  h3 {
+    color: #515151;
+    font-weight: normal;
+    margin-top: 1em;
     margin-bottom: 1em;
+    width: 90%;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #D1D1D1;
   }
 
   #state-icon {
     margin-right: 1em;
-    margin-bottom: 1.5em;
+
+  }
+  
+  div.layout {
+    width: 90%;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #D1D1D1;
   }
 </style>
