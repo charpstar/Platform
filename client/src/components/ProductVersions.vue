@@ -16,7 +16,7 @@
                     <v-icon>mdi-android</v-icon>
                 </v-btn>
             </p>
-            <p>
+            <p class="upload">
               <modelupload v-if="account.usertype != 'Client'" :model="model" :product="product"
                   :uploadfun="androidUploadFun" :filetype="'glb'" @upload="uploadedAndroid"
                   @opened="hideMv = $event" />
@@ -33,7 +33,7 @@
                     <v-icon>mdi-apple</v-icon>
                 </v-btn>
             </p>
-            <p>
+            <p class="upload">
               <modelupload v-if="account.usertype != 'Client'" :model="model" :product="product"
                   :uploadfun="iosUploadFun" :filetype="'usdz'" @upload="uploadedIos" @opened="hideMv = $event" />
             </p>
@@ -51,11 +51,6 @@
                   <v-icon>mdi-android</v-icon>
               </v-btn>
           </p>
-          <p>
-            <modelupload v-if="account.usertype != 'Client'" :model="model" :product="product"
-                :uploadfun="androidUploadFun" :filetype="'glb'" @upload="uploadedAndroid"
-                @opened="hideMv = $event" />
-          </p>
       </div>
       <div v-if="account.usertype == 'Client'" class="link">
           <p class="copy">
@@ -67,11 +62,7 @@
                   <span>iOS Link</span>
                   <v-icon>mdi-apple</v-icon>
               </v-btn>
-          </p>
-          <p>
-            <modelupload v-if="account.usertype != 'Client'" :model="model" :product="product"
-                :uploadfun="iosUploadFun" :filetype="'usdz'" @upload="uploadedIos" @opened="hideMv = $event" />
-          </p>
+          </p> 
       </div>
       <!-- The following components exist for all users but are displayed differently 
         for client, as specified in styling section -->
@@ -158,10 +149,15 @@
 
 <style lang="scss" scoped>
     .actionBtn {
-    color: white;
+      color: white;
       span {
         margin-right: 0.5em;
       }
+    }
+
+    .upload {
+      margin-right: 20px;
+      margin-left: 5px;
     }
 
     /*  Styling of the links and 'compare versions' layout for non-client view*/

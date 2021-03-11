@@ -12,7 +12,16 @@
                 <p class="error-text" v-if="handler.error">{{handler.error}}</p>
             </div>
         </v-dialog>
-        <v-btn rounded class="white--text" dark small @click="handler.modal=true" :style="{'background-color': color + ' !important'}">{{buttonText}}<v-icon right v-if="icon">{{icon}}</v-icon></v-btn>
+        <v-btn  
+            class="white--text" 
+            id="handlerBtn"
+            rounded
+            dark 
+            small 
+            @click="handler.modal=true" 
+            :style="{'background-color': color + ' !important'}">{{buttonText}}
+            <v-icon right v-if="icon">{{icon}}</v-icon>
+        </v-btn>
     </div>
 </template>
 
@@ -44,10 +53,10 @@ export default {
 }
 
 
-/* .v-btn {
-   padding-top: 20px !important;
-   padding-bottom: 20px !important;
-} */
+#handlerBtn {
+   padding-top: 16px !important;
+   padding-bottom: 16px !important;
+} 
 // added margin-top for butttons
 .flexrow{
 	margin-top: 10px;

@@ -30,15 +30,34 @@
             </div>
         </v-dialog>
         <v-dialog v-model="deleteHandler.modal" width="250px">
-            <div class="card flexcol">
-                <h2>Confirm Delete</h2>
-                <v-btn
-                    @click="deleteHandler.execute"
-                    class="buttons"
-                    :loading="deleteHandler.loading"
-                >Confirm</v-btn>
-                <p class="error-text" v-if="deleteHandler.error">{{deleteHandler.error}}</p>
-                <v-btn @click="deleteHandler.modal = false" class="buttons">Cancel</v-btn>
+            <!-- <div class="card flexcol"> -->
+                <div class="card">
+                <h3>Confirm Delete</h3>
+                <div class="buttons">
+                    <div class="confirm">
+                        <v-btn
+                            @click="deleteHandler.execute"
+                            class="buttons"
+                            :loading="deleteHandler.loading"
+                            rounded
+                            small
+                            outlined
+                            id="confirmBtn">
+                            Confirm
+                        </v-btn>
+                    <p class="error-text" v-if="deleteHandler.error">{{deleteHandler.error}}</p>
+                    </div>
+
+                    <v-btn 
+                        @click="deleteHandler.modal = false" 
+                        class="buttons"
+                        rounded 
+                        small
+                        dark>
+                        Cancel
+                    </v-btn>
+                </div>
+
             </div>
         </v-dialog>
         <!-- <div class="flexrow" id="itemsrow"> -->
@@ -331,6 +350,12 @@ export default {
     justify-content: start;
 }
 
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .column {
     display: flex;
     flex-direction: column;
@@ -387,6 +412,8 @@ export default {
 
 .buttons {
     margin-top: 10px;
+    display: flex;
+    justify-content: space-around;
 }
 
 .actionBtn {
@@ -398,7 +425,7 @@ export default {
     margin-right: 10px;
 }
 
-#deleteBtn {
+#deleteBtn, #confirmBtn {
     background-color: white !important;
     color: #1FB1A9;
 }
