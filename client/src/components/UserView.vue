@@ -4,6 +4,7 @@
             <div class="flexrow">
                 <v-btn icon class="hidden-xs-only">
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
+				
                 </v-btn>
                 <h2>User</h2>
             </div>
@@ -12,7 +13,7 @@
             <table id="data">
 				<!-- added icon -->
 				<div class="name">
-					<div class="icon"><v-icon color="#1FB1A9" large left>mdi-account-circle</v-icon></div>
+					<div class="icon"><v-icon color="#1FB1A9" x-large left>mdi-account-circle</v-icon></div>
                 <div>
 				<tr>
 					
@@ -61,7 +62,7 @@
                 </div>
                 <v-btn
                     @click="$router.push('/user/' + user.userid + '/orders')"
-                    v-if="user.usertype == 'Client'" color="#41BF4D" rounded dark small
+                    v-if="user.usertype == 'Client'" color="#41BF4D" rounded dark small class="userBtn"
                 >View Orders</v-btn>
                 <v-btn
                     @click="$router.push('/modeller/' + user.userid )"
@@ -156,7 +157,7 @@ export default {
 #buttons {
     align-items: flex-start;
 	justify-content: flex-end;
-	width: 700px;
+	width: 800px;
 	flex-direction: row;
     > * {
         margin-bottom: 10px;
@@ -179,6 +180,7 @@ export default {
 //added for icon styling
 .icon{
 	margin-top: 5px;
+	size: 40px;
 }
 
 //added for active button styling
@@ -191,10 +193,10 @@ export default {
 	font-weight: bold;
 }
 
-/* .v-btn {
-   padding-top: 20px !important;
-   padding-bottom: 20px !important;
-} */
+.v-btn {
+   padding-top: 16px !important;
+   padding-bottom: 16px !important;
+}
 
 
 </style>
