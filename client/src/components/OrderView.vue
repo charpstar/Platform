@@ -200,7 +200,7 @@
 			</v-expansion-panel-content>
 			<!--added expansion panel for AssignQA-->
 		</v-expansion-panel>
-		<v-expansion-panel v-on="on"  @click="assign.modal = true">
+		<v-expansion-panel v-on="on" v-if="account.usertype == 'Admin'">
 			<v-expansion-panel-header disable-icon-rotate>
 				Assign QA
                 <template v-slot:actions>
@@ -210,7 +210,6 @@
                 </template>	
 			</v-expansion-panel-header>
 			<v-expansion-panel-content  >
-			<v-layout v-model="assign.modal" width="500" >
             <div class="card">
                 <v-select :items="qas" label="QA" v-model="qa">
                     <template v-slot:item="{item}">
@@ -220,10 +219,9 @@
                         <span>{{item.name}}</span>
                     </template>
                 </v-select>
-                <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!qa"   rounded color="#1FB1A9" small dark>Assign</v-btn>
+                <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!qa"   rounded color="#1FB1A9" small class="assignBtn">Assign</v-btn>
                 <p class="error-text" v-if="assign.error">{{assign.error}}</p>
             </div>
-        </v-layout> 
 		</v-expansion-panel-content>
 		</v-expansion-panel>
 
@@ -405,10 +403,10 @@ export default {
         margin-bottom: 20px;
 		margin-top: 15px;
     }
-    .v-btn {
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
+     .v-btn {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    } 
 }
 #order {
     align-items: flex-start;
@@ -444,5 +442,11 @@ table {
 .expansionIcon {
     margin-left: 10px;
     color: #515151!important;
+}
+
+//added to style "Assign" button as per design
+.assignBtn {
+	color: white;
+	margin-top: 15px;
 }
 </style>
