@@ -1,7 +1,7 @@
 <template>
     <div class="modelsList">
         <div class="flexrow" id="topRow">
-            <div class="flexrow" id="arrowBack">
+            <div class="flexrow arrowBack">
                 <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Modeller'">
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
@@ -211,7 +211,7 @@ export default {
     // justify-content: center;
     margin-bottom: 10px;
     // to display the arrow on the left of the component, and title in the center:
-    #arrowBack {
+    .arrowBack {
         width: 40%;
         justify-content: start
     }

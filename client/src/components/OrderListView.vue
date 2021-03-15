@@ -2,12 +2,12 @@
     <div id="order-list">
 
         <div class="flexrow" id="topRow">
-            <div class="flexrow">
+            <div class="flexrow arrowBack">
                 <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Client' && !isAdminView">
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
-                <h2>Orders</h2>
-            </div>
+            </div>   
+            <h2>Orders</h2>
             <!-- <excelupload id="buttonNew" :handler="newOrderHandler" v-if="userOrders && account.usertype != 'Modeller'" @file="file = $event">
                 New Order
                 <v-icon right>mdi-file-plus</v-icon>
@@ -244,9 +244,16 @@ export default {
 
 <style lang="scss" scoped>
 #topRow {
-    justify-content: center;
-    // justify-content: space-between;
+    // justify-content: center;
     margin-bottom: 10px;
+    // to display the arrow on the left of the component, and title in the center:
+    .arrowBack {
+        width: 40%;
+        justify-content: start
+    }
+    h2 {
+        width: 60%;
+    }
 }
 #table {
     max-height: 100vh;
