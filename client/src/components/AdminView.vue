@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-tabs v-model="tab" >
+        <v-tabs v-model="section" >
             <v-tabs-slider></v-tabs-slider>
             <v-tab :href="'#orders'">Orders</v-tab>
             <v-tab :href="'#users'">Users</v-tab>
@@ -19,24 +19,40 @@
 </template>
 
 <script>
-// import orderlistview from './OrderListView'
 import OrderOverview from './OrderOverview.vue';
 import userlistview from './UserListView'
+// import orderlistview from './OrderListView'
 
 export default {
     props: {
         account: { type: Object, required: true }
     },
     components: {
-        // orderlistview,
         userlistview,
         OrderOverview
+        // orderlistview,
     },
-    data() {
-        return {
-            tab: "",
-        };
-    },
+    computed: {
+        //Store the current tab as query parameter using a computed property with a setter:
+
+        section: { //changed the name to 'section' instead of 'tab' because it will probably
+                // make more sense to the user
+            set (section) { 
+                /* The first tab is selected automatically and displayed in the URL  
+                when first logged in as admin*/    
+                this.$router.replace({ query: { ...this.$route.query, section } })
+            },
+            get () {
+                return this.$route.query.section
+            }
+        }
+    }
+
+    // data() {
+    //     return {
+    //         tab: "",
+    //     };
+    // },
 };
 </script>
 

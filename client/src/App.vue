@@ -46,6 +46,7 @@ export default {
             } else if (vm.account.usertype == "Modeller") {
                 vm.$router.push("/modeller/" + vm.account.userid);
             } else {
+                // vm.$router.push("/admin/orders");
                 vm.$router.push("/home");
             }
         },
