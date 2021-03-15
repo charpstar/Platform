@@ -200,7 +200,7 @@
 			</v-expansion-panel-content>
 			<!--added expansion panel for AssignQA-->
 		</v-expansion-panel>
-		<v-expansion-panel v-on="on" v-if="account.usertype == 'Admin'">
+		<v-expansion-panel v-if="account.usertype == 'Admin'">
 			<v-expansion-panel-header disable-icon-rotate>
 				Assign QA
                 <template v-slot:actions>
