@@ -19,14 +19,25 @@
             <div class="card">
                 <h3>Upload File</h3>
                 <v-file-input :label="'Select file'" @change="onFileChange" color="#1FB1A9"></v-file-input>
-                <v-btn 
-                    class="uploadBtn"
-                    rounded
-                    :loading="upload.loading" 
-                    @click="upload.execute" 
-                    :disabled="!file">
-                    Upload
-                </v-btn>
+                <p class="uploadButtons">
+                    <v-btn 
+                        class="uploadBtn"
+                        rounded
+                        :loading="upload.loading" 
+                        @click="upload.execute" 
+                        :disabled="!file">
+                        Upload
+                    </v-btn>
+                    <v-btn 
+                        class="secondaryBtn"
+                        rounded 
+                        outlined
+                        @click="upload.modal = false"
+                    >
+                        Cancel
+                    </v-btn>
+                </p>
+
             </div>
         </v-dialog>
         <v-dialog v-model="deleteHandler.modal" width="250px">
@@ -437,6 +448,14 @@ export default {
     margin: 10px 10px 0 10px;
 }
 
+.secondaryBtn {
+    background-color: white !important;
+    color: #1FB1A9;
+    span {
+        margin-right: 0.5em;
+    }
+}
+
 h3 {
     color: #515151;
     font-weight: normal;
@@ -452,6 +471,12 @@ h3 {
 .expansionIcon {
     margin-left: 10px;
     color: #515151!important;
+}
+
+.uploadButtons {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
 }
 //added to style "Assign" button as per design
 .assignBtn {
