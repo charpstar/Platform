@@ -49,21 +49,27 @@
                     var id = vm.$route.params.id;
                     backend.getModellerModels(id).then(models => {
                         vm.models = models;
-                        //dynamically get the first/ default model to show details for
-                        vm.modelid = Object.values(models)[0].modelid
+                        if (Object.values(vm.models).length > 0) { //execute the following code only if the models' object is not empty to avoid errors
+                            //dynamically get the first/ default model to show details for
+                            vm.modelid = Object.values(models)[0].modelid   
+                        }
                     });
                 } else if (vm.$route.path == "/admin/models") {
                     backend.getAllModels().then(models => {
                         vm.models = models;
-                        //dynamically get the first/ default model to show details for
-                        vm.modelid = Object.values(models)[0].modelid
+                        if (Object.values(vm.models).length > 0) {
+                            //dynamically get the first/ default model to show details for
+                            vm.modelid = Object.values(models)[0].modelid   
+                        }
                     });
                 } else {
                     vm.order = vm.$route.params.id;
                     backend.getModels(vm.order).then(models => {
                         vm.models = models;
-                        //dynamically get the first/ default model to show details for
-                        vm.modelid = Object.values(models)[0].modelid
+                        if (Object.values(vm.models).length > 0) {
+                            //dynamically get the first/ default model to show details for
+                            vm.modelid = Object.values(models)[0].modelid   
+                        }
                     });
                 }
             }

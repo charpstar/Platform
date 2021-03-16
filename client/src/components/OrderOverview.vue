@@ -51,9 +51,10 @@
                         .getAllOrders()
                         .then(orders => {
                             vm.orders = orders;
-
-                            //dynamically get the first/ default order to show details for
-                            vm.orderid = Object.values(orders)[0].orderid
+                            if (Object.values(vm.orders).length > 0) {
+                                //dynamically get the first/ default order to show details for
+                                vm.orderid = Object.values(orders)[0].orderid
+                            }
                         })
                         .catch(error => {
                             vm.error = error;
@@ -63,9 +64,10 @@
                     vm.user.userid = vm.$route.params.id;
                     backend.getOrders(vm.user.userid).then(orders => {
                         vm.orders = orders;
-
-                        //dynamically get the first/ default order to show details for
-                        vm.orderid = Object.values(orders)[0].orderid
+                        if (Object.values(vm.orders).length > 0) {
+                            //dynamically get the first/ default order to show details for
+                            vm.orderid = Object.values(orders)[0].orderid
+                        }
                     });
                 }
 
