@@ -150,7 +150,8 @@
                     <excelupload 
                     :handler="add" 
                     @file="file=$event" 
-                    v-if="account.usertype == 'Client' && order.state != 'Done'">
+                    v-if="account.usertype == 'Client' && order.state != 'Done'"
+                    title="Add models">
                         Add models
                         <v-icon right>mdi-file-plus</v-icon>
                     </excelupload>

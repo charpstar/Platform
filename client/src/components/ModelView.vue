@@ -5,7 +5,12 @@
             <!-- <v-btn icon class="hidden-xs-only">
                 <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
             </v-btn> -->
-            <excelupload id="buttonNew" :handler="addProducts" v-if="account.usertype == 'Client' && model.state != 'Done' && false" @file="file = $event">
+            <excelupload 
+            id="buttonNew" 
+            :handler="addProducts" 
+            v-if="account.usertype == 'Client' && model.state != 'Done' && false" 
+            @file="file = $event"
+            title="Add products">
                 Add products
                 <v-icon right>mdi-file-plus</v-icon>
             </excelupload>

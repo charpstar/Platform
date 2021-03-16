@@ -118,7 +118,12 @@
             </v-data-table>
         </div>
         <div class="newOrder" v-if="account.usertype=='Client'">
-            <excelupload id="buttonNew" :handler="newOrderHandler" v-if="userOrders && account.usertype != 'Modeller'" @file="file = $event">
+            <excelupload 
+            id="buttonNew" 
+            :handler="newOrderHandler" 
+            v-if="userOrders && account.usertype != 'Modeller'" 
+            @file="file = $event"
+            title="New Order">
                 New Order
                 <v-icon right>mdi-file-plus</v-icon>
             </excelupload>    
