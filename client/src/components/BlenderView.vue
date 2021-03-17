@@ -64,7 +64,7 @@
         <div id="itemsrow">
             <div class="column">
                 <p id="modeller">
-                    Assigned modeler: {{model.modelowner ? model.modelowner : 'None'}}
+                    Assigned modeller: {{model.modelowner ? model.modelowner : 'None'}}
                 </p>
                 <!-- If we want to display model status -->
                 <p id="status">
@@ -169,7 +169,7 @@
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <div class="card">
-                                <v-select :items="modelers" label="Modeler" v-model="modeler">
+                                <v-select :items="modelers" label="Modeller" v-model="modeler">
                                     <template v-slot:item="{item}">
                                         <span>{{item.name}}</span>
                                     </template>
