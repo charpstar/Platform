@@ -26,7 +26,7 @@
     export default {
         data() {
             return {
-                loaded: false,
+                loaded: false, //Once the component is mounted, set to true and display subcomponents
                 orderid: "",
                 orders: {},
                 user: {},

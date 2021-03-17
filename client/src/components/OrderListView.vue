@@ -117,10 +117,12 @@
                 <template v-slot:item.time="{value}">{{$formatDate(value)}}</template> -->
             </v-data-table>
         </div>
+        <!-- This div is displayed when there are no orders, i.e. no data to display -->
         <div class="emptyState" 
             v-if="Object.values(orders).length == 0">
-            <span v-if="account.usertype=='Client'">You have not placed any orders.</span>
-            <span v-else>The client has not placed any orders.</span>  
+            <!-- Different messages for different user types: -->
+            <span v-if="account.usertype=='Client'">You have not placed any orders</span>
+            <span v-else>The client has not placed any orders</span>  
         </div>
         <div class="newOrder" v-if="account.usertype=='Client'">
             <excelupload 

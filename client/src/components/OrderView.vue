@@ -226,6 +226,7 @@
                     </v-expansion-panel>
                 </v-expansion-panels>
             </div>
+            <!-- Message to display if there is no data, i.e. no orderid sent from parent component -->
             <div class="emptyState" v-if="!orderid">
                 No order has been selected
             </div>
@@ -453,7 +454,7 @@ table {
 }
 
 div.emptyState {
-    height: 150px;
+    height: 300px;
     display: flex;
     justify-content: center;
     align-items: center;

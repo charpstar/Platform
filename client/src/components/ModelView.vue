@@ -29,6 +29,7 @@
                 </v-tab-item>
             </v-tabs>
         </div>
+        <!-- Message to display if there is no data, i.e. no modelid sent from parent component -->
         <div class="item" v-if="!modelid">
             <h3> Model details </h3>
             <p class="emptyState ">No model has been selected</p> 
@@ -124,7 +125,7 @@ h3 {
 }
 
 p.emptyState {
-    height: 170px;
+    height: 300px;
     display: flex;
     justify-content: center;
     align-items: center;
