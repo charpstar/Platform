@@ -117,6 +117,11 @@
                 <template v-slot:item.time="{value}">{{$formatDate(value)}}</template> -->
             </v-data-table>
         </div>
+        <div class="emptyState" 
+            v-if="Object.values(orders).length == 0">
+            <span v-if="account.usertype=='Client'">You have not placed any orders.</span>
+            <span v-else>The client has not placed any orders.</span>  
+        </div>
         <div class="newOrder" v-if="account.usertype=='Client'">
             <excelupload 
             id="buttonNew" 
@@ -301,5 +306,13 @@ div.newOrder {
     margin-top: 50px;
     display: flex;
     justify-content: flex-end;
+}
+
+div.emptyState {
+    height: 170px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #515151;
 }
 </style>

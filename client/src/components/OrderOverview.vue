@@ -1,20 +1,21 @@
 <template>
     <div class="flexrow">
-        <order-list-view 
-            v-if="orderid"
-            :account="account" 
-            :isAdminView="isAdminView" 
-            @clicked-order="getOrderId" 
+        <order-list-view
+            v-if="loaded"
+            :account="account"
+            :isAdminView="isAdminView"
+            @clicked-order="getOrderId"
             :orders="orders"
             :userOrders="userOrders"/>
 
         <!-- 'key' re-renders the child component when orderid changes-->
-        <order-view 
-            v-if="orderid"
-            :account="account" 
-            :orderid="orderid" 
+        <order-view
+            v-if="loaded"
+            :account="account"
+            :orderid="orderid"
             :key="orderid" />
     </div>
+
 </template>
 
 <script>
@@ -25,10 +26,11 @@
     export default {
         data() {
             return {
-                orderid: "",
+                loaded: false,
+                orderid: null,
                 orders: {},
                 user: {},
-                userOrders: false,
+                userOrders: false
             }
         },
         props: {
@@ -75,7 +77,8 @@
         },
 
         mounted() {
-            this.getOrders(); 
+            this.getOrders();
+            this.loaded = true;
         }
     }
 </script>
