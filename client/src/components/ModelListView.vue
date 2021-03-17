@@ -104,6 +104,12 @@
                 </template> -->
             </v-data-table>
         </div>
+        <div class="emptyState" 
+            v-if="Object.values(models).length == 0">
+            <span v-if="account.usertype=='Modeller'">You have not been assigned any models</span>
+            <span v-if="$route.path.includes('order')">There are no models for this order</span>
+            <span v-else>Modeller has not been assigned any models</span>  
+        </div>
     </div>
 </template>
 
@@ -253,6 +259,14 @@ th {
 
 .highlightedRow {
     background-color: rgba(31, 177, 169, 0.1);
+}
+
+div.emptyState {
+    height: 170px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #515151;
 }
 
 </style>

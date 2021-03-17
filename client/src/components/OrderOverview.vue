@@ -27,7 +27,7 @@
         data() {
             return {
                 loaded: false,
-                orderid: null,
+                orderid: "",
                 orders: {},
                 user: {},
                 userOrders: false

@@ -1,7 +1,7 @@
 <template>
     <div class="flexrow">
         <model-list-view 
-            v-if="modelid"
+            v-if="loaded"
             :account="account" 
             :models="models"
             @clicked-model="getModelId"
@@ -9,7 +9,7 @@
 
         <!-- 'key' re-renders the child component when modelid changes-->
         <model-view 
-            v-if="modelid"
+            v-if="loaded"
             :account="account" 
             :modelid="modelid" 
             :key="modelid"
@@ -28,6 +28,7 @@
     export default {
         data() {
             return {
+                loaded: false,
                 models: {},
                 modelid: "",
                 order: false
@@ -74,6 +75,7 @@
                         }
                     });
                 }
+                this.loaded = true
             }
         }
         
