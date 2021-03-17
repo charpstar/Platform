@@ -75,7 +75,7 @@
         <div id="itemsrow">
             <div class="column">
                 <p id="modeller">
-                    Assigned modeler: {{model.modelowner ? model.modelowner : 'None'}}
+                    Assigned modeller: {{model.modelowner ? model.modelowner : 'None'}}
                 </p>
                 <!-- If we want to display model status -->
                 <p id="status">
@@ -180,7 +180,7 @@
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <div class="card">
-                                <v-select :items="modelers" label="Modeler" v-model="modeler">
+                                <v-select :items="modelers" label="Modeller" v-model="modeler">
                                     <template v-slot:item="{item}">
                                         <span>{{item.name}}</span>
                                     </template>
@@ -188,7 +188,7 @@
                                         <span>{{item.name}}</span>
                                     </template>
                                 </v-select>
-                                <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!modeler" rounded color="#1FB1A9" small class="assignBtn" >Assign</v-btn>
+                                <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!modeler" rounded small width="80px" color="#1FB1A9" class="assignBtn" >Assign</v-btn>
                                 <p class="error-text" v-if="assign.error">{{assign.error}}</p>
                             </div>
                         </v-expansion-panel-content>
@@ -471,6 +471,7 @@ h3 {
 .expansionIcon {
     margin-left: 10px;
     color: #515151!important;
+	
 }
 
 .uploadButtons {
@@ -482,5 +483,6 @@ h3 {
 .assignBtn {
 	color: white;
 	margin-top: 15px;
+	width: 10px;
 }
 </style>
