@@ -1,7 +1,7 @@
 <template>
     <div class="flexrow">
         <model-list-view 
-            v-if="modelid"
+            v-if="loaded"
             :account="account" 
             :models="models"
             @clicked-model="getModelId"
@@ -9,11 +9,13 @@
 
         <!-- 'key' re-renders the child component when modelid changes-->
         <model-view 
-            v-if="modelid"
+            v-if="loaded"
             :account="account" 
             :modelid="modelid" 
             :key="modelid"
         />
+
+        <!-- Show a message if no id or no data is available -->  
     </div>  
  
 </template>
@@ -26,6 +28,7 @@
     export default {
         data() {
             return {
+                loaded: false, //Once the component is mounted, set to true and display subcomponents
                 models: {},
                 modelid: "",
                 order: false
@@ -49,23 +52,30 @@
                     var id = vm.$route.params.id;
                     backend.getModellerModels(id).then(models => {
                         vm.models = models;
-                        //dynamically get the first/ default model to show details for
-                        vm.modelid = Object.values(models)[0].modelid
+                        if (Object.values(vm.models).length > 0) { //execute the following code only if the models' object is not empty to avoid errors
+                            //dynamically get the first/ default model to show details for
+                            vm.modelid = Object.values(models)[0].modelid   
+                        }
                     });
                 } else if (vm.$route.path == "/admin/models") {
                     backend.getAllModels().then(models => {
                         vm.models = models;
-                        //dynamically get the first/ default model to show details for
-                        vm.modelid = Object.values(models)[0].modelid
+                        if (Object.values(vm.models).length > 0) {
+                            //dynamically get the first/ default model to show details for
+                            vm.modelid = Object.values(models)[0].modelid   
+                        }
                     });
                 } else {
                     vm.order = vm.$route.params.id;
                     backend.getModels(vm.order).then(models => {
                         vm.models = models;
-                        //dynamically get the first/ default model to show details for
-                        vm.modelid = Object.values(models)[0].modelid
+                        if (Object.values(vm.models).length > 0) {
+                            //dynamically get the first/ default model to show details for
+                            vm.modelid = Object.values(models)[0].modelid   
+                        }
                     });
                 }
+                this.loaded = true
             }
         }
         

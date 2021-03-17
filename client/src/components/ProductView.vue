@@ -385,9 +385,9 @@
   .colorCell {
     padding-left: 8px;
   }
-  #item {
-    width: 80vw;
-  }
+  // #item {
+  //   width: 80vw;
+  // }
   #itemTable {
     font-size: 20px;
     color: grey;

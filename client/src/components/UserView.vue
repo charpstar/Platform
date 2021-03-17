@@ -3,8 +3,9 @@
         <div class="flexrow" id="topRow">
             <div class="flexrow">
                 <v-btn icon class="hidden-xs-only">
-                    <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
-				
+                    <!-- Go back to home and select the "users" tab -->
+                    <v-icon @click="$router.push('/home?section=users')">mdi-arrow-left</v-icon>
+                    <!-- <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon> -->
                 </v-btn>
                 <h2>User</h2>
             </div>

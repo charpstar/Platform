@@ -25,7 +25,7 @@
                 </v-btn> -->
 
                 <!-- Temporary solution to display which order is displayed -->
-                <h3>Order details - {{orderid}} </h3>
+                <h3>Order details <span v-if="orderid">- {{orderid}}</span>  </h3>
             </div>
         </div>
         <div class="flexrow" id="order">
@@ -119,7 +119,7 @@
                     </excelupload>
                 </div>  -->
             </div>
-            <div class="d-flex">
+            <div class="d-flex" v-if="orderid">
                 <div>
                 <!-- Pass props to the bar chart component in order to render graph -->
                     <barchart 
@@ -150,7 +150,8 @@
                     <excelupload 
                     :handler="add" 
                     @file="file=$event" 
-                    v-if="account.usertype == 'Client' && order.state != 'Done'">
+                    v-if="account.usertype == 'Client' && order.state != 'Done'"
+                    title="Add models">
                         Add models
                         <v-icon right>mdi-file-plus</v-icon>
                     </excelupload>
@@ -179,53 +180,55 @@
                     </v-expansion-panel>
 					<!--added expansion panel for comments-->
 					<v-expansion-panel>
-
-			<v-expansion-panel-header disable-icon-rotate>
-                Comments
-                <template v-slot:actions>
-                    <v-icon class="expansionIcon">
-                        mdi-wechat
-                    </v-icon>
-                </template>			
-			</v-expansion-panel-header>
-			<v-expansion-panel-content>
-				<comments
-                    v-if="order"
-                    :idobj="{orderid: order.orderid}"
-                    :type="'Order'"
-                    :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
-                    :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
-                    @state="order.state = $event.orderstatus"
-                />
-			</v-expansion-panel-content>
-			<!--added expansion panel for AssignQA-->
-		</v-expansion-panel>
-		<v-expansion-panel v-on="on" v-if="account.usertype == 'Admin'">
-			<v-expansion-panel-header disable-icon-rotate>
-				Assign QA
-                <template v-slot:actions>
-                    <v-icon class="expansionIcon">
-                        mdi-account-plus
-                    </v-icon>
-                </template>	
-			</v-expansion-panel-header>
-			<v-expansion-panel-content  >
-            <div class="card">
-                <v-select :items="qas" label="QA" v-model="qa">
-                    <template v-slot:item="{item}">
-                        <span>{{item.name}}</span>
-                    </template>
-                    <template v-slot:selection="{item}">
-                        <span>{{item.name}}</span>
-                    </template>
-                </v-select>
-                <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!qa"   rounded color="#1FB1A9" small class="assignBtn">Assign</v-btn>
-                <p class="error-text" v-if="assign.error">{{assign.error}}</p>
-            </div>
-		</v-expansion-panel-content>
-		</v-expansion-panel>
-
+                        <v-expansion-panel-header disable-icon-rotate>
+                            Comments
+                            <template v-slot:actions>
+                                <v-icon class="expansionIcon">
+                                    mdi-wechat
+                                </v-icon>
+                            </template>			
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <comments
+                                v-if="order"
+                                :idobj="{orderid: order.orderid}"
+                                :type="'Order'"
+                                :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
+                                :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
+                                @state="order.state = $event.orderstatus"
+                            />
+                        </v-expansion-panel-content>
+                        <!--added expansion panel for AssignQA-->
+                    </v-expansion-panel>
+                    <v-expansion-panel v-if="account.usertype == 'Admin'">
+                        <v-expansion-panel-header disable-icon-rotate>
+                            Assign QA
+                            <template v-slot:actions>
+                                <v-icon class="expansionIcon">
+                                    mdi-account-plus
+                                </v-icon>
+                            </template>	
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content  >
+                        <div class="card">
+                            <v-select :items="qas" label="QA" v-model="qa">
+                                <template v-slot:item="{item}">
+                                    <span>{{item.name}}</span>
+                                </template>
+                                <template v-slot:selection="{item}">
+                                    <span>{{item.name}}</span>
+                                </template>
+                            </v-select>
+                            <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!qa"   rounded color="#1FB1A9" small class="assignBtn">Assign</v-btn>
+                            <p class="error-text" v-if="assign.error">{{assign.error}}</p>
+                        </div>
+                    </v-expansion-panel-content>
+                    </v-expansion-panel>
                 </v-expansion-panels>
+            </div>
+            <!-- Message to display if there is no data, i.e. no orderid sent from parent component -->
+            <div class="emptyState" v-if="!orderid">
+                No order has been selected
             </div>
         </div>
     <!-- </div> -->
@@ -250,7 +253,7 @@ export default {
     },
     props: {
         account: { type: Object, required: true },
-        orderid: { type: Number, required: true }
+        orderid: { type: Number, required: false }
     },
 
     computed: {
@@ -448,5 +451,13 @@ table {
 .assignBtn {
 	color: white;
 	margin-top: 15px;
+}
+
+div.emptyState {
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #515151;
 }
 </style>

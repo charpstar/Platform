@@ -1,7 +1,7 @@
 <template>
     <div class="modelsList">
         <div class="flexrow" id="topRow">
-            <div class="flexrow" id="arrowBack">
+            <div class="flexrow arrowBack">
                 <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Modeller'">
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
@@ -103,6 +103,14 @@
                     <span v-else ><i>Unassigned</i></span>
                 </template> -->
             </v-data-table>
+        </div>
+        <!-- This div is displayed when there are no models, i.e. no data to display -->
+        <div class="emptyState" 
+            v-if="Object.values(models).length == 0">
+            <!-- Different messages for different user types: -->
+            <span v-if="account.usertype=='Modeller'">You have not been assigned any models</span>
+            <span v-if="$route.path.includes('order')">There are no models for this order</span>
+            <span v-else>Modeller has not been assigned any models</span>  
         </div>
     </div>
 </template>
@@ -211,7 +219,7 @@ export default {
     // justify-content: center;
     margin-bottom: 10px;
     // to display the arrow on the left of the component, and title in the center:
-    #arrowBack {
+    .arrowBack {
         width: 40%;
         justify-content: start
     }
@@ -253,6 +261,14 @@ th {
 
 .highlightedRow {
     background-color: rgba(31, 177, 169, 0.1);
+}
+
+div.emptyState {
+    height: 170px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #515151;
 }
 
 </style>

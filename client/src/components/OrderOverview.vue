@@ -1,20 +1,21 @@
 <template>
     <div class="flexrow">
-        <order-list-view 
-            v-if="orderid"
-            :account="account" 
-            :isAdminView="isAdminView" 
-            @clicked-order="getOrderId" 
+        <order-list-view
+            v-if="loaded"
+            :account="account"
+            :isAdminView="isAdminView"
+            @clicked-order="getOrderId"
             :orders="orders"
             :userOrders="userOrders"/>
 
         <!-- 'key' re-renders the child component when orderid changes-->
-        <order-view 
-            v-if="orderid"
-            :account="account" 
-            :orderid="orderid" 
+        <order-view
+            v-if="loaded"
+            :account="account"
+            :orderid="orderid"
             :key="orderid" />
     </div>
+
 </template>
 
 <script>
@@ -25,10 +26,11 @@
     export default {
         data() {
             return {
+                loaded: false, //Once the component is mounted, set to true and display subcomponents
                 orderid: "",
                 orders: {},
                 user: {},
-                userOrders: false,
+                userOrders: false
             }
         },
         props: {
@@ -51,9 +53,10 @@
                         .getAllOrders()
                         .then(orders => {
                             vm.orders = orders;
-
-                            //dynamically get the first/ default order to show details for
-                            vm.orderid = Object.values(orders)[0].orderid
+                            if (Object.values(vm.orders).length > 0) {
+                                //dynamically get the first/ default order to show details for
+                                vm.orderid = Object.values(orders)[0].orderid
+                            }
                         })
                         .catch(error => {
                             vm.error = error;
@@ -63,9 +66,10 @@
                     vm.user.userid = vm.$route.params.id;
                     backend.getOrders(vm.user.userid).then(orders => {
                         vm.orders = orders;
-
-                        //dynamically get the first/ default order to show details for
-                        vm.orderid = Object.values(orders)[0].orderid
+                        if (Object.values(vm.orders).length > 0) {
+                            //dynamically get the first/ default order to show details for
+                            vm.orderid = Object.values(orders)[0].orderid
+                        }
                     });
                 }
 
@@ -73,7 +77,8 @@
         },
 
         mounted() {
-            this.getOrders(); 
+            this.getOrders();
+            this.loaded = true;
         }
     }
 </script>

@@ -2,12 +2,12 @@
     <div id="order-list">
 
         <div class="flexrow" id="topRow">
-            <div class="flexrow">
+            <div class="flexrow arrowBack">
                 <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Client' && !isAdminView">
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
-                <h2>Orders</h2>
-            </div>
+            </div>   
+            <h2>Orders</h2>
             <!-- <excelupload id="buttonNew" :handler="newOrderHandler" v-if="userOrders && account.usertype != 'Modeller'" @file="file = $event">
                 New Order
                 <v-icon right>mdi-file-plus</v-icon>
@@ -117,8 +117,20 @@
                 <template v-slot:item.time="{value}">{{$formatDate(value)}}</template> -->
             </v-data-table>
         </div>
+        <!-- This div is displayed when there are no orders, i.e. no data to display -->
+        <div class="emptyState" 
+            v-if="Object.values(orders).length == 0">
+            <!-- Different messages for different user types: -->
+            <span v-if="account.usertype=='Client'">You have not placed any orders</span>
+            <span v-else>The client has not placed any orders</span>  
+        </div>
         <div class="newOrder" v-if="account.usertype=='Client'">
-            <excelupload id="buttonNew" :handler="newOrderHandler" v-if="userOrders && account.usertype != 'Modeller'" @file="file = $event">
+            <excelupload 
+            id="buttonNew" 
+            :handler="newOrderHandler" 
+            v-if="userOrders && account.usertype != 'Modeller'" 
+            @file="file = $event"
+            title="New Order">
                 New Order
                 <v-icon right>mdi-file-plus</v-icon>
             </excelupload>    
@@ -244,9 +256,16 @@ export default {
 
 <style lang="scss" scoped>
 #topRow {
-    justify-content: center;
-    // justify-content: space-between;
+    // justify-content: center;
     margin-bottom: 10px;
+    // to display the arrow on the left of the component, and title in the center:
+    .arrowBack {
+        width: 40%;
+        justify-content: start
+    }
+    h2 {
+        width: 60%;
+    }
 }
 #table {
     max-height: 100vh;
@@ -289,5 +308,13 @@ div.newOrder {
     margin-top: 50px;
     display: flex;
     justify-content: flex-end;
+}
+
+div.emptyState {
+    height: 170px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #515151;
 }
 </style>
