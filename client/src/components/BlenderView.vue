@@ -177,7 +177,7 @@
                                         <span>{{item.name}}</span>
                                     </template>
                                 </v-select>
-                                <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!modeler" rounded color="#1FB1A9" small class="assignBtn" >Assign</v-btn>
+                                <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!modeler" rounded small width="80px" color="#1FB1A9" class="assignBtn" >Assign</v-btn>
                                 <p class="error-text" v-if="assign.error">{{assign.error}}</p>
                             </div>
                         </v-expansion-panel-content>
@@ -452,10 +452,12 @@ h3 {
 .expansionIcon {
     margin-left: 10px;
     color: #515151!important;
+	
 }
 //added to style "Assign" button as per design
 .assignBtn {
 	color: white;
 	margin-top: 15px;
+	width: 10px;
 }
 </style>
