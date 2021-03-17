@@ -339,9 +339,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#item {
-    width: 80vw;
-}
+// #item {
+//     width: 80vw;
+// }
 // #itemTable {
 //     font-size: 20px;
 //     color: grey;
