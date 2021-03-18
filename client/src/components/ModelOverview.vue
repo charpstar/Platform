@@ -1,7 +1,9 @@
 <template>
     <div class="flexrow">
+        <!-- listKey should make the component re-render when it changes -->
         <model-list-view 
             v-if="loaded"
+            :key="listKey"
             :account="account" 
             :models="models"
             @clicked-model="getModelId"
@@ -13,9 +15,8 @@
             :account="account" 
             :modelid="modelid" 
             :key="modelid"
+            @modeller-changed="updateModelList"
         />
-
-        <!-- Show a message if no id or no data is available -->  
     </div>  
  
 </template>
@@ -28,6 +29,7 @@
     export default {
         data() {
             return {
+                listKey: 0,
                 loaded: false, //Once the component is mounted, set to true and display subcomponents
                 models: {},
                 modelid: "",
@@ -44,9 +46,8 @@
         methods: {
             getModelId(id) {
                 this.modelid = id
-            }
-        },
-            mounted() {
+            },
+            fetchModels() {
                 var vm = this;
                 if (vm.$route.path.includes("/modeller/")) {
                     var id = vm.$route.params.id;
@@ -75,6 +76,17 @@
                         }
                     });
                 }
+            },
+            async updateModelList() {
+                //re-establish the models variable and fetch the models again to get new data
+                await (this.models = {});
+                await this.fetchModels();
+                await (this.listKey += 1) //this should be enough to re-render the modelList 
+                // component but it doesn't seem to work
+            }
+        },
+            mounted() {
+                this.fetchModels();
                 this.loaded = true
             }
         }
