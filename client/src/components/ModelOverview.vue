@@ -2,6 +2,7 @@
     <div class="flexrow">
         <model-list-view 
             v-if="loaded"
+            :key="listKey"
             :account="account" 
             :models="models"
             @clicked-model="getModelId"
@@ -13,9 +14,8 @@
             :account="account" 
             :modelid="modelid" 
             :key="modelid"
+            @modeller-changed="updateModelList"
         />
-
-        <!-- Show a message if no id or no data is available -->  
     </div>  
  
 </template>
@@ -28,6 +28,7 @@
     export default {
         data() {
             return {
+                listKey: 0,
                 loaded: false, //Once the component is mounted, set to true and display subcomponents
                 models: {},
                 modelid: "",
@@ -44,9 +45,8 @@
         methods: {
             getModelId(id) {
                 this.modelid = id
-            }
-        },
-            mounted() {
+            },
+            fetchModels() {
                 var vm = this;
                 if (vm.$route.path.includes("/modeller/")) {
                     var id = vm.$route.params.id;
@@ -75,6 +75,19 @@
                         }
                     });
                 }
+            },
+            async updateModelList() {
+                await (this.models = {});
+                await this.fetchModels();
+                await (this.listKey += 1)
+                  // eslint-disable-next-line no-console
+                  console.log(this.listKey)
+
+                
+            }
+        },
+            mounted() {
+                this.fetchModels();
                 this.loaded = true
             }
         }
