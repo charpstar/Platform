@@ -169,7 +169,8 @@
                             />
                         </v-expansion-panel-content>
                     </v-expansion-panel>
-                    <v-expansion-panel v-if="account.usertype != 'Modeller'">
+                    <!-- <v-expansion-panel v-if="account.usertype != 'Modeller'"> -->
+						<v-expansion-panel v-if="account.usertype == 'Admin'">
                         <v-expansion-panel-header disable-icon-rotate>
                             Assign Modeller
                             <template v-slot:actions>
