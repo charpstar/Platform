@@ -1,5 +1,6 @@
 <template>
     <div class="flexrow">
+        <!-- listKey should make the component re-render when it changes -->
         <model-list-view 
             v-if="loaded"
             :key="listKey"
@@ -77,13 +78,11 @@
                 }
             },
             async updateModelList() {
+                //re-establish the models variable and fetch the models again to get new data
                 await (this.models = {});
                 await this.fetchModels();
-                await (this.listKey += 1)
-                  // eslint-disable-next-line no-console
-                  console.log(this.listKey)
-
-                
+                await (this.listKey += 1) //this should be enough to re-render the modelList 
+                // component but it doesn't seem to work
             }
         },
             mounted() {
