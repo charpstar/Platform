@@ -298,7 +298,6 @@ export default {
                     vm.model.modelowner = data.userdata.name;
                     vm.modeler = false;
                 })
-                .then(this.$emit('new-modeller')) //notify parent component that new modeller is assigned
                 
         },
         uploadModel() {
