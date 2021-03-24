@@ -38,14 +38,18 @@
                         <v-list-item
                             v-for="(text, filter) in filters"
                             :key="filter"
-                            @click="search += ' ' + filter + ' '"
+                            @click="searchFor(filter)"
                         >
+                        <!-- @click="search += ' ' + filter + ' '" -->
                             <v-list-item-title>{{ text }}</v-list-item-title>
                         </v-list-item>
                     </v-list>
                 </v-menu>
             </div>
-            
+            <!-- If the user is not Client:
+                1. 'items' will include filteredItems, to render rows based on the preset filters
+                2. 'search' prop is deactivated to allow custom filters chosen 
+                via the 'Filter button'-->
             <v-data-table
                 id="table"
                 :headers="filteredHeaders"
@@ -56,6 +60,10 @@
                 :search="search"
                 @click:row="handleClick"
             >
+            <!-- Props for data table to achieve custom filtering -->
+            <!-- :items="account.usertype=='Client' ? Object.values(orders) : filteredItems" -->
+            <!-- :search="account.usertype=='Client' ? search : undefined" -->
+
                 <!-- Code inspired by solution on https://codepen.io/huntleth/pen/eYOrWog.
                 Replaced the code using v-slots for the table with simple <tr> and <td> because:
                     First: it gave many eslint errors
@@ -187,7 +195,29 @@ export default {
                 return this.headers.filter(header => header.hideClient != true);
             }
             return this.headers
-        }
+        },
+        //custom filtering function instead of :search="search" in v-data-table
+        //to allow more freedom in filtering results:
+
+        // filteredItems() { 
+        //     if (!this.search) {
+        //         /* Initial code in v-data-table: :items="Object.values(orders)" */
+        //         return Object.values(this.orders)
+        //     }
+        //     else {
+        //         var items = []
+        //         Object.values(this.orders).forEach(order => {
+        //             if (this.search.includes(order.qaownername)) {
+        //                 items.push(order)
+        //             }
+        //             if (this.search.includes('Unassigned')){
+        //                 if (!order.qaownername) {items.push(order)}
+        //             }
+        //         });
+
+        //         return items
+        //     }
+        // }
     },
     methods: {
         sumProducts(item) {
@@ -214,6 +244,20 @@ export default {
                 });
             }
         },
+        searchFor(filter) {
+            if (this.search) { //if 'search' is not empty string or null
+                if(!this.search.includes(filter)) { //if filtered isn't already selected, search with this filter
+                    return this.search += ' ' + filter + ' ' 
+                } 
+                //if filtered is already selected, return the existing filters and avoid duplicates
+                else { return this.search }
+                
+            }
+            else { //if 'Filter' text input has been cleared with 'X', search will be null
+                this.search = ''; //so we need to re-declare it as empty string
+                return this.search += ' ' + filter + ' ' 
+            }
+        }
         /* has moved to parent (OrderOverview.vue) */
 
         // getOrders() { 
@@ -246,9 +290,12 @@ export default {
     mounted() {
         var vm = this;
         if (vm.account.usertype == "QA" || vm.account.usertype == "Admin") {
-            vm.filters[vm.account.name] = "Assigned to";
+            //'Assigned to' does not really make sense for Admin, as they are not assigned any orders
+            //We could have instead a list of available modellers to filter the table ?
+            vm.filters[vm.account.name] = "Assigned to"; 
             vm.filters['OrderReceived'] = "Unassigned";
         }
+
         // vm.getOrders(); // has moved to parent (OrderOverview.vue)
     }
 };

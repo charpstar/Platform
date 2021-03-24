@@ -31,9 +31,10 @@
                     <v-list>
                         <v-list-item
                             v-for="(text, filter) in filters"
-                            :key="filter"
-                            @click="search += ' ' + filter + ' '"
+                            :key="filter"  
+                            @click="searchFor(filter)"
                         >
+                        <!-- @click="search += ' ' + filter + ' '" -->
                             <v-list-item-title>{{ text }}</v-list-item-title>
                         </v-list-item>
                     </v-list>
@@ -170,6 +171,19 @@ export default {
         },
         rowSelect(index) {
             this.selectedRow = index;
+        },
+        searchFor(filter) {
+            if (this.search!=='' && this.search!==null) {
+                if(!this.search.includes(filter)) {
+                    return this.search += ' ' + filter + ' '  
+                }
+                else { return this.search }
+            }
+            else { 
+                this.search = '';
+                return this.search += ' ' + filter + ' '
+            }
+            
         }
     },
     computed: {
@@ -181,9 +195,33 @@ export default {
                 return this.headers.filter(header => header.hideModeller != true);
             }
             return this.headers
-        }
+        },
+        //custom filtering function instead of :search="search" in v-data-table
+        //to allow more freedom in filtering results:
+        
+        //    filteredItems() { 
+        //     if (!this.search) {
+        //         /* Initial code in v-data-table: :items="Object.values(models)" */
+        //         return Object.values(this.models)
+        //     }
+        //     else {
+        //         var items = []
+        //         Object.entries(this.models).forEach(model => {
+        //             Object.values(model).forEach(item => {
+        //                 if (this.search.includes(this.filters[item.state])) {
+        //                     items.push(item)
+        //                 }
+        //             })
+                    
+        //         });
+
+        //         return items
+        //     }
+        // }
     },
     mounted() {
+        // eslint-disable-next-line no-console
+        console.log(Object.values(this.models))
         var vm = this;
         if (vm.account.usertype != "Client") {
             vm.filters["ProductMissing"] = "Missing information";

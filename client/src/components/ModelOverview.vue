@@ -13,7 +13,6 @@
             :account="account" 
             :modelid="modelid" 
             :key="modelid"
-            @modeller-changed="updateModelList"
         />
     </div>  
  
