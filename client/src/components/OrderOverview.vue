@@ -1,12 +1,13 @@
 <template>
-    <div class="flexrow">
+    <div class="flexrow">cd 
         <order-list-view
             v-if="loaded"
             :account="account"
             :isAdminView="isAdminView"
             @clicked-order="getOrderId"
             :orders="orders"
-            :userOrders="userOrders"/>
+            :userOrders="userOrders"
+			@created-order="getOrders"/>
 
         <!-- 'key' re-renders the child component when orderid changes-->
         <order-view
