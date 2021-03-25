@@ -38,8 +38,9 @@
                         <v-list-item
                             v-for="(text, filter) in filters"
                             :key="filter"
-                            @click="search += ' ' + filter + ' '"
+                            @click="searchFor(filter)"
                         >
+                        <!-- @click="search += ' ' + filter + ' '" -->
                             <v-list-item-title>{{ text }}</v-list-item-title>
                         </v-list-item>
                     </v-list>
@@ -216,6 +217,20 @@ export default {
                 });
             }
         },
+        searchFor(filter) {
+            if (this.search!=='' && this.search!==null) {
+                if(!this.search.includes(filter)) {
+                    return this.search += ' ' + filter + ' '  
+                }
+                else { return this.search }
+            }
+            else { 
+                this.search = '';
+                return this.search += ' ' + filter + ' '
+            }
+                        
+
+        }
         /* has moved to parent (OrderOverview.vue) */
 
         // getOrders() { 

@@ -341,9 +341,10 @@ export default {
         },
         deleteOrder() {
             var vm = this;
-            return backend.deleteOrder(vm.order.orderid).then(() => {
-                vm.$router.go(-1);
-            });
+                return backend.deleteOrder(vm.order.orderid);
+            // return backend.deleteOrder(vm.order.orderid).then(() => {
+            //     vm.$router.go(-1);
+            // });
         },
         viewModels() {
             this.$router.push("/order/" + this.order.orderid + "/models");
