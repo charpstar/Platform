@@ -115,11 +115,18 @@
                     <p class="emptyFiles" v-if="model.files.length == 0">
                         No files uploaded
                     </p>
-                    <div class="flexrow" v-for="(file, index) in model.files" :key="file">
-                        <p class="fileName">{{file}}</p>
+                    <!-- as file is an array now (not string) it is better to use index as the key-->
+                    <div class="flexrow" v-for="(file, index) in model.files" :key="index">
+                    <!-- <div class="flexrow" v-for="(file, index) in model.files" :key="file"> -->
+                        <!-- 'file' is an array, where file[0] is the date of uploading 
+                        and file[1] the file name: -->
+                        <p class="fileName">{{file[1]}}</p> 
+                        <!-- Added to display uploading date: -->
+                        <p class="fileDate">{{$formatTime(file[0])}}</p>
                         <div class="fileButtons">
                             <p>
-                            <v-btn class="actionBtn" rounded @click="downloadModel(file)">
+                            <!-- file[1] is the file name: -->
+                            <v-btn class="actionBtn" rounded @click="downloadModel(file[1])">
                                 <span>Download</span> 
                                 <v-icon>mdi-cloud-download</v-icon>
                             </v-btn>
@@ -303,7 +310,18 @@ export default {
         uploadModel() {
             var vm = this;
             return backend.uploadModelFile(vm.model.modelid, vm.file).then(newFile => {
-                vm.model.files.push(newFile.filename);
+                // vm.model.files.push(newFile.filename);
+                // vm.model.files.push(newFile);
+ 
+                var existingFile = vm.model.files.findIndex(file => file[1] == newFile.filename)
+                if (existingFile > -1) { //if there is a file with the same name, replace it with the latest version
+                    vm.model.files.splice(existingFile, 1)
+                    vm.model.files.push([newFile.time, newFile.filename]); 
+                }
+                else { //else simply push the new file's uploading time and its name 
+                // to the model.files array in order to display it in the frontend immediately
+                     vm.model.files.push([newFile.time, newFile.filename]); 
+                }
                 vm.file = false;
             });
         },
@@ -318,7 +336,7 @@ export default {
         deleteFileConfirmed() {
             var vm = this;
             return backend
-                .deleteModelFile(vm.model.modelid, vm.model.files[vm.selectedFile])
+                .deleteModelFile(vm.model.modelid, vm.model.files[vm.selectedFile][1])
                 .then(() => {
                     Vue.delete(vm.model.files, vm.selectedFile);
                     vm.selectedFile = false;
@@ -328,7 +346,9 @@ export default {
     mounted() {
         var vm = this;
         backend.getModelFiles(vm.model.modelid).then(files => {
-            vm.$set(vm.model, 'files', Object.values(files))
+            // Object.entries(files) instead of Object.values(files) to get both date and file name
+            vm.$set(vm.model, 'files', Object.entries(files))
+            // vm.$set(vm.model, 'files', Object.values(files))
         });
         if(vm.account.usertype != 'Modeller') {
             backend.getModelers().then(modelers => {
@@ -404,7 +424,12 @@ export default {
 
 .fileName {
     padding-left: 10px;
+    color: #515151;
     // width: 300px;
+}
+
+.fileDate {
+    font-style: italic;
 }
 
 .flexrow {
