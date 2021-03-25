@@ -211,7 +211,7 @@ export default {
             if (vm.file) {
                 return backend.createOrder(vm.file, vm.$route.params.id).then(() => {
                    //added to remove the typeerror-getOrders is not a function.
-				   /* vm.getOrders(); */
+				/* vm.getOrders(); */
 					this.$emit('created-order');
                 });
             }
