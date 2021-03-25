@@ -1,5 +1,5 @@
 <template>
-    <div class="flexrow">cd 
+    <div class="flexrow">
         <order-list-view
             v-if="loaded"
             :account="account"
