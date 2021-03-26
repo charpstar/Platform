@@ -336,12 +336,18 @@ export default {
                     backend.getOrder(vm.order.orderid).then(order => {
                         vm.order = order;
                     });
-                });
+                })
+                // if data changes in the orders' page when client adds models
+                // use this code to communicate to parent that data has changed in order to refresh the page
+                .then(() => { this.$emit('updated-order')}); 
             }
         },
         deleteOrder() {
             var vm = this;
-                return backend.deleteOrder(vm.order.orderid);
+                return backend.deleteOrder(vm.order.orderid).then(() => { 
+                    //code to communicate to parent that data has changed in order to refresh the page
+                    this.$emit('updated-order')
+                    });
             // return backend.deleteOrder(vm.order.orderid).then(() => {
             //     vm.$router.go(-1);
             // });
@@ -363,7 +369,9 @@ export default {
                 if (vm.order.state == 'OrderReceived') {
                     vm.order.state = 'OrderReview'
                 }
-            });
+            })
+            //code to communicate to parent that data has changed in order to refresh the page
+            .then(() => { this.$emit('updated-order')});
         },
         assignQAAdmin() {
             var vm = this;
@@ -376,7 +384,9 @@ export default {
                     vm.order.qaowner = vm.qa.userid;
                     vm.order.qaownername = vm.qa.name;
                     vm.qa = false;
-                });
+                })
+                //code to communicate to parent that data has changed in order to refresh the page
+                .then(() => { this.$emit('updated-order')});
         }
     },
     mounted() {
