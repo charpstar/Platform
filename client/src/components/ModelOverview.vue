@@ -1,8 +1,11 @@
 <template>
     <div class="flexrow">
+        <!--'key' re-renders the child component when listUpdate changes
+            i.e. when a model is updated-->
         <model-list-view 
             v-if="loaded"
-            :account="account" 
+            :account="account"
+            :key="listUpdate" 
             :models="models"
             @clicked-model="getModelId"
         />
@@ -13,6 +16,7 @@
             :account="account" 
             :modelid="modelid" 
             :key="modelid"
+            @model-updated="updateList"
         />
     </div>  
  
@@ -27,6 +31,7 @@
         data() {
             return {
                 loaded: false, //Once the component is mounted, set to true and display subcomponents
+                listUpdate: 0, //Use as a key to re-render the model list
                 models: {},
                 modelid: "",
                 order: false
@@ -42,9 +47,12 @@
         methods: {
             getModelId(id) {
                 this.modelid = id
-            }
-        },
-            mounted() {
+            },
+            updateList() { //when a model is updated
+                this.fetchModels(); //fetch the models again to get the new data
+                this.listUpdate += 1 //increase the key 'listUpdate' by 1 in order to re-render model list
+            },
+            fetchModels() {
                 var vm = this;
                 if (vm.$route.path.includes("/modeller/")) {
                     var id = vm.$route.params.id;
@@ -73,6 +81,11 @@
                         }
                     });
                 }
+
+            }
+        },
+            mounted() {
+                this.fetchModels();
                 this.loaded = true
             }
         }
