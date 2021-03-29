@@ -338,14 +338,14 @@ export default {
                     });
                 })
                 // if data changes in the orders' page when client adds models
-                // use this code to communicate to parent that data has changed in order to refresh the page
+                // communicate to parent that data has changed in order to refresh the page
                 .then(() => { this.$emit('updated-order')}); 
             }
         },
         deleteOrder() {
             var vm = this;
                 return backend.deleteOrder(vm.order.orderid).then(() => { 
-                    //code to communicate to parent that data has changed in order to refresh the page
+                    //communicate to parent that data has changed in order to refresh the page
                     this.$emit('updated-order')
                     });
             // return backend.deleteOrder(vm.order.orderid).then(() => {
@@ -370,7 +370,7 @@ export default {
                     vm.order.state = 'OrderReview'
                 }
             })
-            //code to communicate to parent that data has changed in order to refresh the page
+            //communicate to parent that data has changed in order to refresh the page
             .then(() => { this.$emit('updated-order')});
         },
         assignQAAdmin() {
@@ -385,7 +385,7 @@ export default {
                     vm.order.qaownername = vm.qa.name;
                     vm.qa = false;
                 })
-                //code to communicate to parent that data has changed in order to refresh the page
+                //communicate to parent that data has changed in order to refresh the page
                 .then(() => { this.$emit('updated-order')});
         }
     },

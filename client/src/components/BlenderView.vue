@@ -305,6 +305,10 @@ export default {
                     vm.model.modelowner = data.userdata.name;
                     vm.modeler = false;
                 })
+                .then(() => {
+                    //communicate to parent that data has changed in order to refresh the page
+                    this.$emit('updated-model')
+                })
                 
         },
         uploadModel() {
@@ -323,7 +327,12 @@ export default {
                      vm.model.files.push([newFile.time, newFile.filename]); 
                 }
                 vm.file = false;
-            });
+            })
+            .then(() => {
+                //communicate to parent that data has changed in order to refresh the page
+                this.$emit('updated-model')
+            })
+            
         },
         downloadModel(filename) {
             var vm = this
@@ -340,7 +349,11 @@ export default {
                 .then(() => {
                     Vue.delete(vm.model.files, vm.selectedFile);
                     vm.selectedFile = false;
-                });
+                })
+            .then(() => {
+                //communicate to parent that data has changed in order to refresh the page
+                this.$emit('updated-model')
+            })
         }
     },
     mounted() {
