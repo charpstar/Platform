@@ -46,11 +46,12 @@
                     </v-list>
                 </v-menu>
             </div>
-            
+
+            <!-- :items="Object.values(orders)" -->
             <v-data-table
                 id="table"
                 :headers="filteredHeaders"
-                :items="Object.values(orders)"
+                :items="items"
                 :items-per-page="-1"
                 :must-sort="true"
                 :sort-by="'time'"
@@ -75,11 +76,13 @@
                                 <span v-if="item.qaownername">{{item.qaownername}}</span>
                                 <span v-else ><i>Unassigned</i></span>
                             </td>
-                            <td>
+                            <td>{{item.state}}</td>
+                            <!-- <td>
                                 {{backend.messageFromStatus(item.state, account.usertype)}}
-                            </td>
+                            </td> -->
                             <td>{{item.models}}</td>
-                            <td>{{sumProducts(item)}}</td>
+                            <td>{{item.products}}</td>
+                            <!-- <td>{{sumProducts(item)}}</td> -->
                         </tr>
                     </tbody>
                 </template>
@@ -188,6 +191,18 @@ export default {
                 return this.headers.filter(header => header.hideClient != true);
             }
             return this.headers
+        },
+        items(){
+            var account = this.account.usertype
+            return Object.values(this.orders).map(order => (
+               {orderid: order.orderid,
+               time: order.time,
+               clientname: order.clientname,
+               qaownername: order.qaownername,
+               state: backend.messageFromStatus(order.state, account),
+               models: order.models,
+               products: this.sumProducts(order)}
+            ))
         }
     },
     methods: {
@@ -263,10 +278,19 @@ export default {
     mounted() {
         var vm = this;
         if (vm.account.usertype == "QA" || vm.account.usertype == "Admin") {
-            vm.filters[vm.account.name] = "Assigned to";
-            vm.filters['OrderReceived'] = "Unassigned";
+            vm.filters[vm.account.name] = "Assigned to me";
+            vm.filters['Unassigned'] = "Unassigned";
+            // vm.filters['OrderReceived'] = "Unassigned";
         }
         // vm.getOrders(); // has moved to parent (OrderOverview.vue)
+        // eslint-disable-next-line no-console
+        console.log(this.items)
+        // eslint-disable-next-line no-console
+        console.log(Object.values(this.orders))
+    },
+    updated(){
+          // eslint-disable-next-line no-console
+        console.log(this.search)
     }
 };
 </script>
