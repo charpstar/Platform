@@ -214,7 +214,7 @@ export default {
                    //added to remove the typeerror-getOrders is not a function.
 				/* vm.getOrders(); */
 					this.$emit('created-order');
-                });
+                }).then(()=> { this.selectedRow = 0 })
             }
         },
         searchFor(filter) {

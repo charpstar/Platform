@@ -22,10 +22,20 @@
                 <v-tab v-if="account.usertype != 'Client'" :href="`#blendertab`">Model</v-tab>
                 <v-tab v-for="(p, id) in products" :key="id" :href="`#tab-${id}`">{{p.color}}</v-tab>
                 <v-tab-item :value="'blendertab'" class="tab">
-                    <blenderview :model="model" :account="account" @state="updateOnStateChange"/>
+                    <!-- @updated-model: communicate to parent that data has changed 
+                    in order to refresh the page -->
+                    <blenderview 
+                        :model="model" 
+                        :account="account" 
+                        @state="updateOnStateChange" 
+                        @updated-model="$emit('model-updated')"/>
                 </v-tab-item>
                 <v-tab-item class="tab" v-for="(p, id) in products" :key="id" :value="'tab-' + id">
-                    <productview :model="model" :product="p" :account="account" @state="updateOnStateChange"/>
+                    <productview 
+                        :model="model" 
+                        :product="p" 
+                        :account="account" 
+                        @state="updateOnStateChange"/>
                 </v-tab-item>
             </v-tabs>
         </div>

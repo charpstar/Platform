@@ -1,20 +1,24 @@
 <template>
     <div class="flexrow">
+        <!--'key' re-renders the child component when listUpdate changes
+            i.e. when an order is updated-->
         <order-list-view
             v-if="loaded"
             :account="account"
+            :key="listUpdate"
             :isAdminView="isAdminView"
-            @clicked-order="getOrderId"
             :orders="orders"
             :userOrders="userOrders"
-			@created-order="getOrders"/>
+            @clicked-order="getOrderId"
+			@created-order="updateList"/>
 
         <!-- 'key' re-renders the child component when orderid changes-->
         <order-view
             v-if="loaded"
             :account="account"
             :orderid="orderid"
-            :key="orderid" />
+            :key="orderid"
+            @updated-order="updateList" />
     </div>
 
 </template>
@@ -28,6 +32,7 @@
         data() {
             return {
                 loaded: false, //Once the component is mounted, set to true and display subcomponents
+                listUpdate: 0, //Use as a key to re-render the order list
                 orderid: "",
                 orders: {},
                 user: {},
@@ -75,6 +80,10 @@
                 }
 
             },
+            updateList() { //when an order is updated or added
+                this.getOrders(); //fetch the orders again to get the new data
+                this.listUpdate += 1 //increase the key 'listUpdate' by 1 in order to re-render order list
+            }
         },
 
         mounted() {
