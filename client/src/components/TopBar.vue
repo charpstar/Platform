@@ -8,17 +8,20 @@
             <v-menu id="menu" offset-y v-model="menuOpen" :close-on-content-click="false">
                 <template v-slot:activator="{ on }">
 					<!-- added fab to make button round, color,dark-->
-                    <v-btn text id="menuButton" v-on="on" fab dark color="#1FB1A9" >
+                     <div class="account">
+						<v-btn text id="menuButton" v-on="on" fab dark color="#1FB1A9" >
                         <p
                             class="notification-badge"
                             v-if="Object.values(notifications).length > 0"
                         >{{Object.values(notifications).length}}</p>
 						<!-- Div created for styling of p and icon-->
-                        <div class="account">
+                       
                         <!-- <i class="material-icons" id="acountIcon" color="#1FB1A9" >account_circle</i> -->
 						<v-icon large >mdi-account</v-icon>
-						<p class="accountName">{{account.name}}</p></div>
+						
                     </v-btn>
+					<p class="accountName">{{account.name}}</p>
+					</div>
                 </template>
                 <v-list>
                     <v-list-item v-for="(item, index) in items" :key="index" @click="item.click">
@@ -152,8 +155,15 @@ export default {
 }
 //Added To style p (account.name)
 .accountName {
-	font-size: 10px  !important;
-	margin-right: 10px; 
-} 
+	font-size: 15px  !important;
+margin-right: 10px;
+}
+.account{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center
+	;
+}
 
 </style>
