@@ -227,7 +227,7 @@ export default {
         //    filteredItems() { 
         //     if (!this.search) {
         //         /* Initial code in v-data-table: :items="Object.values(models)" */
-        //         return Object.values(this.models)
+        //         return this.items
         //     }
         //     else {
         //         var items = []
