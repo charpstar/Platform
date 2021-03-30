@@ -40,10 +40,12 @@
                     </v-list>
                 </v-menu>
             </div>
+            <!-- Instead of using the Object.values as they are, use a computed property "items" -->
+            <!-- :items="Object.values(models)" -->
             <v-data-table
                 id="table"
                 :headers="filteredHeaders"
-                :items="Object.values(models)"
+                :items="items"
                 :items-per-page="-1"
                 :must-sort="true"
                 :sort-by="'name'"
@@ -77,8 +79,14 @@
                                 <span v-if="item.modelowner">{{item.modelowner}}</span>
                                 <span v-else ><i>Unassigned</i></span>    
                             </td>
-                            <td>{{backend.messageFromStatus(item.state, account.usertype)}}</td>
-                            <td>{{sumProducts(item)}}</td>
+                            <!-- State is already defined in items() -->
+                            <!-- <td>{{backend.messageFromStatus(item.state, account.usertype)}}</td> -->
+                            <td>{{item.state}}</td>
+                            
+                            <!-- Products already defined in items() -->
+                            <!-- <td>{{sumProducts(item)}}</td> -->
+                            <td>{{item.products}}</td>
+                            
                         </tr>
                     </tbody>
                 </template>
@@ -196,6 +204,23 @@ export default {
             }
             return this.headers
         },
+        items() {
+            // Create an items array to use as data in the table 
+            // so that "value" in the headers matches exactly the table data;
+            // this makes "search" work properly
+            var account = this.account.usertype
+            return Object.values(this.models).map(model => (
+                {
+                    modelid: model.modelid,
+                    modelname: model.modelname,
+                    client: model.client,
+                    modelowner: model.modelowner,
+                    state: backend.messageFromStatus(model.state, account),
+                    products: this.sumProducts(model)
+                }
+            ))
+        }
+        },
         //custom filtering function instead of :search="search" in v-data-table
         //to allow more freedom in filtering results:
         
@@ -218,19 +243,29 @@ export default {
         //         return items
         //     }
         // }
-    },
     mounted() {
-        // eslint-disable-next-line no-console
-        console.log(Object.values(this.models))
         var vm = this;
         if (vm.account.usertype != "Client") {
-            vm.filters["ProductMissing"] = "Missing information";
-            vm.filters["ProductQAMissing"] = "Missing client information";
-            vm.filters["ProductReview"] = "Awaiting review";
+            // Changed the filter key to match the filter text
+            // Also changed the text to match exactly what is in the table
+            vm.filters["Information missing"] = "Information missing";
+            vm.filters["Client information missing"] = "Client information missing";
+            vm.filters["QA review"] = "QA review";
+            vm.filters["Unassigned"] = "Unassigned";
+
+            // vm.filters["ProductMissing"] = "Missing information";
+            // vm.filters["ProductQAMissing"] = "Missing client information";
+            // vm.filters["ProductReview"] = "Awaiting review";
             
         } else {
-            vm.filters["ProductQAMissing"] = "Missing information";
-            vm.filters["ClientProductReceived"] = "Awaiting review";
+            // Changed the filter key to match the filter text
+            // Also changed the text to match exactly what is in the table
+            vm.filters["Information missing"] = "Information missing";
+            vm.filters["Under development"] = "Under development";
+            vm.filters["Under review"] = "Under review";
+
+            // vm.filters["ProductQAMissing"] = "Missing information";
+            // vm.filters["ClientProductReceived"] = "Awaiting review";
         }
 
     /* Moved to parent component (ModelOverview) */

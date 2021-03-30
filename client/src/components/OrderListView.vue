@@ -46,7 +46,7 @@
                     </v-list>
                 </v-menu>
             </div>
-
+            <!-- Instead of using the Object.values as they are, use a computed property "items" -->
             <!-- :items="Object.values(orders)" -->
             <v-data-table
                 id="table"
@@ -76,13 +76,18 @@
                                 <span v-if="item.qaownername">{{item.qaownername}}</span>
                                 <span v-else ><i>Unassigned</i></span>
                             </td>
-                            <td>{{item.state}}</td>
+                            <!-- State is already defined in items() -->
                             <!-- <td>
                                 {{backend.messageFromStatus(item.state, account.usertype)}}
                             </td> -->
+                            <td>{{item.state}}</td>
+                            
                             <td>{{item.models}}</td>
-                            <td>{{item.products}}</td>
+                            
+                            <!-- Products already defined in items() -->
                             <!-- <td>{{sumProducts(item)}}</td> -->
+                            <td>{{item.products}}</td>
+                            
                         </tr>
                     </tbody>
                 </template>
@@ -193,15 +198,20 @@ export default {
             return this.headers
         },
         items(){
+            // Create an items array to use as data in the table 
+            // so that "value" in the headers matches exactly the table data;
+            // this makes "search" work properly
             var account = this.account.usertype
             return Object.values(this.orders).map(order => (
-               {orderid: order.orderid,
-               time: order.time,
-               clientname: order.clientname,
-               qaownername: order.qaownername,
-               state: backend.messageFromStatus(order.state, account),
-               models: order.models,
-               products: this.sumProducts(order)}
+                {
+                    orderid: order.orderid,
+                    time: order.time,
+                    clientname: order.clientname,
+                    qaownername: order.qaownername,
+                    state: backend.messageFromStatus(order.state, account),
+                    models: order.models,
+                    products: this.sumProducts(order)
+                }
             ))
         }
     },
@@ -279,18 +289,12 @@ export default {
         var vm = this;
         if (vm.account.usertype == "QA" || vm.account.usertype == "Admin") {
             vm.filters[vm.account.name] = "Assigned to me";
+            // Changed the filter key; no need to have the code for unassigned, we can just write "unassigned"
             vm.filters['Unassigned'] = "Unassigned";
+
             // vm.filters['OrderReceived'] = "Unassigned";
         }
         // vm.getOrders(); // has moved to parent (OrderOverview.vue)
-        // eslint-disable-next-line no-console
-        console.log(this.items)
-        // eslint-disable-next-line no-console
-        console.log(Object.values(this.orders))
-    },
-    updated(){
-          // eslint-disable-next-line no-console
-        console.log(this.search)
     }
 };
 </script>
