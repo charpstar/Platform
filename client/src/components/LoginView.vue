@@ -17,7 +17,7 @@
             <p class="error" v-if="button.error">{{button.error}}</p>
         </transitionexpandheight>
         <v-btn rounded color="#1FB1A9"
-		dark small
+		small
             @click="button.execute"
             :loading="button.loading"
             :disabled="!email || !password"
@@ -88,6 +88,7 @@ h1 {
     max-width: 200px;
 }
 .v-btn {
-    margin-top: 10px;
+	margin-top: 10px;
+	color: white;
 }
 </style>
