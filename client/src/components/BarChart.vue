@@ -6,7 +6,7 @@
             :chart-data="barData"
             :options="barOptions"
             :plugins="plugins"
-            :height="$vuetify.breakpoint.mdAndUp ? 300 : 400"
+            :height="300"
             />
         <!-- Previous code for creating a progress bar -->
 

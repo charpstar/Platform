@@ -1,6 +1,6 @@
 <template>
-<!-- If screen is md(960px) and up, apply styling for 'view', otherwise use default styling (mobileView) -->
-    <div id="order-list" :class="$vuetify.breakpoint.mdAndUp ? 'view' : 'mobileView'">
+<!-- If screen is md(960px) and up, apply styling for 'view', otherwise use default styling -->
+    <div id="order-list" :class="$vuetify.breakpoint.mdAndUp ? 'view' : ''">
 
         <div class="flexrow" id="topRow">
             <div class="flexrow arrowBack">

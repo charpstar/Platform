@@ -1,5 +1,5 @@
 <template>
-    <div :class="$vuetify.breakpoint.lgAndUp ? 'flexrow' : ''">
+    <div :class="$vuetify.breakpoint.mdAndUp ? 'flexrow' : ''">
         <!--'key' re-renders the child component when listUpdate changes
             i.e. when a model is updated-->
         <model-list-view 
