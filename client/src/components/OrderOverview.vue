@@ -1,5 +1,7 @@
 <template>
-    <div class="flexrow">
+<!-- Show order list and details in a row for bigger screens, and in a column for smaller ones-->
+    <div :class="$vuetify.breakpoint.mdAndUp ? 'flexrow' : ''">
+        
         <!--'key' re-renders the child component when listUpdate changes
             i.e. when an order is updated-->
         <order-list-view

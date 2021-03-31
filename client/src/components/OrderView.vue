@@ -1,6 +1,8 @@
 <template>
-    <div class="view">
-		<!-- commenting off as it has moved to expansion panel (can eb deleted later)-->
+<!-- If screen is md(960px) and up, apply styling for 'view', otherwise use styling for 'mobileView' -->
+    <div :class="$vuetify.breakpoint.mdAndUp ? 'view' : 'mobileView'">
+
+		<!-- commenting off as it has moved to expansion panel (can be deleted later)-->
         <!-- <v-dialog v-model="assign.modal" width="500">
             <div class="card">
                 <v-select :items="qas" label="QA" v-model="qa">
@@ -15,6 +17,8 @@
                 <p class="error-text" v-if="assign.error">{{assign.error}}</p>
             </div>
         </v-dialog> -->
+
+        
         <div class="flexrow" id="topRow">
             <div>
                 <!-- It is probably best to leave the following button out, as user
@@ -28,11 +32,12 @@
                 <h3>Order details <span v-if="orderid">- {{orderid}}</span>  </h3>
             </div>
         </div>
+      
         <div class="flexrow" id="order">
             <!-- Most of the following code is not necessary when orders' list is displayed 
             next to the order details; modals and other necessary code will be in expansion
             panels instead, like for "Product states" -->
-
+              <!-- This div is not used: -->
             <!-- <div class="flexcolumn">
                 <table>
                     <tr>
@@ -118,8 +123,8 @@
                         <v-icon right>mdi-file-plus</v-icon>
                     </excelupload>
                 </div>  -->
-            </div>
-            <div class="d-flex" v-if="orderid">
+            <!-- </div> -->
+            <div class='d-flex' v-if="orderid">
                 <div>
                 <!-- Pass props to the bar chart component in order to render graph -->
                     <barchart 
@@ -132,7 +137,9 @@
                         :total="products"
                         :status="backend.messageFromStatus(order.state, account.usertype)"/>
                 </div>
-				<div class="flexcol" id="buttons">
+                <!-- If scren is less than 435px in width, display the buttons in a column
+                    so that they fit in the screen and they don't become too small -->
+				<div :class="$vuetify.breakpoint.width > 435 ? 'flexrow' : 'flexcol'" id="buttons">
                     <v-btn @click="viewModels" color="#1FB1A9" rounded dark small>View Models <v-icon right>mdi-file-image-outline</v-icon></v-btn>
                     <v-btn @click="downloadExcel" color="#1FB1A9" rounded dark small>
                         Export Models
@@ -231,7 +238,7 @@
                 No order has been selected
             </div>
         </div>
-    <!-- </div> -->
+    </div>
 </template>
 <script>
 import backend from "./../backend";
@@ -410,7 +417,7 @@ export default {
 
 <style lang="scss" scoped>
 #buttons {
-	flex-direction:row;
+	// flex-direction:row;
 	justify-content: space-between;
     align-items: flex-start;
     > * {
@@ -421,6 +428,13 @@ export default {
         padding-top: 16px;
         padding-bottom: 16px;
     } 
+}
+
+#buttons.flexcol { //when screen is less than 435px in width apply slightly different styling:
+    align-items: center;
+    > * {
+        margin-top: 1px;
+    }
 }
 #order {
     align-items: flex-start;
@@ -451,6 +465,10 @@ table {
 .view {
     width: 40vw;
     margin-left: 1em;
+}
+
+.mobileView { // for smaller screens, apply a litle margin to separate orders' table and details
+    margin-top: 2em;
 }
 
 .expansionIcon {
