@@ -159,7 +159,7 @@
 
                 <v-expansion-panels focusable>
                     <v-expansion-panel>
-                        <v-expansion-panel-header disable-icon-rotate>
+                        <v-expansion-panel-header disable-icon-rotate style="background:rgb(134,134,134,0.1);">
                             Product states
                             <template v-slot:actions>
                                 <v-icon class="expansionIcon">
@@ -180,7 +180,7 @@
                     </v-expansion-panel>
 					<!--added expansion panel for comments-->
 					<v-expansion-panel>
-                        <v-expansion-panel-header disable-icon-rotate>
+                        <v-expansion-panel-header disable-icon-rotate style="background:rgb(134,134,134,0.1);">
                             Comments
                             <template v-slot:actions>
                                 <v-icon class="expansionIcon">
@@ -201,7 +201,7 @@
                         <!--added expansion panel for AssignQA-->
                     </v-expansion-panel>
                     <v-expansion-panel v-if="account.usertype == 'Admin'">
-                        <v-expansion-panel-header disable-icon-rotate>
+                        <v-expansion-panel-header disable-icon-rotate style="background:rgb(134,134,134,0.1);">
                             Assign QA
                             <template v-slot:actions>
                                 <v-icon class="expansionIcon">
