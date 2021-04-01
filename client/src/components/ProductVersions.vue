@@ -1,8 +1,10 @@
 <template>
 <!-- This component includes the buttons for copying and uploading product links 
     and the button to compare versions -->
-
-  <div :id="account.usertype == 'Client' ? 'versionsClient' : 'versions'">
+<!-- If screen is 650px and up, apply styling for 'view', otherwise use styling for 'mobileView' -->
+  <div 
+    :id="account.usertype == 'Client' ? 'versionsClient' : 'versions'"
+    :class="$vuetify.breakpoint.width > 650 ? 'view' : 'mobileView'">
       <!-- Layout for all users except client -->
       <div v-if="account.usertype !== 'Client'" class="links">
         <div class="link">
@@ -161,15 +163,18 @@
     }
 
     /*  Styling of the links and 'compare versions' layout for non-client view*/
-    #versions {
+    #versions.view { // screens bigger than 650px
       display: flex;
       flex-direction: column;
       align-items: center;
+      margin-top: 10px;
+      margin-bottom: 30px;
+      width: 100%;
         .links {
           width: 100%;
+          margin-bottom: 20px;
           display: flex;
           justify-content: space-between;
-          margin-bottom: 30px;
         }
         .link {
           display: flex;
@@ -179,13 +184,49 @@
         }
     }
 
+      #versions.mobileView { // screens smaller than 650px
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 10px;
+      width: 100%;
+        .links {
+          width: 100%;
+          margin-bottom: 10px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .link {
+          display: flex;
+          margin-bottom: 20px;
+        }
+        .copy {
+          margin-right: 5px;
+        }
+    }
+
     /*  Styling of the links and 'compare versions' layout for client view*/
-    #versionsClient {
+    #versionsClient.view { // screens bigger than 650px
       display: flex;
       justify-content: space-around;
       align-items: center;
-        .links{
-          display: flex;
-        }
+      width: 100%;
+        // .links{
+        //   display: flex;
+        // }
+    }
+
+    #versionsClient.mobileView { // screens smaller than 650px
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      .link {
+        margin-bottom: 10px;
+      }
+        // .links{
+        //   display: flex;
+        // }
     }
 </style>

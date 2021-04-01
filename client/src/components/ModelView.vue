@@ -1,6 +1,8 @@
 <template>
     <div>
-        <div class="item" v-if="modelid">
+        <!-- If screen is md(960px) and up, apply styling for 'view', otherwise use styling for 'mobileView' -->
+        <div :class="$vuetify.breakpoint.mdAndUp ? 'item' : 'mobileView'" v-if="modelid">
+        <!-- <div class="item" v-if="modelid"> -->
             <h3> {{model.modelname}} </h3>
             <div class="row" id="topRow">
                 <!-- <v-btn icon class="hidden-xs-only">
@@ -104,6 +106,8 @@ export default {
         backend.getProducts(vm.modelid).then(products => {
             Vue.set(vm, "products", products);
         })
+          // eslint-disable-next-line no-console
+        console.log(this.$vuetify.breakpoint.width)
     }
 };
 </script>

@@ -8,25 +8,28 @@
     >
     <!-- <div class="flexrow" id="itemsrow"> -->
     <div id="itemsrow">
-      <div id="productTitle">
+      <div id="productTitle" :class="$vuetify.breakpoint.width < 550 ? 'mobileView' : ''">
         <p>{{ product.color }}</p>
-        <a :href="product.link" target="_blank">
-          <v-btn rounded class="actionBtn">
-            <span>Product page</span>
-            <v-icon>mdi-link</v-icon>
-          </v-btn>
-        </a>
-        <!-- Replaced the tooltip for editing the product page with a button -->
-        <v-btn
-          outlined
-          rounded
-          id="editBtn"
-          @click="edit.modal = true"
-          v-if="account.usertype == 'Client'"
-        >
-          <span>Edit</span>
-          <v-icon class="iconColor">mdi-border-color</v-icon>
-        </v-btn>
+        <p class="productBtns">
+            <a :href="product.link" target="_blank">
+            <v-btn rounded class="actionBtn">
+              <span>Product page</span>
+              <v-icon>mdi-link</v-icon>
+            </v-btn>
+            </a>
+            <!-- Replaced the tooltip for editing the product page with a button -->
+            <v-btn
+              outlined
+              rounded
+              id="editBtn"
+              @click="edit.modal = true"
+              v-if="account.usertype == 'Client'"
+            >
+              <span>Edit</span>
+              <v-icon class="iconColor">mdi-border-color</v-icon>
+            </v-btn>
+        </p>
+        
       </div>
 
       <div class="column" style="position:relative;">
@@ -438,6 +441,19 @@
     justify-content: space-around;
     align-items: center;
     margin-bottom: 5px;
+  }
+  .mobileView#productTitle {
+    display: flex;
+    flex-direction: column;
+    // align-items: center;
+    margin-bottom: 5px;
+    height: 20vh;
+  }
+
+  .mobileView .productBtns {
+    margin-top: 30px;
+    // display: flex;
+    width: 100px;
   }
 
   .actionBtn {
