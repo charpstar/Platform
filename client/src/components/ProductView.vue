@@ -450,6 +450,7 @@
     display: flex;
     justify-content: space-around;
   }
+
   .mobileView#productTitle {
     display: flex;
     flex-direction: column;
