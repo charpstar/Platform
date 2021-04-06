@@ -136,6 +136,10 @@ h3 {
     margin-left: 1em;
 }
 
+.mobileView {
+    margin-top: 2em;
+}
+
 #topRow {
     // justify-content: space-between;
     justify-content: flex-end;

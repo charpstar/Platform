@@ -8,6 +8,8 @@
     >
     <!-- <div class="flexrow" id="itemsrow"> -->
     <div id="itemsrow">
+      <!-- If screen is smaller than 550px, apply class "mobileView" and related styling
+      to display all elements in the screen properly -->
       <div id="productTitle" :class="$vuetify.breakpoint.width < 550 ? 'mobileView' : ''">
         <p>{{ product.color }}</p>
         <p class="productBtns">
@@ -445,15 +447,17 @@
   .mobileView#productTitle {
     display: flex;
     flex-direction: column;
-    // align-items: center;
     margin-bottom: 5px;
-    height: 20vh;
   }
 
   .mobileView .productBtns {
     margin-top: 30px;
-    // display: flex;
+    display: flex;
+    justify-content: center;
     width: 100px;
+    > * {
+      margin-right: 10px;
+    }
   }
 
   .actionBtn {
