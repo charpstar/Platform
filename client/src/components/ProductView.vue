@@ -444,6 +444,12 @@
     align-items: center;
     margin-bottom: 5px;
   }
+
+  .productBtns {
+    width: 50%;
+    display: flex;
+    justify-content: space-around;
+  }
   .mobileView#productTitle {
     display: flex;
     flex-direction: column;
