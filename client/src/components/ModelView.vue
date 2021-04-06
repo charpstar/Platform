@@ -105,6 +105,15 @@ export default {
         });
         backend.getProducts(vm.modelid).then(products => {
             Vue.set(vm, "products", products);
+        }).then(()=>{ 
+            Object.values(this.products).forEach(p => {
+                //for each product in the model, make sure that the newAndroidLink is updated 
+                //in order to get a preview of the model; if the link is null, we don't get a preview
+                if(p.newandroidlink && p.newandroidlink.includes('oldandroid')){
+                        var newLink = p.newandroidlink.replace('oldandroid', 'newandroid')
+                        p.newandroidlink = newLink
+                    }
+            });
         })
           // eslint-disable-next-line no-console
         console.log(this.$vuetify.breakpoint.width)

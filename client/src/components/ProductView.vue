@@ -184,7 +184,7 @@
 
       <v-expansion-panels class="expansionPanels">
         <v-expansion-panel>
-          <v-expansion-panel-header
+          <v-expansion-panel-header isable-icon-rotate style="background:rgb(134,134,134,0.1);"
             v-if="account.usertype != 'Client'"
             disable-icon-rotate
           >
@@ -228,7 +228,7 @@
         </v-expansion-panel>
         <v-expansion-panel v-if="account.usertype != 'Modeller'">
           <v-expansion-panel-header
-            disable-icon-rotate
+            disable-icon-rotate isable-icon-rotate style="background:rgb(134,134,134,0.1);"
           >
             {{ account.usertype == 'Client' ? 'Comments' : 'Client Comments' }}
              <template v-slot:actions>
