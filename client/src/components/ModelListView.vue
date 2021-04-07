@@ -268,7 +268,8 @@ export default {
             // vm.filters["ProductQAMissing"] = "Missing information";
             // vm.filters["ClientProductReceived"] = "Awaiting review";
         }
-        
+        // eslint-disable-next-line no-console
+        console.log(vm.models)
         // backend.getProducts(Object.values(vm.models)[0].modelid)
         // // eslint-disable-next-line no-console
         // .then((products) => {console.log(products)})

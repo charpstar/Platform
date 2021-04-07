@@ -20,7 +20,7 @@
             <v-tabs v-model="tab" show-arrows v-if="account.usertype != 'Client' && model">
             <!-- <v-tabs v-model="tab" show-arrows v-else> -->
                 <v-tabs-slider></v-tabs-slider>
-                <v-tab :href="`#blendertab`">Model details</v-tab>
+                <v-tab :href="`#blendertab`">Product details</v-tab>
                 <!-- <v-tab v-if="account.usertype != 'Client'" :href="`#blendertab`">Model</v-tab> -->
                 <v-tab v-for="(p, id) in products" :key="id" :href="`#tab-${id}`">{{p.color}}</v-tab>
                 <v-tab-item :value="'blendertab'" class="tab">
@@ -110,6 +110,8 @@ export default {
         backend.getModel(vm.modelid).then(model => {
             model.files = [];
             vm.model = model;
+                    // eslint-disable-next-line no-console
+        console.log(vm.model)
         });
         backend.getProducts(vm.modelid).then(products => {
             Vue.set(vm, "products", products);
