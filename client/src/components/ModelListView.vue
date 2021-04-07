@@ -86,7 +86,7 @@
                             
                             <!-- Products already defined in items() -->
                             <!-- <td>{{sumProducts(item)}}</td> -->
-                            <td>{{item.products}}</td>
+                            <!-- <td>{{item.products}}</td> -->
                             
                         </tr>
                     </tbody>
@@ -151,7 +151,7 @@ export default {
                 { text: "Client", value: "client", hideClient: true},
                 { text: "Modeller", value: "modelowner", hideClient: true, hideModeller: true},
                 { text: "Status", value: "state" },
-                { text: "Products", sortable: false, value: "products" },
+                // { text: "Products", sortable: false, value: "products" },
                 // { text: "Product states", value: "partitiondata" }
             ],
             filters: {},
@@ -217,7 +217,7 @@ export default {
                     client: model.client,
                     modelowner: model.modelowner,
                     state: backend.messageFromStatus(model.state, account),
-                    products: this.sumProducts(model)
+                    // products: this.sumProducts(model)
                 }
             ))
         }
@@ -269,9 +269,9 @@ export default {
             // vm.filters["ClientProductReceived"] = "Awaiting review";
         }
         
-        backend.getProducts(Object.values(vm.models)[0].modelid)
-        // eslint-disable-next-line no-console
-        .then((products) => {console.log(products)})
+        // backend.getProducts(Object.values(vm.models)[0].modelid)
+        // // eslint-disable-next-line no-console
+        // .then((products) => {console.log(products)})
         
 
     /* Moved to parent component (ModelOverview) */

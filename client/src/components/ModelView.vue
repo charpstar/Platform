@@ -17,9 +17,11 @@
                 </excelupload>
             </div>
             <v-progress-circular v-if="!model" indeterminate></v-progress-circular>
-            <v-tabs v-model="tab" show-arrows v-else>
+            <v-tabs v-model="tab" show-arrows v-if="account.usertype != 'Client' && model">
+            <!-- <v-tabs v-model="tab" show-arrows v-else> -->
                 <v-tabs-slider></v-tabs-slider>
-                <v-tab v-if="account.usertype != 'Client'" :href="`#blendertab`">Model</v-tab>
+                <v-tab :href="`#blendertab`">Model details</v-tab>
+                <!-- <v-tab v-if="account.usertype != 'Client'" :href="`#blendertab`">Model</v-tab> -->
                 <v-tab v-for="(p, id) in products" :key="id" :href="`#tab-${id}`">{{p.color}}</v-tab>
                 <v-tab-item :value="'blendertab'" class="tab">
                     <!-- @updated-model: communicate to parent that data has changed 
@@ -38,6 +40,14 @@
                         @state="updateOnStateChange"/>
                 </v-tab-item>
             </v-tabs>
+            <div v-if="account.usertype == 'Client' && model">
+                <productview 
+                v-for="(p, id) in products" :key="id" 
+                :model="model" 
+                :product="p" 
+                :account="account" 
+                @state="updateOnStateChange"/>
+            </div>
         </div>
         <!-- Message to display if there is no data, i.e. no modelid sent from parent component -->
         <div class="item" v-if="!modelid">
