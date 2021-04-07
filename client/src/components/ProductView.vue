@@ -377,6 +377,8 @@
       setTimeout(() => {
         vm.hideMv = false
       }, 500)
+      // eslint-disable-next-line no-console
+      console.log(vm.product)
     }
   }
 </script>

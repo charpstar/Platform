@@ -6,7 +6,8 @@
                     <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
                 </v-btn>
             </div>    
-            <h2>Models</h2>
+            <h2>Products</h2>
+            <!-- <h2>Models</h2> -->
         </div>
         
         <div id="itemsView">
@@ -267,6 +268,11 @@ export default {
             // vm.filters["ProductQAMissing"] = "Missing information";
             // vm.filters["ClientProductReceived"] = "Awaiting review";
         }
+        
+        backend.getProducts(Object.values(vm.models)[0].modelid)
+        // eslint-disable-next-line no-console
+        .then((products) => {console.log(products)})
+        
 
     /* Moved to parent component (ModelOverview) */
     //     if (vm.$route.path.includes("/modeller/")) {
