@@ -201,7 +201,64 @@
                             </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
-                </v-expansion-panels>
+					<!-- Added deadline -->
+					<v-expansion-panel v-if="account.usertype !== 'Client'">
+                        <v-expansion-panel-header disable-icon-rotate style="background:rgb(134,134,134,0.1);">
+                            Deadline
+                            <template v-slot:actions>
+                                <v-icon class="expansionIcon">
+                                    mdi-calendar
+                                </v-icon>
+                            </template>	
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <div>
+                              <v-menu
+        ref="menu"
+        v-model="menu"
+        :close-on-content-click="false"
+        :return-value.sync="date"
+        transition="scale-transition"
+        offset-y
+        min-width="auto"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            v-model="date"
+            label="Deadline"
+            prepend-icon="mdi-calendar"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker
+          v-model="date"
+          no-title
+          scrollable
+		id="dateBtn"
+        >
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            class="dateconfirmBtn"
+            @click="menu = false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            text
+            class="dateconfirmBtn"
+            @click="$refs.menu.save(date)"
+          >
+            OK
+          </v-btn>
+        </v-date-picker>
+      </v-menu>
+	</div>
+	</v-expansion-panel-content>
+	</v-expansion-panel>
+	</v-expansion-panels>
 
                 <!-- <table id="itemTable"> -->
                     <!-- <tr>
@@ -274,6 +331,8 @@ export default {
             file: "",
             backend: backend,
             assignSnackbar: false,
+			date: new Date().toISOString().substr(0, 10),
+			menu: false
         };
     },
     methods: {
@@ -525,4 +584,15 @@ h3 {
 	margin-top: 15px;
 	width: 10px;
 }
+.v-date-picker-table .v-btn {
+	background-color:white !important;
+} 
+
+.dateconfirmBtn{
+	background-color: white !important 
+} 
+
+	
+
+
 </style>
