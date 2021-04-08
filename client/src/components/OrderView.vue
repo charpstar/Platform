@@ -140,7 +140,7 @@
                 <!-- If screen is less than 460px in width, display the buttons in a column
                     so that all fit in the screen and they don't become too small -->
 				<div :class="$vuetify.breakpoint.width > 460 ? 'flexrow' : 'flexcol'" id="buttons">
-                    <v-btn @click="viewModels" color="#1FB1A9" rounded dark small>View Models <v-icon right>mdi-file-image-outline</v-icon></v-btn>
+                    <v-btn @click="viewModels" color="#1FB1A9" rounded dark small>View Products <v-icon right>mdi-file-image-outline</v-icon></v-btn>
                     <v-btn @click="downloadExcel" color="#1FB1A9" rounded dark small>
                         Export Products
                         <v-icon right>mdi-file-export-outline</v-icon>
