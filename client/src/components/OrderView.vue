@@ -142,7 +142,7 @@
 				<div :class="$vuetify.breakpoint.width > 460 ? 'flexrow' : 'flexcol'" id="buttons">
                     <v-btn @click="viewModels" color="#1FB1A9" rounded dark small>View Models <v-icon right>mdi-file-image-outline</v-icon></v-btn>
                     <v-btn @click="downloadExcel" color="#1FB1A9" rounded dark small>
-                        Export Models
+                        Export Products
                         <v-icon right>mdi-file-export-outline</v-icon>
                     </v-btn>
                     <confirmmodal 
@@ -159,7 +159,7 @@
                     @file="file=$event" 
                     v-if="account.usertype == 'Client' && order.state != 'Done'"
                     title="Add models">
-                        Add models
+                        Add products
                         <v-icon right>mdi-file-plus</v-icon>
                     </excelupload>
                 </div> 

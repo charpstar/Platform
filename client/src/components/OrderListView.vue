@@ -83,7 +83,7 @@
                             </td> -->
                             <td>{{item.state}}</td>
                             
-                            <td>{{item.models}}</td>
+                            <!-- <td>{{item.models}}</td> -->
                             
                             <!-- Products already defined in items() -->
                             <!-- <td>{{sumProducts(item)}}</td> -->
@@ -172,7 +172,7 @@ export default {
                 { text: "Client", value: "clientname", hideClient: true},
                 { text: "Assigned QA", value: "qaownername"},
                 { text: "Status", value: "state"},
-                { text: "Models", value: "models"},
+                // { text: "Models", value: "models"},
                 { text: "Products", value: "products"},
                 // { text: "Product states", value: "partitiondata"},
             ],
@@ -209,7 +209,7 @@ export default {
                     clientname: order.clientname,
                     qaownername: order.qaownername,
                     state: backend.messageFromStatus(order.state, account),
-                    models: order.models,
+                    // models: order.models,
                     products: this.sumProducts(order)
                 }
             ))
