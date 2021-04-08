@@ -202,7 +202,7 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 					<!-- Added deadline -->
-					<v-expansion-panel v-if="account.usertype == 'Admin'">
+					<!-- <v-expansion-panel v-if="account.usertype == 'Admin'">
                         <v-expansion-panel-header disable-icon-rotate style="background:rgb(134,134,134,0.1);">
                             Deadline
                             <template v-slot:actions>
@@ -258,7 +258,7 @@
                                     </v-menu>
                                 </div>
                             </v-expansion-panel-content>
-                        </v-expansion-panel>
+                        </v-expansion-panel> -->
                     </v-expansion-panels>
 
                 <!-- <table id="itemTable"> -->
