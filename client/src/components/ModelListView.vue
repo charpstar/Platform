@@ -1,5 +1,7 @@
 <template>
-    <div class="modelsList">
+<!-- If screen is md(960px) and up, apply styling for 'modelsList', otherwise use default styling -->
+    <div :class="$vuetify.breakpoint.mdAndUp ? 'modelsList' : ''">
+    <!-- <div class="modelsList"> -->
         <div class="flexrow" id="topRow">
             <div class="flexrow arrowBack">
                 <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Modeller'">
@@ -42,9 +44,13 @@
                 </v-menu>
             </div>
             <!-- Instead of using the Object.values as they are, use a computed property "items" -->
-            <!-- :items="Object.values(models)" -->
+            <!-- Old-> :items="Object.values(models)" -->
+
+            <!-- add a class "mobileList" to style the table for small screens
+                and view the "sort" dropdown properly -->
             <v-data-table
                 id="table"
+                :class="$vuetify.breakpoint.width < 600 ? 'mobileList' : ''"
                 :headers="filteredHeaders"
                 :items="items"
                 :items-per-page="-1"
@@ -309,13 +315,6 @@ export default {
         width: 60%;
     }
 }
-#table {
-    max-height: 100vh;
-    // max-height: 70vh;
-    overflow: auto;
-    // width: 80vw;
-    width: 50vw; // to fit both order list and order details
-}
 
 .thumbnail {
     max-width: 50px;
@@ -341,6 +340,23 @@ th {
     border-right: 2px solid rgb(179, 179, 179);
 }
 
+.modelsList #table {
+    max-height: 100vh;
+    // max-height: 70vh;
+    overflow: auto;
+    // width: 80vw;
+    width: 50vw; // to fit both order list and order details
+}
+
+.mobileList#table{
+    td:first-of-type {
+        //Set min-width for the first column to view "sort" dropdown properly
+        min-width: 105px;
+    }
+  
+    
+}
+
 .highlightedRow {
     background-color: rgba(31, 177, 169, 0.1);
 }
@@ -352,5 +368,14 @@ div.emptyState {
     align-items: center;
     color: #515151;
 }
+
+// #table {
+//     max-height: 100vh;
+//     // max-height: 70vh;
+//     overflow: auto;
+//     // width: 80vw;
+//     width: 50vw; // to fit both order list and order details
+// }
+
 
 </style>

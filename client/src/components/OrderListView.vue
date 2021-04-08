@@ -1,5 +1,6 @@
 <template>
-    <div id="order-list">
+<!-- If screen is md(960px) and up, apply styling for 'view', otherwise use default styling -->
+    <div id="order-list" :class="$vuetify.breakpoint.mdAndUp ? 'view' : ''">
 
         <div class="flexrow" id="topRow">
             <div class="flexrow arrowBack">
@@ -311,12 +312,21 @@ export default {
         width: 60%;
     }
 }
-#table {
-    max-height: 100vh;
-    // max-height: 70vh;
-    overflow: auto;
-    width: 50vw // to fit both order list and order details
-    // width: 80vw;
+
+
+.view {/* Specify styling for screens bigger than 960px: */
+
+    /* Not sure about this border, but it felt right to separate the two sections*/
+    padding-right: 1em;
+    margin-right: 1em;
+    border-right: 2px solid rgb(179, 179, 179);
+    #table {
+        max-height: 100vh;
+        // max-height: 70vh;
+        overflow: auto;
+        width: 50vw // to fit both order list and order details
+        // width: 80vw;
+    }
 }
 
 #table.v-data-table-header th {
@@ -337,13 +347,6 @@ export default {
     align-items: center;
 }
 
-#order-list {
-    /* Not sure about this border, but it felt right to separate the two sections*/
-    padding-right: 1em;
-    margin-right: 1em;
-    border-right: 2px solid rgb(179, 179, 179);
-}
-
 .highlightedRow {
     background-color: rgba(31, 177, 169, 0.1);
 }
@@ -361,4 +364,20 @@ div.emptyState {
     align-items: center;
     color: #515151;
 }
+
+// #table {
+//     max-height: 100vh;
+//     // max-height: 70vh;
+//     overflow: auto;
+//     width: 50vw // to fit both order list and order details
+//     // width: 80vw;
+// }
+
+// #order-list {
+//     /* Not sure about this border, but it felt right to separate the two sections*/
+//     padding-right: 1em;
+//     margin-right: 1em;
+//     border-right: 2px solid rgb(179, 179, 179);
+// }
+
 </style>

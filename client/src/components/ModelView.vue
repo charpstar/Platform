@@ -1,6 +1,8 @@
 <template>
     <div>
-        <div class="item" v-if="modelid">
+        <!-- If screen is md(960px) and up, apply styling for 'view', otherwise use styling for 'mobileView' -->
+        <div :class="$vuetify.breakpoint.mdAndUp ? 'item' : 'mobileView'" v-if="modelid">
+        <!-- <div class="item" v-if="modelid"> -->
             <h3> {{model.modelname}} </h3>
             <div class="row" id="topRow">
                 <!-- <v-btn icon class="hidden-xs-only">
@@ -125,6 +127,8 @@ export default {
                     }
             });
         })
+          // eslint-disable-next-line no-console
+        console.log(this.$vuetify.breakpoint.width)
         // eslint-disable-next-line no-console
         console.log(vm.products)
     }
@@ -144,6 +148,10 @@ h3 {
     // width: 80vw;
     width: 40vw;
     margin-left: 1em;
+}
+
+.mobileView {
+    margin-top: 2em;
 }
 
 #topRow {

@@ -10,41 +10,47 @@
                 <h2>User</h2>
             </div>
         </div>
-        <div class="flexrow" id="user">
+        <div :class="displayWidth" id="user">
+        <!-- <div class="flexrow" id="user"> -->
             <table id="data">
 				<!-- added icon -->
 				<div class="name">
 					<div class="icon"><v-icon color="#1FB1A9" x-large left>mdi-account-circle</v-icon></div>
+                </div>
                 <div>
 				<tr>
-					
                     <td class="textBold"> Name</td>
                     <td>{{user.name}}</td>
                 </tr>
                 <tr>
                     <td class="textBold">Email</td>
                     <td>{{user.email}}</td>
-                </tr></div></div>
+                </tr>
+                </div>
 				<div class="role" >
-                <tr>
-					<!-- changed TYPE to ROLE-->
-                    <td class="textBold">Role</td>
-                    <td>{{user.usertype}}</td>
-                </tr>
-                <tr>
-                    <td class="textBold">ID</td>
-                    <td>{{user.userid}}</td>
-                </tr>
+                    <tr>
+                        <!-- changed TYPE to ROLE-->
+                        <td class="textBold">Role</td>
+                        <td>{{user.usertype}}</td>
+                    </tr>
+                    <tr>
+                        <td class="textBold">ID</td>
+                        <td>{{user.userid}}</td>
+                    </tr>
 				</div>
-                <tr class="active">
+                <div>
+                    <tr class="active">
                     <!-- <td>Active</td> -->
-                    <td >
-                        <!-- <i class="material-icons">{{user.active ? 'check' : 'close'}}</i> -->
-						<v-chip color="#41BF4D" label dark>{{value ? 'Active' : 'Active'}} </v-chip>
-                    </td>
-                </tr>
+                        <td >
+                            <!-- <i class="material-icons">{{user.active ? 'check' : 'close'}}</i> -->
+                            <v-chip color="#41BF4D" label dark>{{value ? 'Active' : 'Active'}} </v-chip>
+                        </td>
+                    </tr>  
+                </div>
+                
             </table>
-            <div class="flexcol" id="buttons">
+            <div id="buttons">
+            <!-- <div class="flexcol" id="buttons"> -->
                 <div class="flexrow" v-if="account.usertype == 'Admin'">
                     <confirmmodal
                         :handler="resetHandler"
@@ -104,6 +110,16 @@ export default {
             snackbar: false
         };
     },
+    computed: {
+        //Compute screen width to return appropriate class and therefore appropriate styling
+        displayWidth() {
+            if(this.$vuetify.breakpoint.width > 1270) 
+                { return 'display' }
+            else if (this.$vuetify.breakpoint.width < 1270 && this.$vuetify.breakpoint.width > 650)
+                { return 'mediumDisplay'}
+            else { return 'mobileDisplay'}
+        }
+    },
     methods: {
         resetUser() {
             var vm = this;
@@ -136,17 +152,37 @@ export default {
         backend.getUser(userid).then(user => {
             vm.user = user;
         });
+        // eslint-disable-next-line no-console
+        console.log(this.$vuetify.breakpoint.width)
     }
 };
 </script>
 
 <style lang="scss" scoped>
 
-#user {
+
+.display#user {
+    display: flex;
+    flex-direction: row;
     justify-content: flex-start;
 	margin-top: 10px;
 }
-#data {
+.mediumDisplay#user {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+	margin-top: 10px;
+}
+.mobileDisplay#user {
+    display: flex;
+    flex-direction: column;
+}
+// #user {
+//     justify-content: flex-start;
+// 	margin-top: 10px;
+// }
+
+.display #data {
 	display: flex;
     font-size: 16px;
     color: grey;
@@ -155,7 +191,31 @@ export default {
     }
 }
 
-#buttons {
+.mediumDisplay #data, .mobileDisplay #data {
+	display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    color: grey;
+    td {
+        padding: 5px;
+    }
+}
+
+.mobileDisplay #data {
+    margin-bottom: 20px;
+}
+
+// #data {
+// 	display: flex;
+//     font-size: 16px;
+//     color: grey;
+//     td {
+//         padding: 5px;
+//     }
+// }
+
+.display #buttons {
+    display: flex;
     align-items: flex-start;
 	justify-content: flex-end;
 	width: 800px;
@@ -166,6 +226,40 @@ export default {
 		margin-top: 5px;
     }
 }
+.mediumDisplay #buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    > * {
+        margin-bottom: 10px;
+        margin-left: 10px;
+		margin-top: 5px;
+    }
+}
+
+.mobileDisplay #buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+	justify-content: flex-start;
+    > * {
+        margin-bottom: 10px;
+        margin-left: 10px;
+		margin-top: 5px;
+    }
+}
+// #buttons {
+//     align-items: flex-start;
+// 	justify-content: flex-end;
+// 	width: 800px;
+// 	flex-direction: row;
+//     > * {
+//         margin-bottom: 10px;
+//         margin-left: 10px;
+// 		margin-top: 5px;
+//     }
+// }
 
 #topRow {
     justify-content: flex-start;

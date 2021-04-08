@@ -1,5 +1,7 @@
 <template>
-   <div class="chart">
+    <!-- Apply styling 'chart' for screens bigger than 960px, and mobileChart for smaller
+    ones in order to visualize the bar chart properly -->
+   <div :class="$vuetify.breakpoint.mdAndUp ? 'chart' : 'mobileChart'">
         <bar-chart-render
             :chart-data="barData"
             :options="barOptions"
@@ -101,7 +103,8 @@ export default {
                 },
 
                 //"responsive" requires container graph component to be relatively positioned
-                //and relative (width, height) values for the container size
+                //and relative (width, height) values for the container size 
+                // maintainAspectRatio: this.$vuetify.breakpoint.mdAndUp ? true : false,
                 responsive: true,
                 scales: {
                     xAxes: [{
@@ -284,6 +287,11 @@ export default {
     .chart {
         position: relative;
         width: 40vw; //only "vw" works in order to have responsive graph, not "%"
+    }
+
+    .mobileChart {
+        position: relative;
+        width: 90vw;
     }
 
 /* This CSS code is not needed when having a charts library */

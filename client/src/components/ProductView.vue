@@ -8,25 +8,30 @@
     >
     <!-- <div class="flexrow" id="itemsrow"> -->
     <div id="itemsrow">
-      <div id="productTitle">
-        <p>Color: {{ product.color }}</p>
-        <a :href="product.link" target="_blank">
-          <v-btn rounded class="actionBtn">
-            <span>Product page</span>
-            <v-icon>mdi-link</v-icon>
-          </v-btn>
-        </a>
-        <!-- Replaced the tooltip for editing the product page with a button -->
-        <v-btn
-          outlined
-          rounded
-          id="editBtn"
-          @click="edit.modal = true"
-          v-if="account.usertype == 'Client'"
-        >
-          <span>Edit</span>
-          <v-icon class="iconColor">mdi-border-color</v-icon>
-        </v-btn>
+      <!-- If screen is smaller than 550px, apply class "mobileView" and related styling
+      to display all elements in the screen properly -->
+      <div id="productTitle" :class="$vuetify.breakpoint.width < 550 ? 'mobileView' : ''">
+        <p>{{ product.color }}</p>
+        <p class="productBtns">
+            <a :href="product.link" target="_blank">
+            <v-btn rounded class="actionBtn">
+              <span>Product page</span>
+              <v-icon>mdi-link</v-icon>
+            </v-btn>
+            </a>
+            <!-- Replaced the tooltip for editing the product page with a button -->
+            <v-btn
+              outlined
+              rounded
+              id="editBtn"
+              @click="edit.modal = true"
+              v-if="account.usertype == 'Client'"
+            >
+              <span>Edit</span>
+              <v-icon class="iconColor">mdi-border-color</v-icon>
+            </v-btn>
+        </p>
+        
       </div>
 
       <div class="column" style="position:relative;">
@@ -440,6 +445,28 @@
     justify-content: space-around;
     align-items: center;
     margin-bottom: 5px;
+  }
+
+  .productBtns {
+    width: 50%;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .mobileView#productTitle {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+  }
+
+  .mobileView .productBtns {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    width: 100px;
+    > * {
+      margin-right: 10px;
+    }
   }
 
   .actionBtn {
