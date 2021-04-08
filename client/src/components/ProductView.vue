@@ -9,7 +9,7 @@
     <!-- <div class="flexrow" id="itemsrow"> -->
     <div id="itemsrow">
       <div id="productTitle">
-        <p>{{ product.color }}</p>
+        <p>Color: {{ product.color }}</p>
         <a :href="product.link" target="_blank">
           <v-btn rounded class="actionBtn">
             <span>Product page</span>
@@ -377,6 +377,8 @@
       setTimeout(() => {
         vm.hideMv = false
       }, 500)
+      // eslint-disable-next-line no-console
+      console.log(vm.product)
     }
   }
 </script>
