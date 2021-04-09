@@ -322,10 +322,13 @@ export default {
 .buttons {
 	display: flex;
 	flex-direction: row;
-	margin-left: 40px;
+	// margin-left: 40px;
 }
 
-
+.v-btn--block {
+    //some buttons had 'min-width: 100%' which made their width 100% at all times
+    min-width: auto !important;
+}
 .approve {
     &.v-btn {
         background-color: green !important;
