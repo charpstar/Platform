@@ -244,6 +244,27 @@ export default {
         }
         return Colors[status]
     },
+    
+    /* backendState: get backend message from forntend message;
+    used in Order and Model lists to apply correct color in 'status' column */
+    backendState(status, usertype) {
+        var message;
+        var backendMessage;
+        if (usertype == 'Client') {
+            message = Object.entries(ClientMessages).find (
+                m => m[1] == status
+            )
+            backendMessage = message[0]
+            return backendMessage
+        }
+        else {
+            message = Object.entries(Messages).find (
+                m => m[1] == status
+            )
+            backendMessage = message[0]
+            return backendMessage                
+        }
+    },
 
     //eslint-disable-next-line no-unused-vars
     iconFromStatus(status, usertype) {

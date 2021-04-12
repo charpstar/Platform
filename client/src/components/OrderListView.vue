@@ -81,7 +81,14 @@
                             <!-- <td>
                                 {{backend.messageFromStatus(item.state, account.usertype)}}
                             </td> -->
-                            <td>{{item.state}}</td>
+                            <td>
+                            <!-- Use v-chip and methods from backend.js to apply the correct color -->
+                                <v-chip 
+                                style="color: white"
+                                :color="backend.colorFromAccount(backend.backendState(item.state, account.usertype), account.usertype)">
+                                    {{item.state}}
+                                </v-chip>
+                            </td>
                             
                             <!-- <td>{{item.models}}</td> -->
                             
