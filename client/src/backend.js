@@ -149,6 +149,13 @@ const ClientMessages = {
     Code to apply colors for different products states in bar graph and in lists 
     Commented code means the colors previously used for the bar chart */
 const Colors = {
+    OrderInit: "grey",
+    OrderReceived: "#868686",
+    OrderReview: "#4A754A",
+    OrderClientReview: "#744885",
+    OrderMissing: "#A33636",
+    OrderDev: "#7FCB7F",
+
     ProductInit: "grey", //maybe different color?
     ProductReceived: "#868686",
     ProductDev: "#7FCB7F",
@@ -173,6 +180,13 @@ const Colors = {
 }
 
 const ClientColors = {
+    OrderInit: "grey",
+    OrderReceived: "#FFA500",
+    OrderReview: "#FFA500",
+    OrderClientReview: "#744885",
+    OrderMissing: "#EC4E4E",
+    OrderDev: "#7FCB7F",
+
     ProductInit: "grey",
     ProductReceived: "#FFA500",
     ProductDev: "#7FCB7F",
