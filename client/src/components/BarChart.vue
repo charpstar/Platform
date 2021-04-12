@@ -35,57 +35,57 @@ export default {
         total: {type: Number, required: true}
         // productdata: {type: Object, required: true}
     },
-    data() {
-        return {
+    // data() {
+    //     return {
+        /* Moved to backend.js to be accessible for various components: */
+            // /* Commented code in colors means the colors previously used for the bar chart */
+            // colors: {
+            //     ProductInit: "grey", //maybe different color?
+            //     ProductReceived: "#868686",
+            //     ProductDev: "#7FCB7F",
+            //     ProductMissing: "#EC4E4E",
+            //     ProductQAMissing: "#A33636",
+            //     ProductReview: "#4A754A",
+            //     ProductRefine: "#FFA500",
+            //     ClientProductReceived: "#744885",
+            //     ClientFeedback: "#1DA19A",
+            //     Done: "#188038",
+            //     Error: "E20000"
+            //     // ProductReceived: "grey",
+            //     // ProductDev: "#0e6ab5",
+            //     // ProductMissing: "#c91463",
+            //     // ProductQAMissing: "#ad239b",
+            //     // ProductReview: "#1496c9",
+            //     // ProductRefine: "#0e6ab5",
+            //     // ClientProductReceived: "#37db4d",
+            //     // ClientFeedback: "#0e6ab5",
+            //     // Done: "green"
 
-            /* Commented code in colors means the colors previously used for the bar chart */
-            colors: {
-                ProductInit: "grey", //maybe different color?
-                ProductReceived: "#868686",
-                ProductDev: "#7FCB7F",
-                ProductMissing: "#EC4E4E",
-                ProductQAMissing: "#A33636",
-                ProductReview: "#4A754A",
-                ProductRefine: "#FFA500",
-                ClientProductReceived: "#744885",
-                ClientFeedback: "#1DA19A",
-                Done: "#188038",
-                Error: "E20000"
-                // ProductReceived: "grey",
-                // ProductDev: "#0e6ab5",
-                // ProductMissing: "#c91463",
-                // ProductQAMissing: "#ad239b",
-                // ProductReview: "#1496c9",
-                // ProductRefine: "#0e6ab5",
-                // ClientProductReceived: "#37db4d",
-                // ClientFeedback: "#0e6ab5",
-                // Done: "green"
-
-            },
-            clientcolors: {
-                ProductInit: "grey",
-                ProductReceived: "#FFA500",
-                ProductDev: "#7FCB7F",
-                ProductMissing: "#7FCB7F",
-                ProductQAMissing: "#EC4E4E",
-                ProductReview: "#7FCB7F",
-                ProductRefine: "#7FCB7F",
-                ClientProductReceived: "#744885",
-                ClientFeedback: "#1DA19A",
-                Done: "#188038",
-                Error: "E20000"
-                // ProductReceived: "grey",
-                // ProductDev: "#0e6ab5",
-                // ProductMissing: "#0e6ab5",
-                // ProductQAMissing: "#ad239b",
-                // ProductReview: "#0e6ab5",
-                // ProductRefine: "#0e6ab5",
-                // ClientProductReceived: "#37db4d",
-                // ClientFeedback: "#0e6ab5",
-                // Done: "green"
-            }
-        };
-    },
+            // },
+            // clientcolors: {
+            //     ProductInit: "grey",
+            //     ProductReceived: "#FFA500",
+            //     ProductDev: "#7FCB7F",
+            //     ProductMissing: "#7FCB7F",
+            //     ProductQAMissing: "#EC4E4E",
+            //     ProductReview: "#7FCB7F",
+            //     ProductRefine: "#7FCB7F",
+            //     ClientProductReceived: "#744885",
+            //     ClientFeedback: "#1DA19A",
+            //     Done: "#188038",
+            //     Error: "E20000"
+            //     // ProductReceived: "grey",
+            //     // ProductDev: "#0e6ab5",
+            //     // ProductMissing: "#0e6ab5",
+            //     // ProductQAMissing: "#ad239b",
+            //     // ProductReview: "#0e6ab5",
+            //     // ProductRefine: "#0e6ab5",
+            //     // ClientProductReceived: "#37db4d",
+            //     // ClientFeedback: "#0e6ab5",
+            //     // Done: "green"
+            // }
+    //     };
+    // },
     
     computed: {
 
@@ -178,7 +178,7 @@ export default {
             dataObj.datasets[0].data = this.orderedstates.map(state => state.count)
 
             //dynamically set colors for each bar
-            dataObj.datasets[0].backgroundColor = this.orderedstates.map(state => this.colorFromAccount(state.stateafter))
+            dataObj.datasets[0].backgroundColor = this.orderedstates.map(state => backend.colorFromAccount(state.stateafter, this.account.usertype))
 
             return dataObj
         },
@@ -266,12 +266,13 @@ export default {
         // }
     },
     methods: {
-        colorFromAccount(state) {
-            if(this.account.usertype == 'Client') {
-                return this.clientcolors[state]
-            }
-            return this.colors[state]
-        },
+        /* Moved to backend.js to be accessible by various components */
+        // colorFromAccount(state) {
+        //     if(this.account.usertype == 'Client') {
+        //         return this.clientcolors[state]
+        //     }
+        //     return this.colors[state]
+        // },
 
         iconFromAccount(state) {
             if(this.account.usertype == 'Client') {
