@@ -145,6 +145,56 @@ const ClientMessages = {
     Error: "Error"
 }
 
+/* Colors and ClientColors:
+    Code to apply colors for different products states in bar graph and in lists 
+    Commented code means the colors previously used for the bar chart */
+const Colors = {
+    ProductInit: "grey", //maybe different color?
+    ProductReceived: "#868686",
+    ProductDev: "#7FCB7F",
+    ProductMissing: "#EC4E4E",
+    ProductQAMissing: "#A33636",
+    ProductReview: "#4A754A",
+    ProductRefine: "#FFA500",
+    ClientProductReceived: "#744885",
+    ClientFeedback: "#1DA19A",
+    Done: "#188038",
+    Error: "E20000"
+    // ProductReceived: "grey",
+    // ProductDev: "#0e6ab5",
+    // ProductMissing: "#c91463",
+    // ProductQAMissing: "#ad239b",
+    // ProductReview: "#1496c9",
+    // ProductRefine: "#0e6ab5",
+    // ClientProductReceived: "#37db4d",
+    // ClientFeedback: "#0e6ab5",
+    // Done: "green"
+
+}
+
+const ClientColors = {
+    ProductInit: "grey",
+    ProductReceived: "#FFA500",
+    ProductDev: "#7FCB7F",
+    ProductMissing: "#7FCB7F",
+    ProductQAMissing: "#EC4E4E",
+    ProductReview: "#7FCB7F",
+    ProductRefine: "#7FCB7F",
+    ClientProductReceived: "#744885",
+    ClientFeedback: "#1DA19A",
+    Done: "#188038",
+    Error: "E20000"
+    // ProductReceived: "grey",
+    // ProductDev: "#0e6ab5",
+    // ProductMissing: "#0e6ab5",
+    // ProductQAMissing: "#ad239b",
+    // ProductReview: "#0e6ab5",
+    // ProductRefine: "#0e6ab5",
+    // ClientProductReceived: "#37db4d",
+    // ClientFeedback: "#0e6ab5",
+    // Done: "green"
+}
+
 export default {
 
     promiseHandler(fun) {
@@ -173,6 +223,12 @@ export default {
             return ClientMessages[status]
         }
         return Messages[status]
+    },
+    colorFromAccount(status,  usertype) {
+        if(usertype == 'Client') {
+            return ClientColors[status]
+        }
+        return Colors[status]
     },
 
     //eslint-disable-next-line no-unused-vars
