@@ -1,7 +1,21 @@
 <template>
-<!-- If screen is md(960px) and up, apply styling for 'modelsList', otherwise use default styling -->
+<!-- Apply styling depending on screen width -->
     <!-- <div :class="$vuetify.breakpoint.mdAndUp ? 'modelsList' : ''"> -->
     <div :class="computedWidth">
+        <v-dialog v-model="assign.modal" width="500">
+            <div class="card">
+                <v-select :items="modelers" label="Modeler" v-model="modeler">
+                    <template v-slot:item="{item}">
+                        <span>{{item.name}}</span>
+                    </template>
+                    <template v-slot:selection="{item}">
+                        <span>{{item.name}}</span>
+                    </template>
+                </v-select>
+                <v-btn :loading="assign.loading" @click="assignMethod" :disabled="!modeler">Assign</v-btn>
+                <p class="error-text" v-if="assign.error">{{assign.error}}</p>
+            </div>
+        </v-dialog>
     <!-- <div class="modelsList"> -->
         <div class="flexrow" id="topRow">
             <div class="flexrow arrowBack">
@@ -44,6 +58,28 @@
                     </v-list>
                 </v-menu>
             </div>
+            <div class="assignModellers" v-if="account.usertype =='Admin'">
+                <v-btn
+                @click="assign.modal = true"
+                :disabled="selectedModels.length < 1"
+                small 
+                rounded 
+                class="primaryBtn">
+                    <span>Assign modeller</span> 
+                    <v-icon small>mdi-account-plus</v-icon> 
+                </v-btn>
+                <v-btn
+                class="secondaryBtn"
+                @click="selectedModels = []"
+                :disabled="selectedModels.length < 1"
+                rounded 
+                outlined
+                small 
+                >
+                    <span>Clear selected</span>
+                    <v-icon small>mdi-close</v-icon>
+                </v-btn>
+            </div>
             <!-- Instead of using the Object.values as they are, use a computed property "items" -->
             <!-- Old-> :items="Object.values(models)" -->
 
@@ -70,10 +106,11 @@
                         @click="rowSelect(key); handleClick(item.modelid)" 
                         v-for="(item, key) in items" 
                         :key="item.modelid">
-                            <td v-if="account.usertype!=='Client'">
+                            <td v-if="account.usertype =='Admin'">
                                 <v-checkbox 
-                                :true-value="item.modelid" 
-                                @change="changeSelected(item.modelid)">
+                                v-model="selectedModels"
+                                :value="item.modelid"
+                                >
                                 </v-checkbox>
                             </td>
                             <td>
@@ -178,12 +215,15 @@ export default {
                 // { text: "Product states", value: "partitiondata" }
             ],
             filters: {},
+            assign: backend.promiseHandler(this.assignModeler),
             name: "",
             search: "",
             selectedModels: [],
             backend: backend,
             menuOpen: false,
-            selectedRow: 0
+            selectedRow: 0,
+            modelers: [],
+            modeler: false,
             // order: false,
             // models: {},
         };
@@ -218,16 +258,26 @@ export default {
             }
             
         },
-        changeSelected(id){
-            if (!this.selectedModels.includes(id))
-                { this.selectedModels.push(id) }
-            else { 
-                var idIndex = this.selectedModels.findIndex(i => i == id)
-                  // eslint-disable-next-line no-console
-                console.log(idIndex)
-                this.selectedModels.splice(idIndex, 1)
-                }
-        }
+        async assignModeler() {
+            var vm = this;
+            await vm.selectedModels.forEach(id => {
+                backend.getModel(id).then(model => vm.model = model)
+                return backend
+                    .assignModeler(id, vm.modeler.userid)
+                    .then(data => {
+                        if(vm.model.state == 'ProductReceived' || vm.model.state == 'ProductReview' ) {
+                            vm.model.state = 'ProductDev';
+                        }
+                        vm.model.modelowner = data.userdata.name;
+                    })
+            })
+        },    
+        async assignMethod() {
+            await this.assign.execute();
+            this.models = [];
+            await this.$emit('model-updated')
+        } 
+        
     },
     computed: {
         filteredHeaders() {
@@ -310,6 +360,13 @@ export default {
 
             // vm.filters["ProductQAMissing"] = "Missing information";
             // vm.filters["ClientProductReceived"] = "Awaiting review";
+        }
+
+        if (vm.account.usertype == 'Admin') {
+            backend.getModelers().then(modelers => {
+                vm.modelers = Object.values(modelers);
+            });
+            
         }
         // eslint-disable-next-line no-console
         console.log(vm.$vuetify.breakpoint.width)
@@ -417,7 +474,21 @@ div.emptyState {
     align-items: center;
     color: #515151;
 }
-
+.primaryBtn {
+    background-color: #1FB1A9 !important;
+    color: white;
+    margin-right: 0.5em;
+    span {
+        margin-right: 0.5em;
+    }
+}
+.secondaryBtn {
+    background-color: white !important;
+    color: #1FB1A9;
+    span {
+        margin-right: 0.5em;
+    }
+}
 // #table {
 //     max-height: 100vh;
 //     // max-height: 70vh;
