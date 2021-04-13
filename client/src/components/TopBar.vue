@@ -39,6 +39,34 @@
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </v-list-item>
+					<v-list-group
+        :value="false"
+		v-if="account.usertype == 'QA'"
+      >
+		<template v-slot:activator>
+          <v-list-item-title>QA tools</v-list-item-title>
+        </template>
+		<v-list-group
+          :value="true"
+          no-action
+          sub-group
+        >
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title>Links</v-list-item-title>
+            </v-list-item-content>
+          </template>
+		<v-list-item
+            v-for="item in links"
+            :key="item.title"
+			:href="item.href"
+            link
+			target="_blank"
+          >
+            <v-list-item-title>{{item.title}}</v-list-item-title>
+</v-list-item>
+            </v-list-group>
+			</v-list-group>
                 </v-list>
             </v-menu>
         </div>
@@ -55,7 +83,13 @@ export default {
     },
     data: () => ({
         items: [],
-        menuOpen: false
+        menuOpen: false,
+		links: [
+		{title:'3DTester', href:'https://charpstar.se/3DTester'},
+        {title:'modelviewer', href:'https://modelviewer.dev/editor'},
+		{title:'vectary', href:'https://wwww.vectary.com'}
+      
+      ],
     }),
     methods: {
         logout() {
