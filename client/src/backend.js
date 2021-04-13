@@ -182,7 +182,7 @@ const Colors = {
 const ClientColors = {
     OrderInit: "grey",
     OrderReceived: "#FFA500",
-    OrderReview: "#FFA500",
+    OrderReview: "#4A754A",
     OrderClientReview: "#744885",
     OrderMissing: "#EC4E4E",
     OrderDev: "#7FCB7F",

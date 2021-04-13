@@ -1,6 +1,7 @@
 <template>
 <!-- If screen is md(960px) and up, apply styling for 'modelsList', otherwise use default styling -->
-    <div :class="$vuetify.breakpoint.mdAndUp ? 'modelsList' : ''">
+    <!-- <div :class="$vuetify.breakpoint.mdAndUp ? 'modelsList' : ''"> -->
+    <div :class="computedWidth">
     <!-- <div class="modelsList"> -->
         <div class="flexrow" id="topRow">
             <div class="flexrow arrowBack">
@@ -50,7 +51,7 @@
                 and view the "sort" dropdown properly -->
             <v-data-table
                 id="table"
-                :class="$vuetify.breakpoint.width < 600 ? 'mobileList' : ''"
+                :class="$vuetify.breakpoint.width < 600 ? 'mobileTable' : ''"
                 :headers="filteredHeaders"
                 :items="items"
                 :items-per-page="-1"
@@ -69,6 +70,12 @@
                         @click="rowSelect(key); handleClick(item.modelid)" 
                         v-for="(item, key) in items" 
                         :key="item.modelid">
+                            <td v-if="account.usertype!=='Client'">
+                                <v-checkbox 
+                                :true-value="item.modelid" 
+                                @change="changeSelected(item.modelid)">
+                                </v-checkbox>
+                            </td>
                             <td>
                                 <img
                                     :src="backend.getThumbURL(item.modelid)"
@@ -91,9 +98,10 @@
                             <td>
                                 <!-- Use v-chip and methods from backend.js to apply the correct color -->
                                 <v-chip 
-                                style="color: white"
-                                :color="backend.colorFromAccount(backend.backendState(item.state, account.usertype), account.usertype)">
-                                    {{item.state}}
+                                small
+                                :color="backend.colorFromAccount(backend.backendState(item.state, account.usertype), account.usertype)"
+                                text-color="#FFFFFF">
+                                    <span>{{item.state}}</span>
                                 </v-chip>
                             </td>
                             
@@ -126,6 +134,7 @@
                     <span v-else ><i>Unassigned</i></span>
                 </template> -->
             </v-data-table>
+            <p>{{selectedModels}}</p>
         </div>
         <!-- This div is displayed when there are no models, i.e. no data to display -->
         <div class="emptyState" 
@@ -158,6 +167,7 @@ export default {
             /* Added 'sortable: false' to ID and Products columns, as we probably do not
             need to sort these attributes and it frees up space in the table */
             headers: [
+                { text: "", sortable: false, value: "checkbox", hideClient: true},
                 { text: "", sortable: false, value: "thumb"},
                 { text: "ID", sortable: false, value: "modelid" },
                 { text: "Name", value: "modelname" },
@@ -170,6 +180,7 @@ export default {
             filters: {},
             name: "",
             search: "",
+            selectedModels: [],
             backend: backend,
             menuOpen: false,
             selectedRow: 0
@@ -206,6 +217,16 @@ export default {
                 return this.search += ' ' + filter + ' '
             }
             
+        },
+        changeSelected(id){
+            if (!this.selectedModels.includes(id))
+                { this.selectedModels.push(id) }
+            else { 
+                var idIndex = this.selectedModels.findIndex(i => i == id)
+                  // eslint-disable-next-line no-console
+                console.log(idIndex)
+                this.selectedModels.splice(idIndex, 1)
+                }
         }
     },
     computed: {
@@ -233,7 +254,16 @@ export default {
                     // products: this.sumProducts(model)
                 }
             ))
-        }
+        },
+        computedWidth() {
+            if (this.$vuetify.breakpoint.width > 1300) {
+                return 'modelsList'
+            }
+            else if (this.$vuetify.breakpoint.width < 1300 && this.$vuetify.breakpoint.width > 948)
+                { return 'tabletList' }
+            else { return 'mobileList' }
+            }
+            
         },
         //custom filtering function instead of :search="search" in v-data-table
         //to allow more freedom in filtering results:
@@ -282,7 +312,7 @@ export default {
             // vm.filters["ClientProductReceived"] = "Awaiting review";
         }
         // eslint-disable-next-line no-console
-        console.log(vm.models)
+        console.log(vm.$vuetify.breakpoint.width)
         // backend.getProducts(Object.values(vm.models)[0].modelid)
         // // eslint-disable-next-line no-console
         // .then((products) => {console.log(products)})
@@ -324,7 +354,8 @@ export default {
 }
 
 .thumbnail {
-    max-width: 50px;
+    max-width: 40px;
+    // max-width: 50px;
 }
 th {
     text-align: start;
@@ -345,6 +376,13 @@ th {
     margin-right: 1em;
     padding-right: 1em;
     border-right: 2px solid rgb(179, 179, 179);
+    width: 60vw; // to fit both order list and order details
+}
+.tabletList {
+    margin-right: 1em;
+    padding-right: 1em;
+    border-right: 2px solid rgb(179, 179, 179);
+    width: 50vw; // to fit both order list and order details
 }
 
 .modelsList #table {
@@ -352,10 +390,14 @@ th {
     // max-height: 70vh;
     overflow: auto;
     // width: 80vw;
-    width: 50vw; // to fit both order list and order details
 }
 
-.mobileList#table{
+.mobileList {
+    margin-right: 1em;
+    padding-right: 1em;
+}
+
+.mobileTable#table{
     td:first-of-type {
         //Set min-width for the first column to view "sort" dropdown properly
         min-width: 105px;
