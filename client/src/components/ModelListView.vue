@@ -1,17 +1,30 @@
 <template>
 <!-- Apply styling depending on screen width -->
     <div :class="computedWidth">
+        <!-- Modal to assign modeller to more models -->
         <v-dialog v-model="assign.modal" width="500">
             <div class="card">
-                <v-select :items="modelers" label="Modeler" v-model="modeler">
+                <v-select 
+                :items="modelers" 
+                label="Modeller" 
+                v-model="modeler" 
+                >
                     <template v-slot:item="{item}">
                         <span>{{item.name}}</span>
                     </template>
-                    <template v-slot:selection="{item}">
+                    <template v-slot:selection="{item}" >
                         <span>{{item.name}}</span>
                     </template>
                 </v-select>
-                <v-btn :loading="assign.loading" @click="assignMethod" :disabled="!modeler">Assign</v-btn>
+                <v-btn 
+                :loading="assign.loading" 
+                @click="assignMethod" 
+                :disabled="!modeler"
+                rounded
+                class="primaryBtn"
+                >
+                    Assign
+                </v-btn>
                 <p class="error-text" v-if="assign.error">{{assign.error}}</p>
             </div>
         </v-dialog>
@@ -57,7 +70,9 @@
                     </v-list>
                 </v-menu>
             </div>
-            <div class="assignModellers" v-if="account.usertype =='Admin'">
+            <!-- Admin can assign modeller by selecting models via the checkboxes -->
+            <div class="assignModeller" v-if="account.usertype =='Admin'">
+                <!-- Button opens the modal to assign modelers -->
                 <v-btn
                 @click="assign.modal = true"
                 :disabled="selectedModels.length < 1"
@@ -67,6 +82,7 @@
                     <span>Assign modeller</span> 
                     <v-icon small>mdi-account-plus</v-icon> 
                 </v-btn>
+                <!-- Clear all selected models if needed -->
                 <v-btn
                 class="secondaryBtn"
                 @click="selectedModels = []"
@@ -105,6 +121,8 @@
                         @click="rowSelect(key); handleClick(item.modelid)" 
                         v-for="(item, key) in items" 
                         :key="item.modelid">
+                        <!-- Select models to assign to a modeller; add their id to an 
+                            array "selectedModels" in order to then assign them with a function-->
                             <td v-if="account.usertype =='Admin'">
                                 <v-checkbox 
                                 color="#1FB1A9"
@@ -171,7 +189,6 @@
                     <span v-else ><i>Unassigned</i></span>
                 </template> -->
             </v-data-table>
-            <p>{{selectedModels}}</p>
         </div>
         <!-- This div is displayed when there are no models, i.e. no data to display -->
         <div class="emptyState" 
@@ -222,8 +239,9 @@ export default {
             backend: backend,
             menuOpen: false,
             selectedRow: 0,
+            // 'modelers' and 'modeler' are needed to assign the models
             modelers: [],
-            modeler: false,
+            modeler: '',
             // order: false,
             // models: {},
         };
@@ -259,6 +277,9 @@ export default {
             
         },
         async assignModeler() {
+            //For each id in the 'selectedModels':
+            //1: get the model
+            //2: assign it to the selected modeller
             var vm = this;
             await vm.selectedModels.forEach(id => {
                 backend.getModel(id).then(model => vm.model = model)
@@ -272,10 +293,10 @@ export default {
                     })
             })
         },    
-        async assignMethod() {
-            await this.assign.execute();
-            this.models = [];
-            await this.$emit('model-updated')
+        async assignMethod() { //Method executed when "Assign" is clicked in the modal
+            await this.assign.execute(); //will execute the method "assignModeler"
+            this.models = []; //emptying the models array helps refresh the table
+            await this.$emit('model-updated') //communicate to parent that the table should be refreshed
         } 
         
     },
@@ -340,6 +361,10 @@ export default {
         //         return items
         //     }
         // }
+    updated() {
+          // eslint-disable-next-line no-console
+          console.log(this.modeler)
+    },
     mounted() {
         var vm = this;
         if (vm.account.usertype != "Client") {
@@ -371,8 +396,7 @@ export default {
             });
             
         }
-        // eslint-disable-next-line no-console
-        console.log(vm.$vuetify.breakpoint.width)
+
         // backend.getProducts(Object.values(vm.models)[0].modelid)
         // // eslint-disable-next-line no-console
         // .then((products) => {console.log(products)})
@@ -492,6 +516,7 @@ div.emptyState {
         margin-right: 0.5em;
     }
 }
+
 // #table {
 //     max-height: 100vh;
 //     // max-height: 70vh;
