@@ -1,6 +1,5 @@
 <template>
 <!-- Apply styling depending on screen width -->
-    <!-- <div :class="$vuetify.breakpoint.mdAndUp ? 'modelsList' : ''"> -->
     <div :class="computedWidth">
         <v-dialog v-model="assign.modal" width="500">
             <div class="card">
@@ -108,6 +107,7 @@
                         :key="item.modelid">
                             <td v-if="account.usertype =='Admin'">
                                 <v-checkbox 
+                                color="#1FB1A9"
                                 v-model="selectedModels"
                                 :value="item.modelid"
                                 >
