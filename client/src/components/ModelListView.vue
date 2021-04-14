@@ -204,7 +204,7 @@ export default {
             /* Added 'sortable: false' to ID and Products columns, as we probably do not
             need to sort these attributes and it frees up space in the table */
             headers: [
-                { text: "", sortable: false, value: "checkbox", hideClient: true},
+                { text: "", sortable: false, value: "checkbox", hideClient: true, hideModeller: true, hideQA: true},
                 { text: "", sortable: false, value: "thumb"},
                 { text: "ID", sortable: false, value: "modelid" },
                 { text: "Name", value: "modelname" },
@@ -285,6 +285,9 @@ export default {
                 return this.headers.filter(header => header.hideClient != true);
             }
             else if(this.account.usertype == 'Modeller') {
+                return this.headers.filter(header => header.hideModeller != true);
+            }
+            else if(this.account.usertype == 'QA') {
                 return this.headers.filter(header => header.hideModeller != true);
             }
             return this.headers
