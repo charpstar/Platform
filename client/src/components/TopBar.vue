@@ -26,6 +26,9 @@
                 <v-list>
                     <v-list-item v-for="(item, index) in items" :key="index" @click="item.click">
                         <v-list-item-title>{{ item.title }}</v-list-item-title>
+						<v-list-item-icon>
+              <v-icon v-text="item.icon"></v-icon>
+            </v-list-item-icon>
                     </v-list-item>
                     <v-divider v-if="Object.values(notifications).length > 0" />
                     <v-list-item
@@ -39,6 +42,7 @@
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </v-list-item>
+					<!-- Added QA tools to access important links -->
 					<v-list-group
         :value="false"
 		v-if="account.usertype == 'QA'"
@@ -64,6 +68,7 @@
 			target="_blank"
           >
             <v-list-item-title>{{item.title}}</v-list-item-title>
+			<v-icon>mdi-link</v-icon>
 </v-list-item>
             </v-list-group>
 			</v-list-group>
@@ -111,9 +116,9 @@ export default {
     mounted() {
         var vm = this;
         vm.items = [
-            { title: "Log out", click: vm.logout },
+            { title: "Log out", icon: 'mdi-logout', click: vm.logout },
             {
-                title: "Support",
+                title: "Support", icon:'mdi-lifebuoy',
                 click: () => {
                     window.location.href = "https://www.charpstar.se/";
                     vm.menuOpen = false;
