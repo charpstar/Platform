@@ -84,8 +84,9 @@
                             <td>
                             <!-- Use v-chip and methods from backend.js to apply the correct color -->
                                 <v-chip 
-                                style="color: white"
-                                :color="backend.colorFromAccount(backend.backendState(item.state, account.usertype), account.usertype)">
+                                small
+                                :color="backend.colorFromAccount(backend.backendState(item.state, account.usertype), account.usertype)"
+                                text-color="#FFFFFF">
                                     {{item.state}}
                                 </v-chip>
                             </td>

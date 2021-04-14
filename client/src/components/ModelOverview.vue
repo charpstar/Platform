@@ -8,6 +8,7 @@
             :key="listUpdate" 
             :models="models"
             @clicked-model="getModelId"
+            @model-updated="updateList"
         />
 
         <!-- 'key' re-renders the child component when modelid changes-->
@@ -15,7 +16,7 @@
             v-if="loaded"
             :account="account" 
             :modelid="modelid" 
-            :key="modelid"
+            :key="getKey(modelid)"
             @model-updated="updateList"
         />
     </div>  
@@ -47,6 +48,12 @@
         methods: {
             getModelId(id) {
                 this.modelid = id
+            },
+            getKey(id) {
+                if (this.models && id == Object.values(this.models)[0].modelid ) {
+                    return this.listUpdate
+                }
+                else { return id }
             },
             updateList() { //when a model is updated
                 this.fetchModels(); //fetch the models again to get the new data

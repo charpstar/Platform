@@ -1,6 +1,33 @@
 <template>
-<!-- If screen is md(960px) and up, apply styling for 'modelsList', otherwise use default styling -->
-    <div :class="$vuetify.breakpoint.mdAndUp ? 'modelsList' : ''">
+<!-- Apply styling depending on screen width -->
+    <div :class="computedWidth">
+        <!-- Modal to assign modeller to more models -->
+        <v-dialog v-model="assign.modal" width="500">
+            <div class="card">
+                <v-select 
+                :items="modelers" 
+                label="Modeller" 
+                v-model="modeler" 
+                >
+                    <template v-slot:item="{item}">
+                        <span>{{item.name}}</span>
+                    </template>
+                    <template v-slot:selection="{item}" >
+                        <span>{{item.name}}</span>
+                    </template>
+                </v-select>
+                <v-btn 
+                :loading="assign.loading" 
+                @click="assignMethod" 
+                :disabled="!modeler"
+                rounded
+                class="primaryBtn"
+                >
+                    Assign
+                </v-btn>
+                <p class="error-text" v-if="assign.error">{{assign.error}}</p>
+            </div>
+        </v-dialog>
     <!-- <div class="modelsList"> -->
         <div class="flexrow" id="topRow">
             <div class="flexrow arrowBack">
@@ -43,6 +70,31 @@
                     </v-list>
                 </v-menu>
             </div>
+            <!-- Admin can assign modeller by selecting models via the checkboxes -->
+            <div class="assignModeller" v-if="account.usertype =='Admin'">
+                <!-- Button opens the modal to assign modelers -->
+                <v-btn
+                @click="assign.modal = true"
+                :disabled="selectedModels.length < 1"
+                small 
+                rounded 
+                class="primaryBtn">
+                    <span>Assign modeller</span> 
+                    <v-icon small>mdi-account-plus</v-icon> 
+                </v-btn>
+                <!-- Clear all selected models if needed -->
+                <v-btn
+                class="secondaryBtn"
+                @click="selectedModels = []"
+                :disabled="selectedModels.length < 1"
+                rounded 
+                outlined
+                small 
+                >
+                    <span>Clear selected</span>
+                    <v-icon small>mdi-close</v-icon>
+                </v-btn>
+            </div>
             <!-- Instead of using the Object.values as they are, use a computed property "items" -->
             <!-- Old-> :items="Object.values(models)" -->
 
@@ -50,7 +102,7 @@
                 and view the "sort" dropdown properly -->
             <v-data-table
                 id="table"
-                :class="$vuetify.breakpoint.width < 600 ? 'mobileList' : ''"
+                :class="$vuetify.breakpoint.width < 600 ? 'mobileTable' : ''"
                 :headers="filteredHeaders"
                 :items="items"
                 :items-per-page="-1"
@@ -69,6 +121,16 @@
                         @click="rowSelect(key); handleClick(item.modelid)" 
                         v-for="(item, key) in items" 
                         :key="item.modelid">
+                        <!-- Select models to assign to a modeller; add their id to an 
+                            array "selectedModels" in order to then assign them with a function-->
+                            <td v-if="account.usertype =='Admin'">
+                                <v-checkbox 
+                                color="#1FB1A9"
+                                v-model="selectedModels"
+                                :value="item.modelid"
+                                >
+                                </v-checkbox>
+                            </td>
                             <td>
                                 <img
                                     :src="backend.getThumbURL(item.modelid)"
@@ -91,9 +153,10 @@
                             <td>
                                 <!-- Use v-chip and methods from backend.js to apply the correct color -->
                                 <v-chip 
-                                style="color: white"
-                                :color="backend.colorFromAccount(backend.backendState(item.state, account.usertype), account.usertype)">
-                                    {{item.state}}
+                                small
+                                :color="backend.colorFromAccount(backend.backendState(item.state, account.usertype), account.usertype)"
+                                text-color="#FFFFFF">
+                                    <span>{{item.state}}</span>
                                 </v-chip>
                             </td>
                             
@@ -158,6 +221,7 @@ export default {
             /* Added 'sortable: false' to ID and Products columns, as we probably do not
             need to sort these attributes and it frees up space in the table */
             headers: [
+                { text: "", sortable: false, value: "checkbox", hideClient: true, hideModeller: true, hideQA: true},
                 { text: "", sortable: false, value: "thumb"},
                 { text: "ID", sortable: false, value: "modelid" },
                 { text: "Name", value: "modelname" },
@@ -168,11 +232,16 @@ export default {
                 // { text: "Product states", value: "partitiondata" }
             ],
             filters: {},
+            assign: backend.promiseHandler(this.assignModeler),
             name: "",
             search: "",
+            selectedModels: [],
             backend: backend,
             menuOpen: false,
-            selectedRow: 0
+            selectedRow: 0,
+            // 'modelers' and 'modeler' are needed to assign the models
+            modelers: [],
+            modeler: '',
             // order: false,
             // models: {},
         };
@@ -206,7 +275,30 @@ export default {
                 return this.search += ' ' + filter + ' '
             }
             
-        }
+        },
+        async assignModeler() {
+            //For each id in the 'selectedModels':
+            //1: get the model
+            //2: assign it to the selected modeller
+            var vm = this;
+            await vm.selectedModels.forEach(id => {
+                backend.getModel(id).then(model => vm.model = model)
+                return backend
+                    .assignModeler(id, vm.modeler.userid)
+                    .then(data => {
+                        if(vm.model.state == 'ProductReceived' || vm.model.state == 'ProductReview' ) {
+                            vm.model.state = 'ProductDev';
+                        }
+                        vm.model.modelowner = data.userdata.name;
+                    })
+            })
+        },    
+        async assignMethod() { //Method executed when "Assign" is clicked in the modal
+            await this.assign.execute(); //will execute the method "assignModeler"
+            this.models = []; //emptying the models array helps refresh the table
+            await this.$emit('model-updated') //communicate to parent that the table should be refreshed
+        } 
+        
     },
     computed: {
         filteredHeaders() {
@@ -214,6 +306,9 @@ export default {
                 return this.headers.filter(header => header.hideClient != true);
             }
             else if(this.account.usertype == 'Modeller') {
+                return this.headers.filter(header => header.hideModeller != true);
+            }
+            else if(this.account.usertype == 'QA') {
                 return this.headers.filter(header => header.hideModeller != true);
             }
             return this.headers
@@ -233,7 +328,16 @@ export default {
                     // products: this.sumProducts(model)
                 }
             ))
-        }
+        },
+        computedWidth() {
+            if (this.$vuetify.breakpoint.width > 1300) {
+                return 'modelsList'
+            }
+            else if (this.$vuetify.breakpoint.width < 1300 && this.$vuetify.breakpoint.width > 948)
+                { return 'tabletList' }
+            else { return 'mobileList' }
+            }
+            
         },
         //custom filtering function instead of :search="search" in v-data-table
         //to allow more freedom in filtering results:
@@ -257,6 +361,10 @@ export default {
         //         return items
         //     }
         // }
+    updated() {
+          // eslint-disable-next-line no-console
+          console.log(this.modeler)
+    },
     mounted() {
         var vm = this;
         if (vm.account.usertype != "Client") {
@@ -281,8 +389,14 @@ export default {
             // vm.filters["ProductQAMissing"] = "Missing information";
             // vm.filters["ClientProductReceived"] = "Awaiting review";
         }
-        // eslint-disable-next-line no-console
-        console.log(vm.models)
+
+        if (vm.account.usertype == 'Admin') {
+            backend.getModelers().then(modelers => {
+                vm.modelers = Object.values(modelers);
+            });
+            
+        }
+
         // backend.getProducts(Object.values(vm.models)[0].modelid)
         // // eslint-disable-next-line no-console
         // .then((products) => {console.log(products)})
@@ -324,7 +438,8 @@ export default {
 }
 
 .thumbnail {
-    max-width: 50px;
+    max-width: 40px;
+    // max-width: 50px;
 }
 th {
     text-align: start;
@@ -345,6 +460,13 @@ th {
     margin-right: 1em;
     padding-right: 1em;
     border-right: 2px solid rgb(179, 179, 179);
+    width: 60vw; // to fit both order list and order details
+}
+.tabletList {
+    margin-right: 1em;
+    padding-right: 1em;
+    border-right: 2px solid rgb(179, 179, 179);
+    width: 50vw; // to fit both order list and order details
 }
 
 .modelsList #table {
@@ -352,10 +474,14 @@ th {
     // max-height: 70vh;
     overflow: auto;
     // width: 80vw;
-    width: 50vw; // to fit both order list and order details
 }
 
-.mobileList#table{
+.mobileList {
+    margin-right: 1em;
+    padding-right: 1em;
+}
+
+.mobileTable#table{
     td:first-of-type {
         //Set min-width for the first column to view "sort" dropdown properly
         min-width: 105px;
@@ -374,6 +500,21 @@ div.emptyState {
     justify-content: center;
     align-items: center;
     color: #515151;
+}
+.primaryBtn {
+    background-color: #1FB1A9 !important;
+    color: white;
+    margin-right: 0.5em;
+    span {
+        margin-right: 0.5em;
+    }
+}
+.secondaryBtn {
+    background-color: white !important;
+    color: #1FB1A9;
+    span {
+        margin-right: 0.5em;
+    }
 }
 
 // #table {
