@@ -309,7 +309,7 @@ export default {
                 return this.headers.filter(header => header.hideModeller != true);
             }
             else if(this.account.usertype == 'QA') {
-                return this.headers.filter(header => header.hideModeller != true);
+                return this.headers.filter(header => header.hideQA != true);
             }
             return this.headers
         },
