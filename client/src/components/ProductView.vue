@@ -306,8 +306,6 @@
     },
     data() {
       return {
-        androidUploadFun: backend.uploadAndroidModel,
-        iosUploadFun: backend.uploadIosModel,
         commentsTab: '',
         hideMv: true,
         edit: backend.promiseHandler(this.editLink),
@@ -316,6 +314,8 @@
         backend: backend
         /* Moved to ProductVersions.vue */
         // snackbar: false,
+        // androidUploadFun: backend.uploadAndroidModel,
+        // iosUploadFun: backend.uploadIosModel,
       }
     },
     methods: {
@@ -382,8 +382,6 @@
       setTimeout(() => {
         vm.hideMv = false
       }, 500)
-      // eslint-disable-next-line no-console
-      console.log(vm.product)
     }
   }
 </script>

@@ -126,6 +126,7 @@
           if (values[1] != null) {
             this.model.thumbnail = values[1]
           }
+          
         },
         uploadedIos(values) {
           this.product.newioslink = values[0].new.ioslink

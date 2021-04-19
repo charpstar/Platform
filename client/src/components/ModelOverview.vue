@@ -5,13 +5,13 @@
         <model-list-view 
             v-if="loaded"
             :account="account"
-            :key="listUpdate" 
+            :key="`list-${listUpdate}`" 
             :models="models"
             @clicked-model="getModelId"
             @model-updated="updateList"
         />
 
-        <!-- 'key' re-renders the child component when modelid changes-->
+        <!-- 'key' re-renders the child component when modelid or listUpdate change-->
         <model-view 
             v-if="loaded"
             :account="account" 
@@ -49,15 +49,20 @@
             getModelId(id) {
                 this.modelid = id
             },
-            getKey(id) {
-                if (this.models && id == Object.values(this.models)[0].modelid ) {
-                    return this.listUpdate
+            getKey(id) { 
+                if (!this.loaded) {
+                    return `model-${this.listUpdate}`
                 }
-                else { return id }
+                //If page is loaded and models are fetched
+                else if(this.loaded && Object.values(this.models).length > 0) {
+                    //use the listUpdate as key to rerender the default component
+                    if( id == Object.values(this.models)[0].modelid){return `model-${this.listUpdate}`}
+                    else{ return id } //else use the modelid
+                }
             },
-            updateList() { //when a model is updated
-                this.fetchModels(); //fetch the models again to get the new data
-                this.listUpdate += 1 //increase the key 'listUpdate' by 1 in order to re-render model list
+            async updateList() { //when a model is updated
+                await this.fetchModels() //fetch the models again to get the new data
+                await (this.listUpdate += 1) //increase the key 'listUpdate' by 1 in order to re-render model list
             },
             fetchModels() {
                 var vm = this;

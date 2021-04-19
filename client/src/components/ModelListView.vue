@@ -361,10 +361,7 @@ export default {
         //         return items
         //     }
         // }
-    updated() {
-          // eslint-disable-next-line no-console
-          console.log(this.modeler)
-    },
+
     mounted() {
         var vm = this;
         if (vm.account.usertype != "Client") {

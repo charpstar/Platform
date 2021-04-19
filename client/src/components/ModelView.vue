@@ -39,7 +39,8 @@
                         :model="model" 
                         :product="p" 
                         :account="account" 
-                        @state="updateOnStateChange"/>
+                        @state="updateOnStateChange"
+                        /> 
                 </v-tab-item>
             </v-tabs>
             <div v-if="account.usertype == 'Client' && model">
@@ -112,8 +113,6 @@ export default {
         backend.getModel(vm.modelid).then(model => {
             model.files = [];
             vm.model = model;
-                    // eslint-disable-next-line no-console
-        console.log(vm.model)
         });
         backend.getProducts(vm.modelid).then(products => {
             Vue.set(vm, "products", products);
@@ -127,10 +126,6 @@ export default {
                     }
             });
         })
-          // eslint-disable-next-line no-console
-        console.log(this.$vuetify.breakpoint.width)
-        // eslint-disable-next-line no-console
-        console.log(vm.products)
     }
 };
 </script>
