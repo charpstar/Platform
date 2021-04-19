@@ -24,6 +24,7 @@
         </div>
 		<div class="flexrow" id="addCommentRow">
 			<v-icon color="#1FB1A9" large>mdi-account-circle</v-icon>
+			<v-container>
             <v-textarea
                 id="addComment"
                 v-model="addComment"
@@ -33,12 +34,22 @@
                 :hide-details="true"
 				outlined
 				color="#1FB1A9"
-				append-icon="mdi-comment"
+				class="container"
 				rows="3"
 				row-height="25"
-            ></v-textarea>
+            >
+			<!-- Moved Add button inside text area -->
+			<template v-slot:append >
+				<v-btn @click="() => sendComment('Comment')" :loading="loading['Comment']" color="#1FB1A9" rounded dark small class="addBtn">
+                    Add
+                    <v-icon right dark>mdi-plus-circle</v-icon>
+                </v-btn>
+				</template>
+				</v-textarea>
+				</v-container>
         </div>
 		<div class="flexcol" id="sendButtons">
+			<div class="buttons">
                 <commentmodal
                     :title="'Confirm approve'"
                     :text="'You will not be able to revert this action'"
@@ -99,11 +110,9 @@
                     Reject
                     <v-icon right class="rejectIcon">mdi-refresh</v-icon>
                 </v-btn>
+				</div>
 				<div class="buttons">
-                <v-btn @click="() => sendComment('Comment')" :loading="loading['Comment']" color="#1FB1A9" rounded dark small>
-                    Add
-                    <v-icon right dark>mdi-plus-circle</v-icon>
-                </v-btn>
+                
 				<v-btn
                     v-if="markinfo"
                     @click="() => sendComment('Info')"
@@ -324,6 +333,15 @@ export default {
 	flex-direction: row;
 	// margin-left: 40px;
 }
+.container{
+	display: flex;
+	flex-direction:column;
+	align-content: flex-end;
+	position: relative;
+}
+.addBtn {
+margin-top :60px;
+} 
 
 .v-btn--block {
     //some buttons had 'min-width: 100%' which made their width 100% at all times
