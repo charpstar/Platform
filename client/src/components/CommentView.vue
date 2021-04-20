@@ -77,8 +77,8 @@
                         block
                         @click="modaldone = true"
                         :loading="loading['Done']"
-                        class="approve"
-                        :disabled="markdonedisabled" rounded dark small
+                        class="approve done"
+                        :disabled="markdonedisabled" rounded  small
                     >
                         Done
                         <v-icon right>mdi-check</v-icon>
@@ -319,20 +319,27 @@ export default {
 }
 
 #sendButtons {
-    justify-content: flex-end; 
+	display: flex;
+	flex-direction: row;
+    justify-content: flex-start; 
     align-items: flex-start;
     .v-btn {
         margin-top: 20px; // changed from 10px to 20px
         display: block;
-        margin-left: 10px;
+        margin-left: 10px; 
     }
 }
 // added class for info and send button
 .buttons {
 	display: flex;
 	flex-direction: row;
-	// margin-left: 40px;
+	/* margin-left: 10px; */
 }
+// added to make the text white on "Done" button
+.done{
+	color: white
+}
+//added to style Add, Approve, Reject buttons
 .container{
 	display: flex;
 	flex-direction:column;
