@@ -172,8 +172,9 @@
                                 :markdonedisabled="model.files.length == 0"
                                 :markinfo="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(model.state)"
                                 :markresolve="account.usertype != 'Modeller' && model.state == 'ProductMissing'"
-                                @state="$emit('state', $event)"
+                                @state="$emit('updated-model')"
                             />
+                             <!-- @state="$emit('state', $event)" -->
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <!-- <v-expansion-panel v-if="account.usertype != 'Modeller'"> -->

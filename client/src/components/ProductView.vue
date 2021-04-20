@@ -224,8 +224,9 @@
                   product.state == 'ProductMissing'
               "
               :internal="true"
-              @state="$emit('state', $event)"
+              @state="$emit('updated-model')"
             />
+            <!-- @state="$emit('state', $event)" -->
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel v-if="account.usertype != 'Modeller'">
@@ -262,8 +263,9 @@
                 account.usertype != 'Client' &&
                   product.state == 'ProductQAMissing'
               "
-              @state="$emit('state', $event)"
+              @state="$emit('updated-model')"
             />
+            <!-- @state="$emit('state', $event)" -->
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>

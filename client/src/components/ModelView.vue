@@ -31,16 +31,17 @@
                     <blenderview 
                         :model="model" 
                         :account="account" 
-                        @state="updateOnStateChange" 
                         @updated-model="$emit('model-updated')"/>
+                        <!-- @state="updateOnStateChange"  -->
                 </v-tab-item>
                 <v-tab-item class="tab" v-for="(p, id) in products" :key="id" :value="'tab-' + id">
                     <productview 
                         :model="model" 
                         :product="p" 
                         :account="account" 
-                        @state="updateOnStateChange"
+                        @updated-model="$emit('model-updated')"
                         /> 
+                        <!-- @state="updateOnStateChange" -->
                 </v-tab-item>
             </v-tabs>
             <div v-if="account.usertype == 'Client' && model">
@@ -49,7 +50,9 @@
                 :model="model" 
                 :product="p" 
                 :account="account" 
-                @state="updateOnStateChange"/>
+                @updated-model="$emit('model-updated')"
+                />
+                <!-- @state="updateOnStateChange" -->
             </div>
         </div>
         <!-- Message to display if there is no data, i.e. no modelid sent from parent component -->
@@ -86,15 +89,18 @@ export default {
         };
     },
     methods: {
-        updateOnStateChange() {
-            var vm = this;
-            backend.getModel(vm.model.modelid).then(model => {
-                vm.model.state = model.state;
-            });
-            backend.getProducts(vm.model.modelid).then(products => {
-                Vue.set(vm, "products", products);
-            })
-        },
+        /* The followingethod not used since when state is changed, the whole component 
+        refreshes and data is fetched to reflect the new state */
+
+        // updateOnStateChange() {
+        //     var vm = this;
+        //     backend.getModel(vm.model.modelid).then(model => {
+        //         vm.model.state = model.state;
+        //     });
+        //     backend.getProducts(vm.model.modelid).then(products => {
+        //         Vue.set(vm, "products", products);
+        //     })
+        // },
         createProducts() {
             var vm = this;
             if (vm.file) {

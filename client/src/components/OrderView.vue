@@ -202,8 +202,9 @@
                                 :type="'Order'"
                                 :markinfo="(account.usertype == 'QA' || account.usertype == 'Admin') && ['OrderReview', 'OrderDev'].includes(order.state)"
                                 :markresolve="(account.usertype == 'QA' || account.usertype == 'Admin') && order.state == 'OrderMissing'"
-                                @state="order.state = $event.orderstatus"
+                                @state="$emit('updated-order')"
                             />
+                            <!-- @state="order.state = $event.orderstatus" -->
                         </v-expansion-panel-content>
                         <!--added expansion panel for AssignQA-->
                     </v-expansion-panel>
