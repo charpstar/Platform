@@ -224,8 +224,9 @@
                   product.state == 'ProductMissing'
               "
               :internal="true"
-              @state="$emit('state', $event)"
+              @state="$emit('updated-model')"
             />
+            <!-- @state="$emit('state', $event)" -->
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel v-if="account.usertype != 'Modeller'">
@@ -262,8 +263,9 @@
                 account.usertype != 'Client' &&
                   product.state == 'ProductQAMissing'
               "
-              @state="$emit('state', $event)"
+              @state="$emit('updated-model')"
             />
+            <!-- @state="$emit('state', $event)" -->
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -306,8 +308,6 @@
     },
     data() {
       return {
-        androidUploadFun: backend.uploadAndroidModel,
-        iosUploadFun: backend.uploadIosModel,
         commentsTab: '',
         hideMv: true,
         edit: backend.promiseHandler(this.editLink),
@@ -316,6 +316,8 @@
         backend: backend
         /* Moved to ProductVersions.vue */
         // snackbar: false,
+        // androidUploadFun: backend.uploadAndroidModel,
+        // iosUploadFun: backend.uploadIosModel,
       }
     },
     methods: {
@@ -382,8 +384,6 @@
       setTimeout(() => {
         vm.hideMv = false
       }, 500)
-      // eslint-disable-next-line no-console
-      console.log(vm.product)
     }
   }
 </script>

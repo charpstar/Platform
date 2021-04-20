@@ -18,7 +18,7 @@
                 </v-select>
                 <v-btn 
                 :loading="assign.loading" 
-                @click="assignMethod" 
+                @click="assign.execute" 
                 :disabled="!modeler"
                 rounded
                 class="primaryBtn"
@@ -290,14 +290,17 @@ export default {
                             vm.model.state = 'ProductDev';
                         }
                         vm.model.modelowner = data.userdata.name;
+                    }).then(()=> {
+                        this.$emit('model-updated')
                     })
             })
         },    
-        async assignMethod() { //Method executed when "Assign" is clicked in the modal
-            await this.assign.execute(); //will execute the method "assignModeler"
-            this.models = []; //emptying the models array helps refresh the table
-            await this.$emit('model-updated') //communicate to parent that the table should be refreshed
-        } 
+        /* The next method is not necessary after all */
+        // async assignMethod() { //Method executed when "Assign" is clicked in the modal
+        //     await this.assign.execute(); //will execute the method "assignModeler"
+        //     this.models = []; //emptying the models array helps refresh the table
+        //     await this.$emit('model-updated') //communicate to parent that the table should be refreshed
+        // } 
         
     },
     computed: {
@@ -361,10 +364,7 @@ export default {
         //         return items
         //     }
         // }
-    updated() {
-          // eslint-disable-next-line no-console
-          console.log(this.modeler)
-    },
+
     mounted() {
         var vm = this;
         if (vm.account.usertype != "Client") {

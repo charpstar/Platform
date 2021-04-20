@@ -20,7 +20,8 @@
                 <p class="error-text" v-if="handler.error">{{handler.error}}</p>
                 <p class="error-text" v-if="error">{{error}}</p>
                 <v-card-actions>
-                    <v-checkbox v-model="thumbnail" :label="' Update Thumbnail'" color="#2196f3"></v-checkbox>
+                    <v-checkbox v-model="thumbnail" :label="' Update Thumbnail'" color="#1FB1A9"></v-checkbox>
+                    <!-- <v-checkbox v-model="thumbnail" :label="' Update Thumbnail'" color="#2196f3"></v-checkbox> -->
                     <v-spacer></v-spacer>
                     <v-btn
                         class="uploadBtn"

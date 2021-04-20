@@ -5,13 +5,13 @@
         <model-list-view 
             v-if="loaded"
             :account="account"
-            :key="listUpdate" 
+            :key="`list-${listUpdate}`" 
             :models="models"
             @clicked-model="getModelId"
             @model-updated="updateList"
         />
 
-        <!-- 'key' re-renders the child component when modelid changes-->
+        <!-- 'key' re-renders the child component when modelid or listUpdate change-->
         <model-view 
             v-if="loaded"
             :account="account" 
@@ -34,7 +34,7 @@
                 loaded: false, //Once the component is mounted, set to true and display subcomponents
                 listUpdate: 0, //Use as a key to re-render the model list
                 models: {},
-                modelid: "",
+                modelid: 0,
                 order: false
             }
         },
@@ -49,15 +49,20 @@
             getModelId(id) {
                 this.modelid = id
             },
-            getKey(id) {
-                if (this.models && id == Object.values(this.models)[0].modelid ) {
+            getKey(id) { //Custom key for the ModelView component in order to also refresh the first product properly
+                if (!this.loaded) { //If page in't loaded yet use 'listUpdate' as key
                     return this.listUpdate
                 }
-                else { return id }
+                //If page is loaded and models are fetched
+                else if(this.loaded && Object.values(this.models).length > 0) {
+                    //use the 'listUpdate' as key when the first/default product changes
+                    if ( id == Object.values(this.models)[0].modelid){ return this.listUpdate }
+                    else { return `model-${id}` } //use 'modelid' as key for the rest of the products
+                }
             },
-            updateList() { //when a model is updated
-                this.fetchModels(); //fetch the models again to get the new data
-                this.listUpdate += 1 //increase the key 'listUpdate' by 1 in order to re-render model list
+            async updateList() { //when a model is updated
+                await this.fetchModels() //fetch the models again to get the new data
+                await (this.listUpdate += 1) //increase the key 'listUpdate' by 1 in order to re-render model list
             },
             fetchModels() {
                 var vm = this;

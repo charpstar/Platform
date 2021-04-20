@@ -31,15 +31,17 @@
                     <blenderview 
                         :model="model" 
                         :account="account" 
-                        @state="updateOnStateChange" 
                         @updated-model="$emit('model-updated')"/>
+                        <!-- @state="updateOnStateChange"  -->
                 </v-tab-item>
                 <v-tab-item class="tab" v-for="(p, id) in products" :key="id" :value="'tab-' + id">
                     <productview 
                         :model="model" 
                         :product="p" 
                         :account="account" 
-                        @state="updateOnStateChange"/>
+                        @updated-model="$emit('model-updated')"
+                        /> 
+                        <!-- @state="updateOnStateChange" -->
                 </v-tab-item>
             </v-tabs>
             <div v-if="account.usertype == 'Client' && model">
@@ -48,7 +50,9 @@
                 :model="model" 
                 :product="p" 
                 :account="account" 
-                @state="updateOnStateChange"/>
+                @updated-model="$emit('model-updated')"
+                />
+                <!-- @state="updateOnStateChange" -->
             </div>
         </div>
         <!-- Message to display if there is no data, i.e. no modelid sent from parent component -->
@@ -85,15 +89,18 @@ export default {
         };
     },
     methods: {
-        updateOnStateChange() {
-            var vm = this;
-            backend.getModel(vm.model.modelid).then(model => {
-                vm.model.state = model.state;
-            });
-            backend.getProducts(vm.model.modelid).then(products => {
-                Vue.set(vm, "products", products);
-            })
-        },
+        /* The followingethod not used since when state is changed, the whole component 
+        refreshes and data is fetched to reflect the new state */
+
+        // updateOnStateChange() {
+        //     var vm = this;
+        //     backend.getModel(vm.model.modelid).then(model => {
+        //         vm.model.state = model.state;
+        //     });
+        //     backend.getProducts(vm.model.modelid).then(products => {
+        //         Vue.set(vm, "products", products);
+        //     })
+        // },
         createProducts() {
             var vm = this;
             if (vm.file) {
@@ -109,28 +116,25 @@ export default {
     mounted() {
         var vm = this;
         // var modelid = vm.$route.params.id;
-        backend.getModel(vm.modelid).then(model => {
-            model.files = [];
-            vm.model = model;
-                    // eslint-disable-next-line no-console
-        console.log(vm.model)
-        });
-        backend.getProducts(vm.modelid).then(products => {
-            Vue.set(vm, "products", products);
-        }).then(()=>{ 
-            Object.values(this.products).forEach(p => {
-                //for each product in the model, make sure that the newAndroidLink is updated 
-                //in order to get a preview of the model; if the link is null, we don't get a preview
-                if(p.newandroidlink && p.newandroidlink.includes('oldandroid')){
-                        var newLink = p.newandroidlink.replace('oldandroid', 'newandroid')
-                        p.newandroidlink = newLink
-                    }
+        if (vm.modelid > 0) { //So that we don't get error "model is undefined" until the component is fully loaded
+            backend.getModel(vm.modelid).then(model => {
+                model.files = [];
+                vm.model = model;
             });
-        })
-          // eslint-disable-next-line no-console
-        console.log(this.$vuetify.breakpoint.width)
-        // eslint-disable-next-line no-console
-        console.log(vm.products)
+            backend.getProducts(vm.modelid).then(products => {
+                Vue.set(vm, "products", products);
+            }).then(()=>{ 
+                Object.values(this.products).forEach(p => {
+                    //for each product in the model, make sure that the newAndroidLink is updated 
+                    //in order to get a preview of the model; if the link is null, we don't get a preview
+                    if(p.newandroidlink && p.newandroidlink.includes('oldandroid')){
+                            var newLink = p.newandroidlink.replace('oldandroid', 'newandroid')
+                            p.newandroidlink = newLink
+                        }
+                });
+            })
+        }
+
     }
 };
 </script>
