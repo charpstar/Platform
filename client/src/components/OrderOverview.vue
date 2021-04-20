@@ -19,7 +19,7 @@
             v-if="loaded"
             :account="account"
             :orderid="orderid"
-            :key="orderid"
+            :key="`orderid-${orderid}`"
             @updated-order="updateList" />
     </div>
 
@@ -35,7 +35,7 @@
             return {
                 loaded: false, //Once the component is mounted, set to true and display subcomponents
                 listUpdate: 0, //Use as a key to re-render the order list
-                orderid: "",
+                orderid: 0,
                 orders: {},
                 user: {},
                 userOrders: false
@@ -88,7 +88,7 @@
             }
         },
 
-        mounted() {
+        async mounted() {
             this.getOrders();
             this.loaded = true;
         }

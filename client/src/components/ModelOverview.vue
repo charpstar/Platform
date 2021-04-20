@@ -34,7 +34,7 @@
                 loaded: false, //Once the component is mounted, set to true and display subcomponents
                 listUpdate: 0, //Use as a key to re-render the model list
                 models: {},
-                modelid: "",
+                modelid: 0,
                 order: false
             }
         },
@@ -49,15 +49,15 @@
             getModelId(id) {
                 this.modelid = id
             },
-            getKey(id) { 
-                if (!this.loaded) {
-                    return `model-${this.listUpdate}`
+            getKey(id) { //Custom key for the ModelView component in order to also refresh the first product properly
+                if (!this.loaded) { //If page in't loaded yet use 'listUpdate' as key
+                    return this.listUpdate
                 }
                 //If page is loaded and models are fetched
                 else if(this.loaded && Object.values(this.models).length > 0) {
-                    //use the listUpdate as key to rerender the default component
-                    if( id == Object.values(this.models)[0].modelid){return `model-${this.listUpdate}`}
-                    else{ return id } //else use the modelid
+                    //use the 'listUpdate' as key when the first/default product changes
+                    if ( id == Object.values(this.models)[0].modelid){ return this.listUpdate }
+                    else { return `model-${id}` } //use 'modelid' as key for the rest of the products
                 }
             },
             async updateList() { //when a model is updated
