@@ -5,8 +5,9 @@
                 <h2>{{title}}</h2>
                 <p v-if="text != ''">{{text}}</p>
                 <div class="flexrow buttons">
-                    <v-btn @click="click">Confirm</v-btn>
-                    <v-btn @click="modal = false">Cancel</v-btn>
+                    <v-btn @click="click"  class="confirm" rounded outlined 
+                    small>Confirm</v-btn>
+                    <v-btn @click="modal = false" rounded color="#1FB1A9" small dark>Cancel</v-btn>
                 </div>
             </div>
         </v-dialog>
@@ -28,5 +29,14 @@ export default {
 <style lang="scss" scoped>
 .buttons > * {
     margin-right: 10px;
+}
+// added to make "confirm" button outlined
+.confirm {
+	background-color: white  !important;
+	color:#1FB1A9;
+	border: 1px solid #1FB1A9;
+}
+.flexrow{
+	margin-top: 10px
 }
 </style>
