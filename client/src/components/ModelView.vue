@@ -31,8 +31,11 @@
                     <blenderview 
                         :model="model" 
                         :account="account" 
-                        @updated-model="$emit('model-updated')"/>
-                        <!-- @state="updateOnStateChange"  -->
+                        @updated-model="$emit('model-updated')"
+                        :products="products"/>
+                        <!-- Pass down prop "products" in order to disable approve button
+                        when either android or ios link is missing -->
+                        <!-- Old code: @state="updateOnStateChange"  -->
                 </v-tab-item>
                 <v-tab-item class="tab" v-for="(p, id) in products" :key="id" :value="'tab-' + id">
                     <productview 
@@ -41,7 +44,7 @@
                         :account="account" 
                         @updated-model="$emit('model-updated')"
                         /> 
-                        <!-- @state="updateOnStateChange" -->
+                        <!-- Old code: @state="updateOnStateChange" -->
                 </v-tab-item>
             </v-tabs>
             <div v-if="account.usertype == 'Client' && model">

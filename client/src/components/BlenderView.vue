@@ -163,6 +163,8 @@
                             </template>		
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
+                            <!-- Indlude prop "markapprovedisabled" to disable approve button
+                        when either android or ios link is missing -->
                             <comments
                                 v-if="model.modelid"
                                 :idobj="{modelid: model.modelid}"
@@ -170,14 +172,15 @@
                                 :review="account.usertype != 'Modeller' && model.state == 'ProductReview' && model.modelowner != null"
                                 :markdone="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(model.state)"
                                 :markdonedisabled="model.files.length == 0"
+                                :markapprovedisabled="!Object.values(products)[0].newioslink || !Object.values(products)[0].newandroidlink"
                                 :markinfo="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(model.state)"
                                 :markresolve="account.usertype != 'Modeller' && model.state == 'ProductMissing'"
                                 @state="$emit('updated-model')"
                             />
-                             <!-- @state="$emit('state', $event)" -->
+                             <!-- old: @state="$emit('state', $event)" -->
                         </v-expansion-panel-content>
                     </v-expansion-panel>
-                    <!-- <v-expansion-panel v-if="account.usertype != 'Modeller'"> -->
+                    <!-- old: <v-expansion-panel v-if="account.usertype != 'Modeller'"> -->
 						<v-expansion-panel v-if="account.usertype == 'Admin'">
                         <v-expansion-panel-header disable-icon-rotate style="background:rgb(134,134,134,0.1);">
                             Assign Modeller
@@ -319,7 +322,8 @@ export default {
     },
     props: {
         model: { type: Object, required: true },
-        account: { type: Object, required: true }
+        account: { type: Object, required: true },
+        products: { type: Object}
     },
     data() {
         return {
