@@ -53,7 +53,8 @@
                 <commentmodal
                     :title="'Confirm approve'"
                     :text="'You will not be able to revert this action'"
-                    :open="modalapprove"
+                    :open.sync="modalapprove"
+					@closedialog="modalapprove= false"
                     :click="() => sendComment('Approve')"
                 >
                     <v-btn
@@ -70,6 +71,7 @@
                 <commentmodal
                     :title="'Confirm mark as done'"
                     :open="modaldone"
+					@closedialog="modaldone= false"
                     :click="() => sendComment('Done')"
                 >
                     <v-btn
@@ -87,6 +89,7 @@
                 <commentmodal
                     :title="'Confirm resolve'"
                     :open="modalresolve"
+					@closedialog="modalresolve= false"
                     :click="() => sendComment('Resolve')"
                 >
                     <v-btn

@@ -7,7 +7,7 @@
                 <div class="flexrow buttons">
                     <v-btn @click="click"  class="confirm" rounded outlined 
                     small>Confirm</v-btn>
-                    <v-btn @click="modal = false" rounded color="#1FB1A9" small dark>Cancel</v-btn>
+                    <v-btn  @click="$emit('closedialog')" rounded color="#1FB1A9" small dark>Cancel</v-btn>
                 </div>
             </div>
         </v-dialog>
