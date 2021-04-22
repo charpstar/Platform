@@ -57,13 +57,17 @@
 					@closedialog="modalapprove= false"
                     :click="() => sendComment('Approve')"
                 >
+                <!--:disabled="markapprovedisabled" -> disable approve button
+                    when either android or ios link is missing -->
                     <v-btn
                         v-if="review"
                         block
                         @click="modalapprove = true"
                         :loading="loading['Approve']"
-                        class="approve" rounded dark small
+                        class="approve" rounded small
+                        :disabled="markapprovedisabled"
                     >
+                    <!-- class="approve" rounded dark small -->
                         Approve
                         <v-icon right>mdi-check</v-icon>
                     </v-btn>
@@ -145,6 +149,7 @@ export default {
         review: { type: Boolean, default: false },
         markdone: { type: Boolean, default: false },
         markdonedisabled: { type: Boolean, default: false },
+        markapprovedisabled: { type: Boolean, default: false },
         markinfo: { type: Boolean, default: false },
         markresolve: { type: Boolean, default: false },
         internal: { type: Boolean, default: false }
@@ -357,7 +362,9 @@ margin-top :60px;
     //some buttons had 'min-width: 100%' which made their width 100% at all times
     min-width: auto !important;
 }
+// added to make the text white on "Approve" button
 .approve {
+    color: white;
     &.v-btn {
         background-color: green !important;
     }

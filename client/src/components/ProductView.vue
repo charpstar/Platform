@@ -198,6 +198,8 @@
               </template>	
           </v-expansion-panel-header>
           <v-expansion-panel-content>
+            <!-- Indlude prop "markapprovedisabled" to disable approve button
+            when either android or ios link is missing -->
             <comments
               :idobj="{ productid: product.productid }"
               :type="'Product'"
@@ -213,6 +215,7 @@
                   )
               "
               :markdonedisabled="model.files.length == 0"
+              :markapprovedisabled="!product.newioslink || !product.newandroidlink"
               :markinfo="
                 account.usertype == 'Modeller' &&
                   ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(
@@ -384,6 +387,8 @@
       setTimeout(() => {
         vm.hideMv = false
       }, 500)
+      // eslint-disable-next-line no-console
+      console.log(this.product)
     }
   }
 </script>
