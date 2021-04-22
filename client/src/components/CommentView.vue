@@ -41,7 +41,7 @@
 			<!-- Moved Add button inside text area -->
 			<template v-slot:append >
 				<v-btn @click="() => sendComment('Comment')" :loading="loading['Comment']" color="#1FB1A9" rounded dark small class="addBtn">
-                    Add
+                    Send
                     <v-icon right dark>mdi-plus-circle</v-icon>
                 </v-btn>
 				</template>
@@ -350,7 +350,7 @@ export default {
 	position: relative;
 }
 .addBtn {
-margin-top :60px;
+margin-top :3.6em;
 } 
 
 .v-btn--block {
