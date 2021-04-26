@@ -4,21 +4,31 @@
             <img src="/charpstar3.png" class="logosmall" />
             <p>3D asset management system</p>
         </div>
-        <div v-if="$route.path != '/'">
+        <div v-if="$route.path != '/'" >
             <v-menu id="menu" offset-y v-model="menuOpen" :close-on-content-click="false">
                 <template v-slot:activator="{ on }">
-                    <v-btn text id="menuButton" v-on="on">
+					<!-- added fab to make button round, color,dark-->
+                     <div class="account">
+						<v-btn text id="menuButton" v-on="on" fab dark color="#1FB1A9" >
                         <p
                             class="notification-badge"
                             v-if="Object.values(notifications).length > 0"
                         >{{Object.values(notifications).length}}</p>
-                        <p>{{account.name}}</p>
-                        <i class="material-icons" id="acountIcon">account_circle</i>
+						<!-- Div created for styling of p and icon-->
+                       
+                        <!-- <i class="material-icons" id="acountIcon" color="#1FB1A9" >account_circle</i> -->
+						<v-icon large >mdi-account</v-icon>
+						
                     </v-btn>
+					<p class="accountName">{{account.name}}</p>
+					</div>
                 </template>
                 <v-list>
                     <v-list-item v-for="(item, index) in items" :key="index" @click="item.click">
                         <v-list-item-title>{{ item.title }}</v-list-item-title>
+						<v-list-item-icon>
+              <v-icon v-text="item.icon"></v-icon>
+            </v-list-item-icon>
                     </v-list-item>
                     <v-divider v-if="Object.values(notifications).length > 0" />
                     <v-list-item
@@ -32,6 +42,36 @@
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </v-list-item>
+					<!-- Added QA tools to access important links -->
+					<v-list-group
+        :value="false"
+		v-if="account.usertype == 'QA'"
+      >
+		<template v-slot:activator>
+          <v-list-item-title>QA tools</v-list-item-title>
+        </template>
+		<v-list-group
+          :value="true"
+          no-action
+          sub-group
+        >
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title>Links</v-list-item-title>
+            </v-list-item-content>
+          </template>
+		<v-list-item
+            v-for="item in links"
+            :key="item.title"
+			:href="item.href"
+            link
+			target="_blank"
+          >
+            <v-list-item-title>{{item.title}}</v-list-item-title>
+			<v-icon>mdi-link</v-icon>
+</v-list-item>
+            </v-list-group>
+			</v-list-group>
                 </v-list>
             </v-menu>
         </div>
@@ -48,7 +88,13 @@ export default {
     },
     data: () => ({
         items: [],
-        menuOpen: false
+        menuOpen: false,
+		links: [
+		{title:'3DTester', href:'https://charpstar.se/3DTester'},
+        {title:'modelviewer', href:'https://modelviewer.dev/editor'},
+		{title:'vectary', href:'https://wwww.vectary.com'}
+      
+      ],
     }),
     methods: {
         logout() {
@@ -70,9 +116,9 @@ export default {
     mounted() {
         var vm = this;
         vm.items = [
-            { title: "Log out", click: vm.logout },
+            { title: "Log out", icon: 'mdi-logout', click: vm.logout },
             {
-                title: "Support",
+                title: "Support", icon:'mdi-lifebuoy',
                 click: () => {
                     window.location.href = "https://www.charpstar.se/";
                     vm.menuOpen = false;
@@ -136,14 +182,27 @@ export default {
     color: black !important;
     font-weight: normal !important;
 }
-
-#acountIcon {
-    color: grey;
-    font-size: 24px;
-}
+// To change icon color from grey to green
+/*#acountIcon {
+     color: grey;
+    font-size: 24px ;
+}*/
 
 .logosmall {
     height: 30px;
     margin-left: 10px;
 }
+//Added To style p (account.name)
+.accountName {
+	font-size: 15px  !important;
+margin-right: 10px;
+}
+.account{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center
+	;
+}
+
 </style>

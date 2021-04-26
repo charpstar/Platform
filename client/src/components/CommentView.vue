@@ -1,95 +1,11 @@
 <template>
     <div>
-        <div class="flexrow" id="addCommentRow">
-            <v-textarea
-                id="addComment"
-                v-model="addComment"
-                name="comment"
-                placeholder="Message"
-                :full-width="true"
-                :hide-details="true"
-            ></v-textarea>
-            <div class="flexcol" id="sendButtons">
-                <commentmodal
-                    :title="'Confirm approve'"
-                    :text="'You will not be able to revert this action'"
-                    :open="modalapprove"
-                    :click="() => sendComment('Approve')"
-                >
-                    <v-btn
-                        v-if="review"
-                        block
-                        @click="modalapprove = true"
-                        :loading="loading['Approve']"
-                        class="approve"
-                    >
-                        Approve
-                        <v-icon right>mdi-check</v-icon>
-                    </v-btn>
-                </commentmodal>
-                <commentmodal
-                    :title="'Confirm mark as done'"
-                    :open="modaldone"
-                    :click="() => sendComment('Done')"
-                >
-                    <v-btn
-                        v-if="markdone"
-                        block
-                        @click="modaldone = true"
-                        :loading="loading['Done']"
-                        class="approve"
-                        :disabled="markdonedisabled"
-                    >
-                        Done
-                        <v-icon right>mdi-check</v-icon>
-                    </v-btn>
-                </commentmodal>
-                <commentmodal
-                    :title="'Confirm resolve'"
-                    :open="modalresolve"
-                    :click="() => sendComment('Resolve')"
-                >
-                    <v-btn
-                        v-if="markresolve"
-                        block
-                        @click="modalresolve = true"
-                        :loading="loading['Resolve']"
-                        class="approve"
-                    >
-                        Resolve
-                        <v-icon right>mdi-check</v-icon>
-                    </v-btn>
-                </commentmodal>
-                <v-btn
-                    v-if="review"
-                    block
-                    @click="() => sendComment('Reject')"
-                    :loading="loading['Reject']"
-                    class="reject"
-                >
-                    Reject
-                    <v-icon right class="rejectIcon">mdi-refresh</v-icon>
-                </v-btn>
-                <v-btn
-                    v-if="markinfo"
-                    block
-                    @click="() => sendComment('Info')"
-                    :loading="loading['Info']"
-                    class="reject"
-                >
-                    Info
-                    <v-icon right class="rejectIcon">mdi-information</v-icon>
-                </v-btn>
-                <v-btn block @click="() => sendComment('Comment')" :loading="loading['Comment']">
-                    Send
-                    <v-icon right>mdi-send</v-icon>
-                </v-btn>
-            </div>
-        </div>
         <div id="comments">
             <div v-if="error != ''" class="error-text">{{error}}</div>
             <div class="comment" v-for="(comment, index) in comments" :key="index">
                 <div>
+					<!-- adding icon for comments-->
+					<v-icon color="#1FB1A9" large>mdi-account-circle</v-icon>
                     <span
                         :class="'name ' + (comment.usertype ? comment.usertype.toLowerCase() : 'client')"
                     >{{comment.name}}</span>
@@ -102,9 +18,120 @@
                         }"
                     >{{icons[comment.commentclass]}}</v-icon>
                 </div>
-                <div>{{comment.comment}}</div>
+                <div class="commentText">{{comment.comment}}</div>
+				<v-divider></v-divider>
             </div>
         </div>
+		<div class="flexrow" id="addCommentRow">
+			<v-icon color="#1FB1A9" large>mdi-account-circle</v-icon>
+			<v-container>
+            <v-textarea
+                id="addComment"
+                v-model="addComment"
+                name="comment"
+                placeholder="Message"
+                :full-width="true"
+                :hide-details="true"
+				outlined
+				color="#1FB1A9"
+				class="container"
+				rows="3"
+				row-height="25"
+            >
+			<!-- Moved Add button inside text area -->
+			<template v-slot:append >
+				<v-btn @click="() => sendComment('Comment')" :loading="loading['Comment']" color="#1FB1A9" rounded dark small class="addBtn">
+                    Send
+                    <v-icon right dark>mdi-plus-circle</v-icon>
+                </v-btn>
+				</template>
+				</v-textarea>
+				</v-container>
+        </div>
+		<div class="flexcol" id="sendButtons">
+			<div class="buttons">
+                <commentmodal
+                    :title="'Confirm approve'"
+                    :text="'You will not be able to revert this action'"
+                    :open.sync="modalapprove"
+					@closedialog="modalapprove= false"
+                    :click="() => sendComment('Approve')"
+                >
+                <!--:disabled="markapprovedisabled" -> disable approve button
+                    when either android or ios link is missing -->
+                    <v-btn
+                        v-if="review"
+                        block
+                        @click="modalapprove = true"
+                        :loading="loading['Approve']"
+                        class="approve" rounded small
+                        :disabled="markapprovedisabled"
+                    >
+                    <!-- class="approve" rounded dark small -->
+                        Approve
+                        <v-icon right>mdi-check</v-icon>
+                    </v-btn>
+                </commentmodal>
+                <commentmodal
+                    :title="'Confirm mark as done'"
+                    :open="modaldone"
+					@closedialog="modaldone= false"
+                    :click="() => sendComment('Done')"
+                >
+                    <v-btn
+                        v-if="markdone"
+                        block
+                        @click="modaldone = true"
+                        :loading="loading['Done']"
+                        class="approve done"
+                        :disabled="markdonedisabled" rounded  small
+                    >
+                        Done
+                        <v-icon right>mdi-check</v-icon>
+                    </v-btn>
+                </commentmodal>
+                <commentmodal
+                    :title="'Confirm resolve'"
+                    :open="modalresolve"
+					@closedialog="modalresolve= false"
+                    :click="() => sendComment('Resolve')"
+                >
+                    <v-btn
+                        v-if="markresolve"
+                        block
+                        @click="modalresolve = true"
+                        :loading="loading['Resolve']"
+                        class="approve" rounded dark small
+                    >
+                        Resolve
+                        <v-icon right>mdi-check</v-icon>
+                    </v-btn>
+                </commentmodal>
+                <v-btn
+                    v-if="review"
+                    block
+                    @click="() => sendComment('Reject')"
+                    :loading="loading['Reject']"
+                    class="reject" rounded dark small
+                >
+                    Reject
+                    <v-icon right class="rejectIcon">mdi-refresh</v-icon>
+                </v-btn>
+				</div>
+				<div class="buttons">
+                
+				<v-btn
+                    v-if="markinfo"
+                    @click="() => sendComment('Info')"
+                    :loading="loading['Info']"
+                    class="reject" 
+					rounded dark small
+                >
+                    Info
+                    <v-icon right class="rejectIcon">mdi-information</v-icon>
+                </v-btn>
+            </div>
+			</div>
         <v-snackbar v-model="snackbar" :timeout="3000">Please add a comment</v-snackbar>
     </div>
 </template>
@@ -122,6 +149,7 @@ export default {
         review: { type: Boolean, default: false },
         markdone: { type: Boolean, default: false },
         markdonedisabled: { type: Boolean, default: false },
+        markapprovedisabled: { type: Boolean, default: false },
         markinfo: { type: Boolean, default: false },
         markresolve: { type: Boolean, default: false },
         internal: { type: Boolean, default: false }
@@ -259,10 +287,14 @@ export default {
     .name {
         font-size: 16px;
         padding-right: 5px;
+		padding-left: 5px; //added for styling
     }
     margin-top: 10px;
 }
-
+//added for styling
+.commentText {
+		padding-left: 40px;
+	}
 .column {
     display: flex;
     flex-direction: column;
@@ -283,26 +315,56 @@ export default {
 }
 
 #addCommentRow {
-    width: 40vw;
-    align-items: flex-end;
+    width: 35vw;
+   /*  align-items: flex-end; */
+   align-items: flex-start;
     .material-icons {
         color: grey;
         margin-left: 10px;
     }
-    margin-left: 5px;
+   /*  margin-left: 5px; */
+	margin-top: 15px;// added to give margin at the top of text area
 }
 
 #sendButtons {
-    justify-content: flex-end;
+	display: flex;
+	flex-direction: row;
+    justify-content: flex-start; 
     align-items: flex-start;
     .v-btn {
-        margin-top: 10px;
+        margin-top: 20px; // changed from 10px to 20px
         display: block;
-        margin-left: 10px;
+        margin-left: 10px; 
     }
 }
+// added class for info and send button
+.buttons {
+	display: flex;
+	flex-direction: row;
+	/* margin-left: 10px; */
+}
+// added to make the text white on "Done" button
+.done{
+	color: white
+}
+//added to style Add, Approve, Reject buttons
+.container{
+	display: flex;
+	flex-direction:column;
+	align-content: flex-end;
+	position: relative;
+}
+.addBtn {
+margin-top :3.6em;
+} 
 
+.v-btn--block {
+    //some buttons had 'min-width: 100%' which made their width 100% at all times
+    min-width: auto !important;
+}
+// added to make the text white on "Approve" button
 .approve {
+    color: white;
     &.v-btn {
         background-color: green !important;
     }

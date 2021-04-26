@@ -5,13 +5,23 @@
                 <h2>{{title}}</h2>
                 <p v-if="text != ''" class="text">{{text}}</p>
                 <div class="flexrow buttons">
-                    <v-btn :loading="handler.loading" @click="handler.execute">Confirm</v-btn>
-                    <v-btn @click="handler.modal = false">Cancel</v-btn>
+                    <v-btn class="confirm" :loading="handler.loading" @click="handler.execute" rounded outlined 
+                    small>Confirm</v-btn>
+                    <v-btn @click="handler.modal = false" rounded color="#1FB1A9" small dark >Cancel</v-btn>
                 </div>
                 <p class="error-text" v-if="handler.error">{{handler.error}}</p>
             </div>
         </v-dialog>
-        <v-btn @click="handler.modal=true" :style="{'background-color': color + ' !important'}">{{buttonText}}<v-icon right v-if="icon">{{icon}}</v-icon></v-btn>
+        <v-btn  
+            class="white--text" 
+            id="handlerBtn"
+            rounded
+            dark 
+            small 
+            @click="handler.modal=true" 
+            :style="{'background-color': color + ' !important'}">{{buttonText}}
+            <v-icon right v-if="icon">{{icon}}</v-icon>
+        </v-btn>
     </div>
 </template>
 
@@ -34,5 +44,22 @@ export default {
 }
 .text {
     padding: 10px;
+}
+// added to make "confirm" button outlined
+.confirm {
+	background-color: white  !important;
+	color:#1FB1A9;
+	border: 1px solid #1FB1A9;
+}
+
+
+#handlerBtn {
+   padding-top: 16px !important;
+   padding-bottom: 16px !important;
+} 
+// added margin-top for butttons
+.flexrow{
+	margin-top: 10px;
+
 }
 </style>

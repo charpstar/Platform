@@ -1,7 +1,7 @@
 <template>
     <div id="item">
         <edittextmodal :label="'model name'" :handler="editname" :text="model.modelname">Edit product parent model</edittextmodal>
-        <v-dialog v-model="assign.modal" width="500">
+        <!-- <v-dialog v-model="assign.modal" width="500">
             <div class="card">
                 <v-select :items="modelers" label="Modeler" v-model="modeler">
                     <template v-slot:item="{item}">
@@ -14,34 +14,81 @@
                 <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!modeler">Assign</v-btn>
                 <p class="error-text" v-if="assign.error">{{assign.error}}</p>
             </div>
-        </v-dialog>
+        </v-dialog> -->
         <v-dialog v-model="upload.modal" width="500">
             <div class="card">
-                <v-file-input :label="'Select file'" @change="onFileChange"></v-file-input>
-                <v-btn :loading="upload.loading" @click="upload.execute" :disabled="!file">Upload</v-btn>
+                <h3>Upload File</h3>
+                <v-file-input :label="'Select file'" @change="onFileChange" color="#1FB1A9"></v-file-input>
+                <p class="uploadButtons">
+                    <v-btn 
+                        class="uploadBtn"
+                        rounded
+                        :loading="upload.loading" 
+                        @click="upload.execute" 
+                        :disabled="!file">
+                        Upload
+                    </v-btn>
+                    <v-btn 
+                        class="secondaryBtn"
+                        rounded 
+                        outlined
+                        @click="upload.modal = false"
+                    >
+                        Cancel
+                    </v-btn>
+                </p>
+
             </div>
         </v-dialog>
         <v-dialog v-model="deleteHandler.modal" width="250px">
-            <div class="card flexcol">
-                <h2>Confirm Delete</h2>
-                <v-btn
-                    @click="deleteHandler.execute"
-                    class="buttons"
-                    :loading="deleteHandler.loading"
-                >Confirm</v-btn>
-                <p class="error-text" v-if="deleteHandler.error">{{deleteHandler.error}}</p>
-                <v-btn @click="deleteHandler.modal = false" class="buttons">Cancel</v-btn>
+            <!-- <div class="card flexcol"> -->
+                <div class="card">
+                <h3>Confirm Delete</h3>
+                <div class="buttons">
+                    <div class="confirm">
+                        <v-btn
+                            @click="deleteHandler.execute"
+                            class="buttons"
+                            :loading="deleteHandler.loading"
+                            rounded
+                            small
+                            outlined
+                            id="confirmBtn">
+                            Confirm
+                        </v-btn>
+                    <p class="error-text" v-if="deleteHandler.error">{{deleteHandler.error}}</p>
+                    </div>
+
+                    <v-btn 
+                        @click="deleteHandler.modal = false" 
+                        class="buttons"
+                        rounded 
+                        small
+                        dark>
+                        Cancel
+                    </v-btn>
+                </div>
+
             </div>
         </v-dialog>
-        <div class="flexrow" id="itemsrow">
+        <!-- <div class="flexrow" id="itemsrow"> -->
+        <div id="itemsrow">
             <div class="column">
-                <div class="flexrow">
+                <p id="modeller">
+                    Assigned modeller: {{model.modelowner ? model.modelowner : 'None'}}
+                </p>
+                <!-- If we want to display model status -->
+                <p id="status">
+                    Status: {{backend.messageFromStatus(model.state, account.usertype)}}
+                    <!-- <v-icon>{{backend.iconFromStatus(model.state, account.usertype)}}</v-icon> --> 
+                </p>
+                <!-- <div class="flexrow">
                     <p>Files</p>
                     <v-btn icon @click="upload.modal = true">
                         <v-icon class="iconColor">mdi-cloud-upload</v-icon>
                     </v-btn>
-                </div>
-                <table class="fileList">
+                </div> -->
+                <!-- <table class="fileList">
                     <tr v-if="model.files.length == 0">
                         <td>
                             <p class="emptyFiles">No files uploaded</p>
@@ -59,36 +106,193 @@
                         <td>
                             <v-btn icon @click="() => {deleteFile(index)}">
                                 <v-icon>mdi-close</v-icon>
-                            </v-btn>
+                            </v-btn> 
                         </td>
                     </tr>
-                </table>
+                </table> -->
+                <!-- Replaced with: -->
+                <div class="fileList">
+                    <p class="emptyFiles" v-if="model.files.length == 0">
+                        No files uploaded
+                    </p>
+                    <!-- as file is an array now (not string) it is better to use index as the key-->
+                    <div class="flexrow" v-for="(file, index) in model.files" :key="index">
+                    <!-- <div class="flexrow" v-for="(file, index) in model.files" :key="file"> -->
+                        <!-- 'file' is an array, where file[0] is the date of uploading 
+                        and file[1] the file name: -->
+                        <p class="fileName">{{file[1]}}</p> 
+                        <!-- Added to display uploading date: -->
+                        <p class="fileDate">{{$formatTime(file[0])}}</p>
+                        <div class="fileButtons">
+                            <p>
+                            <!-- file[1] is the file name: -->
+                            <v-btn class="actionBtn" rounded @click="downloadModel(file[1])">
+                                <span>Download</span> 
+                                <v-icon>mdi-cloud-download</v-icon>
+                            </v-btn>
+                        </p>
+                        <p>
+                            <v-btn 
+                            id="deleteBtn" 
+                            outlined 
+                            rounded 
+                            @click="() => {deleteFile(index)}">
+                                <span>Delete</span> 
+                                <v-icon>mdi-delete</v-icon>
+                            </v-btn>
+                        </p>
+                        </div>
+                        
+                    </div>
+                </div> 
+                <v-btn class="actionBtn" rounded @click="upload.modal = true">
+                    <span>Upload</span>
+                    <v-icon>mdi-cloud-upload</v-icon>
+                    <!-- <v-icon class="iconColor">mdi-cloud-upload</v-icon> -->
+                </v-btn>
             </div>
-            <div class="column">
-                <table id="itemTable">
-                    <tr>
+            <div class="expansionPanels">
+                <v-expansion-panels focusable>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header disable-icon-rotate style="background:rgb(134,134,134,0.1);">
+                            Comments
+                            <template v-slot:actions>
+                                <v-icon class="expansionIcon">
+                                    mdi-wechat
+                                </v-icon>
+                            </template>		
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <!-- Indlude prop "markapprovedisabled" to disable approve button
+                        when either android or ios link is missing -->
+                            <comments
+                                v-if="model.modelid"
+                                :idobj="{modelid: model.modelid}"
+                                :type="'Model'"
+                                :review="account.usertype != 'Modeller' && model.state == 'ProductReview' && model.modelowner != null"
+                                :markdone="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(model.state)"
+                                :markdonedisabled="model.files.length == 0"
+                                :markapprovedisabled="!Object.values(products)[0].newioslink || !Object.values(products)[0].newandroidlink"
+                                :markinfo="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(model.state)"
+                                :markresolve="account.usertype != 'Modeller' && model.state == 'ProductMissing'"
+                                @state="$emit('updated-model')"
+                            />
+                             <!-- old: @state="$emit('state', $event)" -->
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <!-- old: <v-expansion-panel v-if="account.usertype != 'Modeller'"> -->
+						<v-expansion-panel v-if="account.usertype == 'Admin'">
+                        <v-expansion-panel-header disable-icon-rotate style="background:rgb(134,134,134,0.1);">
+                            Assign Modeller
+                            <template v-slot:actions>
+                                <v-icon class="expansionIcon">
+                                    mdi-account-plus
+                                </v-icon>
+                            </template>	
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <div class="card">
+                                <v-select :items="modelers" label="Modeller" v-model="modeler">
+                                    <template v-slot:item="{item}">
+                                        <span>{{item.name}}</span>
+                                    </template>
+                                    <template v-slot:selection="{item}">
+                                        <span>{{item.name}}</span>
+                                    </template>
+                                </v-select>
+                                <v-btn :loading="assign.loading" @click="assign.execute" :disabled="!modeler" rounded small width="80px" color="#1FB1A9" class="assignBtn" >Assign</v-btn>
+                                <p class="error-text" v-if="assign.error">{{assign.error}}</p>
+                            </div>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+					<!-- Added deadline -->
+					<!-- <v-expansion-panel v-if="account.usertype == 'Admin'">
+                        <v-expansion-panel-header disable-icon-rotate style="background:rgb(134,134,134,0.1);">
+                            Deadline
+                            <template v-slot:actions>
+                                <v-icon class="expansionIcon">
+                                    mdi-calendar
+                                </v-icon>
+                            </template>	
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <div>
+                              <v-menu
+                                ref="menu"
+                                v-model="menu"
+                                :close-on-content-click="false"
+                                :return-value.sync="date"
+                                transition="scale-transition"
+                                offset-y
+                                min-width="auto"
+                            >
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-text-field
+                                    v-model="date"
+                                    label="Deadline"
+                                    prepend-icon="mdi-calendar"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"
+                                ></v-text-field>
+                                </template>
+                                        <v-date-picker
+                                        v-model="date"
+                                        no-title
+                                        scrollable
+                                        :min="todaysDate"
+                                        id="dateBtn"
+                                        >
+                                        <v-spacer></v-spacer>
+                                        <v-btn
+                                            text
+                                            class="dateconfirmBtn"
+                                            @click="menu = false"
+                                        >
+                                            Cancel
+                                        </v-btn>
+                                        <v-btn
+                                            text
+                                            class="dateconfirmBtn"
+                                            @click="$refs.menu.save(date)"
+                                        >
+                                            OK
+                                        </v-btn>
+                                        </v-date-picker>
+                                    </v-menu>
+                                </div>
+                            </v-expansion-panel-content>
+                        </v-expansion-panel> -->
+                    </v-expansion-panels>
+
+                <!-- <table id="itemTable"> -->
+                    <!-- <tr>
                         <td>Status</td>
                         <td>
                             {{backend.messageFromStatus(model.state, account.usertype)}}
                             <v-icon>{{backend.iconFromStatus(model.state, account.usertype)}}</v-icon>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>Assigned modeler:</td>
+                    </tr> 
+                    <tr>-->
+                        <!-- Assign modeller via expansion panel instead of modal -->
+
+                        <!--<td>Assigned modeler:</td>
                         <td>
                             {{model.modelowner ? model.modelowner : 'None'}}
-                            <v-btn
+                             <v-btn
                                 v-if="account.usertype != 'Modeller'"
                                 icon
                                 @click="assign.modal = true"
                             >
                                 <v-icon class="iconColor">mdi-account-plus</v-icon>
-                            </v-btn>
-                        </td>
-                    </tr>
-                </table>
+                            </v-btn> -->
 
-                <h2 id="commentsLabel">Comments</h2>
+                        <!-- </td>
+                    </tr> -->
+                <!-- </table> -->
+
+                <!-- Moved code for comments in an expansion panel: -->
+                <!-- <h2 id="commentsLabel">Comments</h2>
                 <comments
                     v-if="model.modelid"
                     :idobj="{modelid: model.modelid}"
@@ -99,7 +303,7 @@
                     :markinfo="account.usertype == 'Modeller' && ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(model.state)"
                     :markresolve="account.usertype != 'Modeller' && model.state == 'ProductMissing'"
                     @state="$emit('state', $event)"
-                />
+                /> -->
             </div>
         </div>
         <v-snackbar v-model="assignSnackbar" :timeout="3000">Cannot assign modeller until order is claimed by a QA</v-snackbar>
@@ -118,7 +322,8 @@ export default {
     },
     props: {
         model: { type: Object, required: true },
-        account: { type: Object, required: true }
+        account: { type: Object, required: true },
+        products: { type: Object}
     },
     data() {
         return {
@@ -132,7 +337,17 @@ export default {
             file: "",
             backend: backend,
             assignSnackbar: false,
+			date: new Date().toISOString().substr(0, 10),
+			menu: false
         };
+    },
+    computed: {
+        todaysDate(){ //get today's date so that the deadline cannot be before
+            const today = new Date()
+            // const tomorrow = new Date(today)
+            // tomorrow.setDate(tomorrow.getDate() + 1)
+            return today.toISOString().split('T')[0]
+        }
     },
     methods: {
         changeName(newname) {
@@ -162,14 +377,35 @@ export default {
                     }
                     vm.model.modelowner = data.userdata.name;
                     vm.modeler = false;
-                });
+                })
+                .then(() => {
+                    //communicate to parent that data has changed in order to refresh the page
+                    this.$emit('updated-model')
+                })
+                
         },
         uploadModel() {
             var vm = this;
             return backend.uploadModelFile(vm.model.modelid, vm.file).then(newFile => {
-                vm.model.files.push(newFile.filename);
+                // vm.model.files.push(newFile.filename);
+                // vm.model.files.push(newFile);
+ 
+                var existingFile = vm.model.files.findIndex(file => file[1] == newFile.filename)
+                if (existingFile > -1) { //if there is a file with the same name, replace it with the latest version
+                    vm.model.files.splice(existingFile, 1)
+                    vm.model.files.push([newFile.time, newFile.filename]); 
+                }
+                else { //else simply push the new file's uploading time and its name 
+                // to the model.files array in order to display it in the frontend immediately
+                     vm.model.files.push([newFile.time, newFile.filename]); 
+                }
                 vm.file = false;
-            });
+            })
+            .then(() => {
+                //communicate to parent that data has changed in order to refresh the page
+                this.$emit('updated-model')
+            })
+            
         },
         downloadModel(filename) {
             var vm = this
@@ -182,17 +418,23 @@ export default {
         deleteFileConfirmed() {
             var vm = this;
             return backend
-                .deleteModelFile(vm.model.modelid, vm.model.files[vm.selectedFile])
+                .deleteModelFile(vm.model.modelid, vm.model.files[vm.selectedFile][1])
                 .then(() => {
                     Vue.delete(vm.model.files, vm.selectedFile);
                     vm.selectedFile = false;
-                });
+                })
+            .then(() => {
+                //communicate to parent that data has changed in order to refresh the page
+                this.$emit('updated-model')
+            })
         }
     },
     mounted() {
         var vm = this;
         backend.getModelFiles(vm.model.modelid).then(files => {
-            vm.$set(vm.model, 'files', Object.values(files))
+            // Object.entries(files) instead of Object.values(files) to get both date and file name
+            vm.$set(vm.model, 'files', Object.entries(files))
+            // vm.$set(vm.model, 'files', Object.values(files))
         });
         if(vm.account.usertype != 'Modeller') {
             backend.getModelers().then(modelers => {
@@ -205,16 +447,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#item {
-    width: 80vw;
-}
-#itemTable {
-    font-size: 20px;
-    color: grey;
-    td {
-        padding-right: 20px;
-    }
-}
+// #item {
+//     width: 80vw;
+// }
+// #itemTable {
+//     font-size: 20px;
+//     color: grey;
+//     td {
+//         padding-right: 20px;
+//     }
+// }
 #modelView {
     width: 400px;
     height: 400px;
@@ -227,11 +469,26 @@ export default {
     justify-content: start;
 }
 
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .column {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
+    p {
+        margin-bottom: 20px;
+    }
+    p#modeller{
+        font-size: 1.3em;
+    }
+    p#status{
+        font-size: 1.1em;
+    }
 }
 
 #default-progress-bar {
@@ -239,19 +496,36 @@ export default {
 }
 
 .fileList {
-    width: 400px;
-    background-color: #cccccc;
-    td {
-        border: none;
-    }
-    max-height: 60px;
-    overflow-y: scroll;
-    margin-right: 20px;
+    width: 100%;
+    margin: 40px 0;
+    // background-color: #cccccc;
+    // td {
+    //     border: none;
+    // }
+    // max-height: 60px;
+    // overflow-y: scroll;
+    // margin-right: 20px;
+  
 }
 
 .fileName {
-    width: 300px;
     padding-left: 10px;
+    color: #515151;
+    // width: 300px;
+}
+
+.fileDate {
+    font-style: italic;
+}
+
+.flexrow {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.fileButtons {
+    display: flex;
 }
 
 .emptyFiles {
@@ -262,5 +536,77 @@ export default {
 
 .buttons {
     margin-top: 10px;
+    display: flex;
+    justify-content: space-around;
 }
+
+.actionBtn {
+    /* Buttons with a class do not seem to accept the "dark" prop */
+    color: white;
+    span {
+        margin-right: 0.5em;
+    }
+    margin-right: 10px;
+}
+
+#deleteBtn, #confirmBtn {
+    background-color: white !important;
+    color: #1FB1A9;
+}
+
+.uploadBtn {
+    /* Buttons with the "dark" prop disappear when disabled 
+    so adjusted the text color in CSS instead*/
+    color: white;
+    margin: 10px 10px 0 10px;
+}
+
+.secondaryBtn {
+    background-color: white !important;
+    color: #1FB1A9;
+    span {
+        margin-right: 0.5em;
+    }
+}
+
+h3 {
+    color: #515151;
+    font-weight: normal;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.expansionPanels{
+    margin-top: 20px;
+    margin-right: 20px;
+}
+
+.expansionIcon {
+    margin-left: 10px;
+    color: #515151!important;
+	
+}
+
+.uploadButtons {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+}
+//added to style "Assign" button as per design
+.assignBtn {
+	color: white;
+	margin-top: 15px;
+	width: 10px;
+}
+.v-date-picker-table .v-btn {
+	background-color:white !important;
+} 
+
+.dateconfirmBtn{
+	background-color: white !important 
+} 
+
+	
+
+
 </style>

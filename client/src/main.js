@@ -16,6 +16,14 @@ const customPlugin = {
       }
       return date.join("/") + " " + time.join(":")
     }
+
+    /* Separate function to get only date */
+    Vue.prototype.$formatDate = function (timestamp) {
+      var now = new Date(Date.parse(timestamp));
+      var date = [now.getFullYear(), now.getMonth() + 1, now.getDate()];
+      return date.join("/")
+    }
+    
     Vue.prototype.$emptyObj = function (obj) {
         return Object.keys(obj).length === 0
     }
@@ -31,12 +39,17 @@ Vue.use(customPlugin)
 
 import loginView from './components/LoginView'
 import adminView from "./components/AdminView";
-import orderListView from "./components/OrderListView";
-import orderView from "./components/OrderView";
-import modelListView from "./components/ModelListView";
-import modelView from "./components/ModelView";
-import userListView from "./components/UserListView";
+import orderOverview from "./components/OrderOverview";
+import modelOverview from "./components/ModelOverview";
 import userView from "./components/UserView";
+
+/* Previously used components that are replaced here by ModelOverview and OrderOverview */
+
+// import modelListView from "./components/ModelListView";
+// import modelView from "./components/ModelView";
+// import orderListView from "./components/OrderListView";
+// import orderView from "./components/OrderView";
+// import userListView from "./components/UserListView";
 
 const router = new VueRouter({
   mode: 'history',
@@ -44,16 +57,36 @@ const router = new VueRouter({
   routes: [
     { path: '/', component: loginView },
     { path: '/home', component: adminView },
-    { path: '/admin/users', component: userListView },
-    { path: '/admin/orders', component: orderListView },
-    { path: '/admin/models', component: modelListView },
-    { path: '/modeller/:id', component: modelListView },
+
+    { path: '/admin/models', component: modelOverview },
+    // { path: '/admin/models', component: modelListView },
+    { path: '/modeller/:id', component: modelOverview },
+    // { path: '/modeller/:id', component: modelListView },
     { path: '/user/:id', component: userView },
-    { path: '/user/:id/orders', component: orderListView },
-    { path: '/user/:id/models', component: modelListView },
-    { path: '/order/:id', component: orderView },
-    { path: '/order/:id/models', component: modelListView },
-    { path: '/model/:id', component: modelView },
+  
+    { path: '/user/:id/orders', component: orderOverview },
+    // { path: '/user/:id/orders', component: orderListView },
+
+    { path: '/order/:id/models', component: modelOverview },
+    // { path: '/order/:id/models', component: modelListView },
+
+    /* Instead of using the following routes, we are using the more semantic '/home' with
+      an additional query parameter to indicate if we are looking at the orders' or 
+      the users' tab*/
+    // { path: '/admin/users', component: userListView }, 
+    // { path: '/admin/orders', component: adminView }, 
+        /* Older version: */
+    // { path: '/admin/orders', component: orderListView },
+
+    /* Where is this route used? */
+    /* replace with component: modelOverview if route is used */
+    // { path: '/user/:id/models', component: modelListView },
+    
+    /* this path is not necessary when we use the OrderOverview component */
+    // { path: '/order/:id', component: orderView }
+
+    /* this path is not necessary when we use the ModelOverview component */
+    // { path: '/model/:id', component: modelView }
 
   ]
 })

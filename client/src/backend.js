@@ -145,6 +145,70 @@ const ClientMessages = {
     Error: "Error"
 }
 
+/* Colors and ClientColors:
+    Code to apply colors for different products states in bar graph and in lists 
+    Commented code means the colors previously used for the bar chart */
+const Colors = {
+    OrderInit: "grey",
+    OrderReceived: "#868686",
+    OrderReview: "#7FCB7F",
+    OrderClientReview: "#744885",
+    OrderMissing: "#A33636",
+    OrderDev: "#88b5bd",
+
+    ProductInit: "grey", //maybe different color?
+    ProductReceived: "#868686",
+    ProductDev: "#88b5bd",
+    ProductMissing: "#EC4E4E",
+    ProductQAMissing: "#A33636",
+    ProductReview: "#7FCB7F",
+    ProductRefine: "#FFA500",
+    ClientProductReceived: "#744885",
+    ClientFeedback: "#1DA19A",
+    Done: "#188038",
+    Error: "E20000"
+    // ProductReceived: "grey",
+    // ProductDev: "#0e6ab5",
+    // ProductMissing: "#c91463",
+    // ProductQAMissing: "#ad239b",
+    // ProductReview: "#1496c9",
+    // ProductRefine: "#0e6ab5",
+    // ClientProductReceived: "#37db4d",
+    // ClientFeedback: "#0e6ab5",
+    // Done: "green"
+
+}
+
+const ClientColors = {
+    OrderInit: "grey",
+    OrderReceived: "#FFA500",
+    OrderReview: "#7FCB7F",
+    OrderClientReview: "#744885",
+    OrderMissing: "#EC4E4E",
+    OrderDev: "#88b5bd",
+
+    ProductInit: "grey",
+    ProductReceived: "#FFA500",
+    ProductDev: "#88b5bd",
+    ProductMissing: "#88b5bd",
+    ProductQAMissing: "#EC4E4E",
+    ProductReview: "#88b5bd",
+    ProductRefine: "#88b5bd",
+    ClientProductReceived: "#744885",
+    ClientFeedback: "#1DA19A",
+    Done: "#188038",
+    Error: "E20000"
+    // ProductReceived: "grey",
+    // ProductDev: "#0e6ab5",
+    // ProductMissing: "#0e6ab5",
+    // ProductQAMissing: "#ad239b",
+    // ProductReview: "#0e6ab5",
+    // ProductRefine: "#0e6ab5",
+    // ClientProductReceived: "#37db4d",
+    // ClientFeedback: "#0e6ab5",
+    // Done: "green"
+}
+
 export default {
 
     promiseHandler(fun) {
@@ -173,6 +237,33 @@ export default {
             return ClientMessages[status]
         }
         return Messages[status]
+    },
+    colorFromAccount(status,  usertype) {
+        if(usertype == 'Client') {
+            return ClientColors[status]
+        }
+        return Colors[status]
+    },
+    
+    /* backendState: get backend message from forntend message;
+    used in Order and Model lists to apply correct color in 'status' column */
+    backendState(status, usertype) {
+        var message;
+        var backendMessage;
+        if (usertype == 'Client') {
+            message = Object.entries(ClientMessages).find (
+                m => m[1] == status
+            )
+            backendMessage = message[0]
+            return backendMessage
+        }
+        else {
+            message = Object.entries(Messages).find (
+                m => m[1] == status
+            )
+            backendMessage = message[0]
+            return backendMessage                
+        }
     },
 
     //eslint-disable-next-line no-unused-vars

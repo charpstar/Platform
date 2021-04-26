@@ -46,6 +46,7 @@ export default {
             } else if (vm.account.usertype == "Modeller") {
                 vm.$router.push("/modeller/" + vm.account.userid);
             } else {
+                // vm.$router.push("/admin/orders");
                 vm.$router.push("/home");
             }
         },
@@ -81,7 +82,10 @@ body {
     padding: 0;
     background-color: #e8e8e8;
     height: 100vh;
-    font-family: "Roboto";
+	//font family in style guide is Montserrat//
+    //alternative sans-serif, if Montserrat is not loading//
+	font-family: "Montserrat", sans-serif;
+    /*  font-family: "Roboto"; */
 }
 
 .view {
@@ -127,14 +131,14 @@ h2 {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
+    // align-items: center;
 }
 
 .flexcol {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    // align-items: center;
 }
 
 .v-data-footer {
@@ -144,15 +148,21 @@ h2 {
 th {
     text-align: start;
 }
+/* We can adjust icon color via v-icon instead */
+// .iconColor {
+//     color: #2196f3 !important;
+// }
 
-.iconColor {
-    color: #2196f3 !important;
-}
-.v-btn:not(.v-btn--icon) {
-    background-color: #2196f3 !important;
-}
+//To change the button color to green, need to change this default button color from blue to green//
+
+ .v-btn:not(.v-btn--icon) {
+    background-color: #1FB1A9 !important;
+} 
 .v-btn--icon {
     background-color: none !important;
+}
+.v-btn {
+    text-transform: none;
 }
 a {
     text-decoration: none;
