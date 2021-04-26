@@ -214,8 +214,6 @@
                     product.state
                   )
               "
-              :markdonedisabled="model.files.length == 0"
-              :markapprovedisabled="!product.newioslink || !product.newandroidlink"
               :markinfo="
                 account.usertype == 'Modeller' &&
                   ['ProductDev', 'ProductRefine', 'ClientFeedback'].includes(
@@ -226,6 +224,8 @@
                 account.usertype != 'Modeller' &&
                   product.state == 'ProductMissing'
               "
+              :markdonedisabled="model.files.length == 0"
+              :markapprovedisabled="!product.newioslink || !product.newandroidlink"
               :internal="true"
               @state="$emit('updated-model')"
             />
@@ -266,6 +266,8 @@
                 account.usertype != 'Client' &&
                   product.state == 'ProductQAMissing'
               "
+              :markdonedisabled="model.files.length == 0"
+              :markapprovedisabled="!product.newioslink || !product.newandroidlink"
               @state="$emit('updated-model')"
             />
             <!-- @state="$emit('state', $event)" -->
