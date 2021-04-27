@@ -194,10 +194,10 @@
         <div class="emptyState" 
             v-if="Object.values(models).length == 0">
             <!-- Different messages for different user types: -->
-            <span v-if="account.usertype=='Modeller'">You have not been assigned any models</span>
-            <span v-if="$route.path.includes('order')">There are no models for this order</span>
+            <span v-if="account.usertype=='Modeller'">You have not been assigned any products</span>
+            <span v-if="$route.path.includes('order')">There are no products for this order</span>
             <span v-if="account.usertype!='Modeller' && !$route.path.includes('order')">
-                Modeller has not been assigned any models
+                Modeller has not been assigned any products
             </span>  
         </div>
     </div>
