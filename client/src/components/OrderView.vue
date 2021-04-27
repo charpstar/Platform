@@ -158,7 +158,7 @@
                     :handler="add" 
                     @file="file=$event" 
                     v-if="account.usertype == 'Client' && order.state != 'Done'"
-                    title="Add models">
+                    title="Add products">
                         Add products
                         <v-icon right>mdi-file-plus</v-icon>
                     </excelupload>
