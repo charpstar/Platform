@@ -295,13 +295,6 @@ export default {
                     })
             })
         },    
-        /* The next method is not necessary after all */
-        // async assignMethod() { //Method executed when "Assign" is clicked in the modal
-        //     await this.assign.execute(); //will execute the method "assignModeler"
-        //     this.models = []; //emptying the models array helps refresh the table
-        //     await this.$emit('model-updated') //communicate to parent that the table should be refreshed
-        // } 
-        
     },
     computed: {
         filteredHeaders() {
@@ -339,32 +332,33 @@ export default {
             else if (this.$vuetify.breakpoint.width < 1300 && this.$vuetify.breakpoint.width > 948)
                 { return 'tabletList' }
             else { return 'mobileList' }
-            }
+            },
             
-        },
-        //custom filtering function instead of :search="search" in v-data-table
-        //to allow more freedom in filtering results:
         
+        // The following computed property is a type of custom filtering to allow multiple filters
+        // to be used when searching in the table. In that case, we need to have ":items=filteredItems"
+        // in the v-data-table props. However, the method has some issues that is why it is not currently used.
         //    filteredItems() { 
         //     if (!this.search) {
-        //         /* Initial code in v-data-table: :items="Object.values(models)" */
         //         return this.items
         //     }
         //     else {
         //         var items = []
-        //         Object.entries(this.models).forEach(model => {
-        //             Object.values(model).forEach(item => {
-        //                 if (this.search.includes(this.filters[item.state])) {
-        //                     items.push(item)
-        //                 }
-        //             })
-                    
+        //         // eslint-disable-next-line no-console
+        //         console.log(this.items)
+        //         this.items.forEach(item => {
+        //                 if (
+        //                     this.search.includes(item.modelid) 
+        //                     || this.search.includes(item.modelname)
+        //                     || this.search.includes(item.client)
+        //                     || this.search.includes(item.modelowner)
+        //                     || this.search.includes(item.state)) 
+        //                     { items.push(item) }    
         //         });
-
         //         return items
         //     }
         // }
-
+    },
     mounted() {
         var vm = this;
         if (vm.account.usertype != "Client") {
