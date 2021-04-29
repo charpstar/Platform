@@ -33,7 +33,10 @@
 					<!--removed check mark from active state-->
                     <!-- <i class="material-icons">{{value ? 'check' : ''}}</i> --> 
 					<!--replaced check mark by text-Active and i-tag by v-chip tag-->
-					<v-chip color="#41BF4D" label dark>{{value ? 'Active' : ''}} </v-chip>
+                    <v-chip :color="value ? '#41BF4D' : '#868686'" label dark>
+                        {{value ? 'Active' : 'Inactive'}} 
+                    </v-chip>
+					<!-- <v-chip color="#41BF4D" label dark>{{value ? 'Active' : ''}} </v-chip> -->
                 </template>
             </v-data-table>
         </div>
