@@ -43,7 +43,11 @@
                     <!-- <td>Active</td> -->
                         <td >
                             <!-- <i class="material-icons">{{user.active ? 'check' : 'close'}}</i> -->
-                            <v-chip color="#41BF4D" label dark>{{value ? 'Active' : 'Active'}} </v-chip>
+                            <!-- <v-chip color="#41BF4D" label dark>{{value ? 'Active' : 'Active'}} </v-chip> -->
+                            <v-chip :color="user.active ? '#41BF4D' : '#868686'" label dark>
+                                {{user.active ? 'Active' : 'Inactive'}} 
+                            </v-chip>
+
                         </td>
                     </tr>  
                 </div>
@@ -151,9 +155,7 @@ export default {
         var userid = vm.$route.params.id;
         backend.getUser(userid).then(user => {
             vm.user = user;
-        });
-        // eslint-disable-next-line no-console
-        console.log(this.$vuetify.breakpoint.width)
+        })
     }
 };
 </script>

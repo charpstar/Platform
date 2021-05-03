@@ -60,8 +60,8 @@
         </div>
         <!-- Message to display if there is no data, i.e. no modelid sent from parent component -->
         <div class="item" v-if="!modelid">
-            <h3> Model details </h3>
-            <p class="emptyState ">No model has been selected</p> 
+            <h3> Product details </h3>
+            <p class="emptyState ">No Product has been selected</p> 
         </div>
     </div>
 </template>
@@ -92,7 +92,7 @@ export default {
         };
     },
     methods: {
-        /* The followingethod not used since when state is changed, the whole component 
+        /* The following method not used since when state is changed, the whole component 
         refreshes and data is fetched to reflect the new state */
 
         // updateOnStateChange() {
