@@ -4,6 +4,11 @@
             <v-tabs-slider class="tabColor"></v-tabs-slider>
             <v-tab :href="'#orders'">Orders</v-tab>
             <v-tab :href="'#users'">Users</v-tab>
+            <v-tab :href="'#qa'" v-if="account.usertype=='Admin'">QA overview</v-tab>
+            <v-tab :href="'#modellers'" 
+                v-if="account.usertype=='Admin' || account.usertype=='QA'">
+                Modellers overview
+            </v-tab>
             <v-tab-item :value="'orders'">
                 <!-- replace OrderListView with new component that shows both the order 
                 list and the details-->
@@ -13,6 +18,12 @@
             <v-tab-item :value="'users'">
                 <userlistview :account="account"/>
             </v-tab-item>
+            <v-tab-item :value="'qa'">
+                <qa-overview></qa-overview>
+            </v-tab-item>
+            <v-tab-item :value="'modellers'">
+                <modellers-overview></modellers-overview>
+            </v-tab-item>
         </v-tabs>
         
     </div>
@@ -20,7 +31,9 @@
 
 <script>
 import OrderOverview from './OrderOverview.vue';
-import userlistview from './UserListView'
+import userlistview from './UserListView';
+import QaOverview from './QaOverview';
+import ModellersOverview from './ModellersOverview.vue';
 // import orderlistview from './OrderListView'
 
 export default {
@@ -29,7 +42,9 @@ export default {
     },
     components: {
         userlistview,
-        OrderOverview
+        OrderOverview,
+        QaOverview,
+        ModellersOverview
         // orderlistview,
     },
     computed: {
