@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-tabs v-model="section" >
-            <v-tabs-slider></v-tabs-slider>
+            <v-tabs-slider class="tabColor"></v-tabs-slider>
             <v-tab :href="'#orders'">Orders</v-tab>
             <v-tab :href="'#users'">Users</v-tab>
             <v-tab-item :value="'orders'">
@@ -59,5 +59,9 @@ export default {
 <style lang="scss">
 .v-tabs-bar {
     margin-bottom: 20px !important;
+}
+//changed tab underline color from default to green
+.tabColor{
+	color:#1FB1A9;
 }
 </style>
