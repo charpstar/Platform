@@ -92,7 +92,7 @@ export default {
         };
     },
     methods: {
-        /* The followingethod not used since when state is changed, the whole component 
+        /* The following method not used since when state is changed, the whole component 
         refreshes and data is fetched to reflect the new state */
 
         // updateOnStateChange() {
