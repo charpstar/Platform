@@ -1,18 +1,18 @@
 <template>
-        <v-container>
-            <v-row>
-                <v-card v-for="modeller in modellers" :key="modeller.userid" class="modeller-card">
-                    <v-card-title>{{modeller.name}}</v-card-title>
-                    <v-card-subtitle>Products</v-card-subtitle>
-                    <v-card-text>
-                        <p>Assigned: {{Object.values(modeller.models).length}}</p>
-                        <p>Approved: {{modelsApproved(modeller.userid)}}</p>
-                        <p>Under development: {{modelsInProgress(modeller.userid)}}</p>
-                    </v-card-text>
-                </v-card>  
-            </v-row>
-          
-        </v-container>
+    <v-container>
+        <v-row>
+            <v-card v-for="modeller in modellers" :key="modeller.userid" class="modeller-card">
+                <v-card-title>{{modeller.name}}</v-card-title>
+                <v-card-subtitle>Products</v-card-subtitle>
+                <v-card-text>
+                    <p>Assigned: {{Object.values(modeller.models).length}}</p>
+                    <p>Approved: {{modelsApproved(modeller.userid)}}</p>
+                    <p>Under development: {{modelsInProgress(modeller.userid)}}</p>
+                </v-card-text>
+            </v-card>  
+        </v-row>
+        
+    </v-container>
 </template>
 
 <script>
@@ -22,7 +22,6 @@ export default {
         return {
             modellers: []   
         }
-        
     },
     methods: {
         modelsApproved(userid) {
@@ -40,15 +39,9 @@ export default {
         backend.getUsers().then((users)=>{
             Object.values(users).forEach(user => {
                 if(user.usertype == "Modeller"){
-                     
                     backend.getModellerModels(user.userid).then(models => {
                         user.models = models
-                    }).then(()=>{
-                        // eslint-disable-next-line no-console
-                        console.log(user)  
                     }).then(()=>{this.modellers.push(user)})
-                    
-                    
                 }
             })
         })
