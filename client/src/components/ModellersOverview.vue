@@ -1,4 +1,5 @@
 <template>
+<!-- Component that provides an overview of the currents stats for each Modeller -->
     <v-container>
         <v-row>
             <v-card v-for="modeller in modellers" :key="modeller.userid" class="modeller-card">
@@ -11,7 +12,6 @@
                 </v-card-text>
             </v-card>  
         </v-row>
-        
     </v-container>
 </template>
 
@@ -38,8 +38,12 @@ export default {
     mounted() {
         backend.getUsers().then((users)=>{
             Object.values(users).forEach(user => {
+                //get the users that are modellers
                 if(user.usertype == "Modeller"){
+                    //for each modeller, fetch the models they are assigned to
                     backend.getModellerModels(user.userid).then(models => {
+                        //assign one more property "models" to the user, which includes the models
+                        //they are assigned to
                         user.models = models
                     }).then(()=>{this.modellers.push(user)})
                 }

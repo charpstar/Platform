@@ -61,7 +61,7 @@
         <!-- Message to display if there is no data, i.e. no modelid sent from parent component -->
         <div class="item" v-if="!modelid">
             <h3> Product details </h3>
-            <p class="emptyState ">No Product has been selected</p> 
+            <p class="emptyState ">No product has been selected</p> 
         </div>
     </div>
 </template>

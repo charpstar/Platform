@@ -66,7 +66,7 @@ export default {
     },
     data () {
         return {
-            qaUpdate: 0
+            qaUpdate: 0 //used as key to update qa-overview component
         }
     }
 
