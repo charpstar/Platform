@@ -12,17 +12,19 @@
             <v-tab-item :value="'orders'">
                 <!-- replace OrderListView with new component that shows both the order 
                 list and the details-->
-                <order-overview :account="account" :isAdminView="true"/>
+                <order-overview :account="account" :isAdminView="true" @update-qa="qaUpdate++"/>
                 <!-- <orderlistview :account="account" :isAdminView="true"/> -->
             </v-tab-item>
             <v-tab-item :value="'users'">
                 <userlistview :account="account"/>
             </v-tab-item>
             <v-tab-item :value="'qa'">
-                <qa-overview></qa-overview>
+                <!-- Key updates the component when assigned QA changes in order to display
+                correct data in QA overview -->
+                <qa-overview :key="qaUpdate"/>
             </v-tab-item>
             <v-tab-item :value="'modellers'">
-                <modellers-overview></modellers-overview>
+                <modellers-overview />
             </v-tab-item>
         </v-tabs>
         
@@ -60,6 +62,11 @@ export default {
             get () {
                 return this.$route.query.section
             }
+        }
+    },
+    data () {
+        return {
+            qaUpdate: 0
         }
     }
 

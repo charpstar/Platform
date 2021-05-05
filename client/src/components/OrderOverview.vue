@@ -96,6 +96,7 @@
             updateList() { //when an order is updated or added
                 this.getOrders(); //fetch the orders again to get the new data
                 this.listUpdate += 1 //increase the key 'listUpdate' by 1 in order to re-render order list
+                this.$emit("update-qa")
             }
         },
 
