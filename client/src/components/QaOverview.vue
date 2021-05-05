@@ -7,6 +7,8 @@
                 <v-card-subtitle>Products</v-card-subtitle>
                 <v-card-text>
                     <p>Assigned: {{qa.models.length}}</p>
+                    <p>Under review: {{modelsToReview(qa.userid)}}</p>
+                    <p>Approved: {{modelsApproved(qa.userid)}}</p>
                 </v-card-text>
             </v-card>
         </v-row>
@@ -22,6 +24,18 @@ export default {
             orders: [],
             loaded: false
         }
+    },
+    methods: {
+        modelsToReview(userid) {
+            var qa = this.qas.find(q => q.userid == userid)
+            var modelsToReview = Object.values(qa.models).filter(m => m.state == "ProductReview")
+            return modelsToReview.length
+        },
+        modelsApproved(userid) {
+            var qa = this.qas.find(q => q.userid == userid)
+            var modelsApproved = Object.values(qa.models).filter(m => m.state == "ClientProductReceived")
+            return modelsApproved.length
+        },
     },
     async mounted() { //async-await to complete the setps in the correct order
         await backend.getAllOrders().then((orders)=>{
