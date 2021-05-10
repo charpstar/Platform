@@ -38,7 +38,10 @@
             <h2>Products</h2>
             <!-- <h2>Models</h2> -->
         </div>
-        
+        <div class="flexrow">
+            <p> </p>
+            <h3 style="text-align: center">{{productsDone}}/{{Object.values(models).length}} done</h3>
+        </div>
         <div id="itemsView">
             <div class="flexrow" id="filtering">
                 <v-text-field
@@ -333,6 +336,10 @@ export default {
                 { return 'tabletList' }
             else { return 'mobileList' }
             },
+        productsDone() {
+            var productsDone = Object.values(this.models).filter(m => m.state == "ClientProductReceived")
+            return productsDone.length
+        }
             
         
         // The following computed property is a type of custom filtering to allow multiple filters
