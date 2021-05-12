@@ -2,7 +2,9 @@
     <div id="app" data-app>
         <topBar :account="account" @home="homeButton" :notifications="notifications" />
         <div id="center">
-            <v-card class="card">
+            <!-- If user is logged in, make the card width and height 100%,
+            otherwise always automatic card size -->
+            <v-card class="card" :id="$route.path != '/' ? 'logged-in' : ''">
                 <transitionExpandHeight>
                     <v-progress-circular v-if="loading" indeterminate></v-progress-circular>
                     <router-view v-else v-on:login="login" :account="account"></router-view>
@@ -126,6 +128,10 @@ h2 {
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     padding: 20px;
     background-color: white;
+
+}
+
+#logged-in {
     // Always same width and height to avoid the expansion effect, that can be tiring for the user
     width: 100%;
     min-height: 100%;

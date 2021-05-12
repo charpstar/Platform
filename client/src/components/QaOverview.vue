@@ -2,8 +2,8 @@
 <!-- Component that provides an overview of the currents stats for each QA -->
     <v-container>
         <v-row >
-            <v-col>
-                <v-card v-for="qa in qas" :key="qa.userid" class="qa-card">
+            <v-col cols="6" v-for="qa in qas" :key="qa.userid">
+                <v-card  class="qa-card" raised>
                     <v-card-title>{{qa.name}}</v-card-title>
                     <v-card-subtitle>Products</v-card-subtitle>
                     <v-card-text>
@@ -74,9 +74,10 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
     .qa-card {
         margin-right: 1em;
         margin-bottom: 1em;
+        color: #23968E !important;
     }
 </style>

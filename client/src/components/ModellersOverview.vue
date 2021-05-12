@@ -2,8 +2,8 @@
 <!-- Component that provides an overview of the currents stats for each Modeller -->
     <v-container>
         <v-row>
-            <v-col>
-                <v-card v-for="modeller in modellers" :key="modeller.userid" class="modeller-card">
+            <v-col cols="6" v-for="modeller in modellers" :key="modeller.userid">
+                <v-card class="modeller-card" raised>
                     <v-card-title>{{modeller.name}}</v-card-title>
                     <v-card-subtitle>Products</v-card-subtitle>
                     <v-card-text>
@@ -59,5 +59,6 @@ export default {
     .modeller-card {
         margin-right: 1em;
         margin-bottom: 1em;
+        color: #23968E !important;
     }
 </style>
