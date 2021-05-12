@@ -94,6 +94,6 @@ export default {
 #table {
     max-height: 70vh;
     overflow: auto;
-    width: 80vw;
+    // width: 80vw;
 }
 </style>

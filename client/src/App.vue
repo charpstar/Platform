@@ -119,12 +119,16 @@ h2 {
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    margin-top: 0.8em;
 }
 
 .card {
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     padding: 20px;
     background-color: white;
+    // Always same width and height to avoid the expansion effect, that can be tiring for the user
+    width: 100%;
+    min-height: 100%;
 }
 
 .flexrow {

@@ -2,15 +2,17 @@
 <!-- Component that provides an overview of the currents stats for each QA -->
     <v-container>
         <v-row >
-            <v-card v-for="qa in qas" :key="qa.userid" class="qa-card">
-                <v-card-title>{{qa.name}}</v-card-title>
-                <v-card-subtitle>Products</v-card-subtitle>
-                <v-card-text>
-                    <p>Assigned: {{qa.models.length}}</p>
-                    <p>Under review: {{modelsToReview(qa.userid)}}</p>
-                    <p>Approved: {{modelsApproved(qa.userid)}}</p>
-                </v-card-text>
-            </v-card>
+            <v-col>
+                <v-card v-for="qa in qas" :key="qa.userid" class="qa-card">
+                    <v-card-title>{{qa.name}}</v-card-title>
+                    <v-card-subtitle>Products</v-card-subtitle>
+                    <v-card-text>
+                        <p>Assigned: {{qa.models.length}}</p>
+                        <p>Under review: {{modelsToReview(qa.userid)}}</p>
+                        <p>Approved: {{modelsApproved(qa.userid)}}</p>
+                    </v-card-text>
+                </v-card>
+            </v-col>
         </v-row>
     </v-container>
 </template>

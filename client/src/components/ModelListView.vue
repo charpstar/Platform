@@ -42,7 +42,8 @@
             <!-- If the products array is not empty -->
             <div v-if="Object.values(models).length > 0" class="progress">
                 <!-- Display a progress bar with what percentage of products are done, 
-                    i.e. have status "Complete" -->
+                    i.e. status "Complete", or done from the QA side, i.e. are now under 
+                    client review -->
                 <v-progress-linear 
                     :value="Math.round((productsDone/Object.values(models).length) * 100)" 
                     color="#1FB1A9" 
@@ -351,7 +352,8 @@ export default {
             else { return 'mobileList' }
             },
 
-        productsDone() { //get the number of products "Done" to later find the percentage
+        productsDone() { 
+        //get the number of products "Complete" or under "CLient Review" to later find the percentage
             var productsDone = Object.values(this.models).filter(m => m.state == "Done" || m.state == "ClientProductReceived")
             return productsDone.length
         }

@@ -2,15 +2,17 @@
 <!-- Component that provides an overview of the currents stats for each Modeller -->
     <v-container>
         <v-row>
-            <v-card v-for="modeller in modellers" :key="modeller.userid" class="modeller-card">
-                <v-card-title>{{modeller.name}}</v-card-title>
-                <v-card-subtitle>Products</v-card-subtitle>
-                <v-card-text>
-                    <p>Assigned: {{Object.values(modeller.models).length}}</p>
-                    <p>Approved: {{modelsApproved(modeller.userid)}}</p>
-                    <p>Under development: {{modelsInProgress(modeller.userid)}}</p>
-                </v-card-text>
-            </v-card>  
+            <v-col>
+                <v-card v-for="modeller in modellers" :key="modeller.userid" class="modeller-card">
+                    <v-card-title>{{modeller.name}}</v-card-title>
+                    <v-card-subtitle>Products</v-card-subtitle>
+                    <v-card-text>
+                        <p>Assigned: {{Object.values(modeller.models).length}}</p>
+                        <p>Approved: {{modelsApproved(modeller.userid)}}</p>
+                        <p>Under development: {{modelsInProgress(modeller.userid)}}</p>
+                    </v-card-text>
+                </v-card>  
+            </v-col>
         </v-row>
     </v-container>
 </template>
