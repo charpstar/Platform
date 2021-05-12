@@ -61,4 +61,9 @@ export default {
         margin-bottom: 1em;
         color: #23968E !important;
     }
+
+/* Box shadow custom colour */
+    .v-card--raised {
+        box-shadow: 0px 3px 3px -3px rgba(35, 150, 142, 0.2), 0px 8px 10px 1px rgba(35, 150, 142, 0.14), 0px 3px 14px 2px rgba(35, 150, 142, 0.12) !important;
+    }
 </style>

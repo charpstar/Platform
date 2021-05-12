@@ -2,9 +2,11 @@
     <div id="app" data-app>
         <topBar :account="account" @home="homeButton" :notifications="notifications" />
         <div id="center">
-            <!-- If user is logged in, make the card width and height 100%,
-            otherwise always automatic card size -->
-            <v-card class="card" :id="$route.path != '/' ? 'logged-in' : ''">
+            <!-- If user is logged in, use an id to style the card width and height to 100%;
+            otherwise automatic card size for login component and user details -->
+            <v-card 
+            class="card" 
+            :id="$route.path != '/' &&  !$route.path.includes('user')? 'logged-in' : ''">
                 <transitionExpandHeight>
                     <v-progress-circular v-if="loading" indeterminate></v-progress-circular>
                     <router-view v-else v-on:login="login" :account="account"></router-view>

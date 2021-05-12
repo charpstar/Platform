@@ -116,7 +116,6 @@ export default {
                         }
                     }],
                     yAxes: [{
-                        
                         scaleLabel: {
                             display: true,
                             fontSize: 16, //default is 12, kind of small

@@ -11,6 +11,9 @@
                         <p>Under review: {{modelsToReview(qa.userid)}}</p>
                         <p>Approved: {{modelsApproved(qa.userid)}}</p>
                     </v-card-text>
+                    <bar-chart-overview 
+                        :productData="{assigned: qa.models.length, review: modelsToReview(qa.userid), approved: modelsApproved(qa.userid)}"
+                    />
                 </v-card>
             </v-col>
         </v-row>
@@ -19,7 +22,9 @@
 
 <script>
 import backend from '../backend'
+import BarChartOverview from './BarChartOverview.vue'
 export default {
+  components: { BarChartOverview },
     data () {
         return {
             qas: [],
@@ -80,4 +85,8 @@ export default {
         margin-bottom: 1em;
         color: #23968E !important;
     }
+    .v-card--raised {
+        box-shadow: 0px 3px 3px -3px rgba(35, 150, 142, 0.2), 0px 8px 10px 1px rgba(35, 150, 142, 0.14), 0px 3px 14px 2px rgba(35, 150, 142, 0.12) !important;
+    }
+
 </style>
