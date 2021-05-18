@@ -5,14 +5,11 @@
             <v-col xs="12" sm="6" v-for="qa in qas" :key="qa.userid">
                 <v-card  class="qa-card" raised>
                     <v-card-title>{{qa.name}}</v-card-title>
-                    <!-- <v-card-subtitle>Products</v-card-subtitle> -->
-                    <!-- <v-card-text>
-                        <p>Assigned: {{qa.models.length}}</p>
-                        <p>Under review: {{modelsToReview(qa.userid)}}</p>
-                        <p>Approved: {{modelsApproved(qa.userid)}}</p>
-                    </v-card-text> -->
                     <bar-chart-overview 
-                        :productData="{Assigned: qa.models.length, 'Under review': modelsToReview(qa.userid), Approved: modelsApproved(qa.userid)}"
+                        :productData="{
+                            Assigned: qa.models.length, 
+                            'Under review': modelsToReview(qa.userid), 
+                            Approved: modelsApproved(qa.userid)}"
                     />
                 </v-card>
             </v-col>

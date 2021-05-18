@@ -5,14 +5,11 @@
             <v-col xs="12" sm="6" v-for="modeller in modellers" :key="modeller.userid">
                 <v-card class="modeller-card" raised>
                     <v-card-title>{{modeller.name}}</v-card-title>
-                    <!-- <v-card-subtitle>Products</v-card-subtitle> -->
-                    <!-- <v-card-text>
-                        <p>Assigned: {{modeller.models.length}}</p>
-                        <p>Approved: {{modelsApproved(modeller.userid)}}</p>
-                        <p>Under development: {{modelsInProgress(modeller.userid)}}</p>
-                    </v-card-text> -->
                     <bar-chart-overview 
-                        :productData="{Assigned: modeller.models.length, 'Under development': modelsInProgress(modeller.userid), Approved: modelsApproved(modeller.userid)}"
+                        :productData="{
+                            Assigned: modeller.models.length, 
+                            'Under development': modelsInProgress(modeller.userid), 
+                            Approved: modelsApproved(modeller.userid)}"
                     />
                 </v-card>  
             </v-col>
@@ -42,7 +39,7 @@ export default {
             return modelsInProgress.length
         }
     },
-    async mounted() {
+    async mounted() { //async-await to complete the setps in the correct order
         await backend.getUsers().then((users)=>{
             Object.values(users).forEach(user => {
                 //get the users that are modellers
@@ -56,9 +53,10 @@ export default {
 
         //for each modeller, fetch the models they are assigned to
         await this.modellers.forEach(m => backend.getModellerModels(m.userid).then(models => {
-        //property "models" includes the models the modeller is assigned to
-        m.models = Object.values(models)
-        }))
+            //property "models" includes the models the modeller is assigned to
+            m.models = Object.values(models)
+            })
+        )
 } 
 }
 </script>
