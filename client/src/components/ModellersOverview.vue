@@ -2,15 +2,18 @@
 <!-- Component that provides an overview of the currents stats for each Modeller -->
     <v-container>
         <v-row>
-            <v-col cols="6" v-for="modeller in modellers" :key="modeller.userid">
+            <v-col xs="12" sm="6" v-for="modeller in modellers" :key="modeller.userid">
                 <v-card class="modeller-card" raised>
                     <v-card-title>{{modeller.name}}</v-card-title>
-                    <v-card-subtitle>Products</v-card-subtitle>
-                    <v-card-text>
-                        <p>Assigned: {{Object.values(modeller.models).length}}</p>
+                    <!-- <v-card-subtitle>Products</v-card-subtitle> -->
+                    <!-- <v-card-text>
+                        <p>Assigned: {{modeller.models.length}}</p>
                         <p>Approved: {{modelsApproved(modeller.userid)}}</p>
                         <p>Under development: {{modelsInProgress(modeller.userid)}}</p>
-                    </v-card-text>
+                    </v-card-text> -->
+                    <bar-chart-overview 
+                        :productData="{Assigned: modeller.models.length, 'Under development': modelsInProgress(modeller.userid), Approved: modelsApproved(modeller.userid)}"
+                    />
                 </v-card>  
             </v-col>
         </v-row>
@@ -19,7 +22,9 @@
 
 <script>
 import backend from '../backend'
+import BarChartOverview from './BarChartOverview.vue'
 export default {
+    components: { BarChartOverview },
     data() {
         return {
             modellers: []   
@@ -37,21 +42,24 @@ export default {
             return modelsInProgress.length
         }
     },
-    mounted() {
-        backend.getUsers().then((users)=>{
+    async mounted() {
+        await backend.getUsers().then((users)=>{
             Object.values(users).forEach(user => {
                 //get the users that are modellers
                 if(user.usertype == "Modeller"){
-                    //for each modeller, fetch the models they are assigned to
-                    backend.getModellerModels(user.userid).then(models => {
-                        //assign one more property "models" to the user, which includes the models
-                        //they are assigned to
-                        user.models = models
-                    }).then(()=>{this.modellers.push(user)})
+                    //assign one more property "models" to the user; populated in the last step in "mounted"
+                    user.models= []
+                    this.modellers.push(user)
                 }
             })
         })
-    }
+
+        //for each modeller, fetch the models they are assigned to
+        await this.modellers.forEach(m => backend.getModellerModels(m.userid).then(models => {
+        //property "models" includes the models the modeller is assigned to
+        m.models = Object.values(models)
+        }))
+} 
 }
 </script>
 

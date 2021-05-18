@@ -17,6 +17,11 @@ export default {
         productData: {type: Object}
     },
     computed: {
+        stepSize() { //calculate the yAxis steps/ticks
+            if (this.productData.assigned > 50) {return 10}
+            else if (50 > this.productData.assigned > 10) {return 5}
+            else {return 1}
+        },
         //options configuration for bar graph
         barOptions() {
             var optionsObj = {
@@ -39,7 +44,7 @@ export default {
                         },
                         ticks: {
                             min: 0,
-                            stepSize: this.productData.assigned > 50 ? 10 : 5, 
+                            stepSize: this.stepSize, 
                             fontFamily: "Montserrat, sans-serif"
                         },
                     }],
@@ -58,18 +63,14 @@ export default {
                         data: []
                     }]
             }
-            
-            //create an array with the same number of items as the product states
-            //this way we don't get text as labels, only icons
-            // for (let i=0; i<this.orderedstates.length ; i++) {dataObj.labels[i] = ''}
+
             dataObj.labels = Object.keys(this.productData).map(p => p)
             dataObj.datasets[0].data = Object.values(this.productData).map(p => p)
 
-            // //dynamically set colors for each bar
-            // dataObj.datasets[0].backgroundColor = this.orderedstates.map(state => backend.colorFromAccount(state.stateafter, this.account.usertype))
+            dataObj.datasets[0].backgroundColor = ['#868686', '#7FCB7F', '#744885']
 
             return dataObj
-        },
+        }
     }
 }
 </script>

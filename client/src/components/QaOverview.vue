@@ -1,18 +1,18 @@
 <template>
 <!-- Component that provides an overview of the currents stats for each QA -->
     <v-container>
-        <v-row >
-            <v-col cols="6" v-for="qa in qas" :key="qa.userid">
+        <v-row>
+            <v-col xs="12" sm="6" v-for="qa in qas" :key="qa.userid">
                 <v-card  class="qa-card" raised>
                     <v-card-title>{{qa.name}}</v-card-title>
-                    <v-card-subtitle>Products</v-card-subtitle>
-                    <v-card-text>
+                    <!-- <v-card-subtitle>Products</v-card-subtitle> -->
+                    <!-- <v-card-text>
                         <p>Assigned: {{qa.models.length}}</p>
                         <p>Under review: {{modelsToReview(qa.userid)}}</p>
                         <p>Approved: {{modelsApproved(qa.userid)}}</p>
-                    </v-card-text>
+                    </v-card-text> -->
                     <bar-chart-overview 
-                        :productData="{assigned: qa.models.length, review: modelsToReview(qa.userid), approved: modelsApproved(qa.userid)}"
+                        :productData="{Assigned: qa.models.length, 'Under review': modelsToReview(qa.userid), Approved: modelsApproved(qa.userid)}"
                     />
                 </v-card>
             </v-col>
