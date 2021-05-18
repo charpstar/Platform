@@ -1,6 +1,6 @@
 <template>
     <div>
-        <!-- If screen is md(960px) and up, apply styling for 'view', otherwise use styling for 'mobileView' -->
+        <!-- If screen is md(960px) and up, apply styling for 'item', otherwise use styling for 'mobileView' -->
         <div :class="$vuetify.breakpoint.mdAndUp ? 'item' : 'mobileView'" v-if="modelid">
         <!-- <div class="item" v-if="modelid"> -->
             <h3> {{model.modelname}} </h3>
@@ -26,8 +26,8 @@
                 <!-- <v-tab v-if="account.usertype != 'Client'" :href="`#blendertab`">Model</v-tab> -->
                 <v-tab v-for="(p, id) in products" :key="id" :href="`#tab-${id}`">{{p.color}}</v-tab>
                 <v-tab-item :value="'blendertab'" class="tab">
-                    <!-- @updated-model: communicate to parent that data has changed 
-                    in order to refresh the page -->
+                    <!-- @updated-model-> communicate via custom event
+                    to parent that data has changed in order to refresh the page -->
                     <blenderview 
                         :model="model" 
                         :account="account" 

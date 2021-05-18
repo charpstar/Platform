@@ -2,7 +2,10 @@
 <!-- Component that provides an overview of the currents stats for each Modeller -->
     <v-container>
         <v-row>
-            <v-col xs="12" sm="6" v-for="modeller in modellers" :key="modeller.userid">
+            <v-col 
+            xs="12" sm="6" 
+            v-for="modeller in modellers" 
+            :key="modeller.userid">
                 <v-card class="modeller-card" raised>
                     <v-card-title>{{modeller.name}}</v-card-title>
                     <bar-chart-overview 
@@ -30,12 +33,19 @@ export default {
     methods: {
         modelsApproved(userid) {
             var modeller = this.modellers.find(m => m.userid == userid)
+
+            //filter the modeller's models that have been approved by QA, i.e. have state "ClientProductReceived"
             var modelsApproved = Object.values(modeller.models).filter(m => m.state == "ClientProductReceived")
+            
             return modelsApproved.length
         },
+
         modelsInProgress(userid){
             var modeller = this.modellers.find(m => m.userid == userid)
+
+            //filter the modeller's models that are under development, i.e. have state "ProductDev"            
             var modelsInProgress = Object.values(modeller.models).filter(m => m.state == "ProductDev")
+
             return modelsInProgress.length
         }
     },
@@ -44,7 +54,8 @@ export default {
             Object.values(users).forEach(user => {
                 //get the users that are modellers
                 if(user.usertype == "Modeller"){
-                    //assign one more property "models" to the user; populated in the last step in "mounted"
+                    //assign one more property "models" to the user; 
+                    //populated in the last step in "mounted"
                     user.models= []
                     this.modellers.push(user)
                 }

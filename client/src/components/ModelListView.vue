@@ -354,6 +354,7 @@ export default {
 
         productsDone() { 
         //get the number of products "Complete" or under "CLient Review" to later find the percentage
+        //and use it to display the progress bar above the table
             var productsDone = Object.values(this.models).filter(m => m.state == "Done" || m.state == "ClientProductReceived")
             return productsDone.length
         }
@@ -362,6 +363,7 @@ export default {
         // The following computed property is a type of custom filtering to allow multiple filters
         // to be used when searching in the table. In that case, we need to have ":items=filteredItems"
         // in the v-data-table props. However, the method has some issues that is why it is not currently used.
+        
         //    filteredItems() { 
         //     if (!this.search) {
         //         return this.items

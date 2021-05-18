@@ -10,10 +10,11 @@
                 Modellers overview
             </v-tab>
             <v-tab-item :value="'orders'">
+                <!-- Old code: <orderlistview :account="account" :isAdminView="true"/> -->
                 <!-- replace OrderListView with new component that shows both the order 
-                list and the details-->
+                list and the details: -->
                 <order-overview :account="account" :isAdminView="true" @update-qa="qaUpdate++"/>
-                <!-- <orderlistview :account="account" :isAdminView="true"/> -->
+                <!-- "@update-qa" is a custom event emitted when something is updated in OrderOverview -->
             </v-tab-item>
             <v-tab-item :value="'users'">
                 <userlistview :account="account"/>

@@ -2,7 +2,10 @@
 <!-- Component that provides an overview of the currents stats for each QA -->
     <v-container>
         <v-row>
-            <v-col xs="12" sm="6" v-for="qa in qas" :key="qa.userid">
+            <v-col 
+            xs="12" sm="6" 
+            v-for="qa in qas" 
+            :key="qa.userid">
                 <v-card  class="qa-card" raised>
                     <v-card-title>{{qa.name}}</v-card-title>
                     <bar-chart-overview 
@@ -32,13 +35,19 @@ export default {
     methods: {
         modelsToReview(userid) {
             var qa = this.qas.find(q => q.userid == userid)
+
+            //filter the models that need review by the specific QA, i.e. have state "ProductReview"
             var modelsToReview = Object.values(qa.models).filter(m => m.state == "ProductReview")
+            
             return modelsToReview.length
         },
         modelsApproved(userid) {
             var qa = this.qas.find(q => q.userid == userid)
+
+            //filter the models that have been approved by the specific QA, i.e. have state "ClientProductReceived"
             var modelsApproved = Object.values(qa.models).filter(m => m.state == "ClientProductReceived")
-            return modelsApproved.length
+           
+           return modelsApproved.length
         },
     },
     async mounted() { //async-await to complete the setps in the correct order
