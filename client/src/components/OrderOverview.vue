@@ -14,7 +14,7 @@
             @clicked-order="getOrderId"
 			@created-order="updateList"/>
 
-        <!-- 'key' re-renders the child component when orderid changes-->
+        <!-- 'key' re-renders the child component -->
         <order-view
             v-if="loaded"
             :account="account"

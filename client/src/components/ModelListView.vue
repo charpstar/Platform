@@ -185,6 +185,7 @@
                         </tr>
                     </tbody>
                 </template>
+                <!-- Old code for the table: -->
                 <!-- <template v-slot:item.thumb="{item}">
                     <img
                         :src="backend.getThumbURL(item.modelid)"

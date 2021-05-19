@@ -120,7 +120,7 @@
       },
 
       methods: {
-        /* Methods moved from ProductView, as they are only relevant for the 'link' buttons */
+        /* Methods moved here from ProductView, as they are only relevant for the 'link' buttons */
         uploadedAndroid(values) {
           this.product.newandroidlink = values[0].new.androidlink
           if (values[1] != null) {
