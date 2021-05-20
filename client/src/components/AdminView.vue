@@ -4,14 +4,28 @@
             <v-tabs-slider class="tabColor"></v-tabs-slider>
             <v-tab :href="'#orders'">Orders</v-tab>
             <v-tab :href="'#users'">Users</v-tab>
+            <v-tab :href="'#qa'" v-if="account.usertype=='Admin'">QA overview</v-tab>
+            <v-tab :href="'#modellers'" 
+                v-if="account.usertype=='Admin' || account.usertype=='QA'">
+                Modellers overview
+            </v-tab>
             <v-tab-item :value="'orders'">
+                <!-- Old code: <orderlistview :account="account" :isAdminView="true"/> -->
                 <!-- replace OrderListView with new component that shows both the order 
-                list and the details-->
-                <order-overview :account="account" :isAdminView="true"/>
-                <!-- <orderlistview :account="account" :isAdminView="true"/> -->
+                list and the details: -->
+                <order-overview :account="account" :isAdminView="true" @update-qa="qaUpdate++"/>
+                <!-- "@update-qa" is a custom event emitted when something is updated in OrderOverview -->
             </v-tab-item>
             <v-tab-item :value="'users'">
                 <userlistview :account="account"/>
+            </v-tab-item>
+            <v-tab-item :value="'qa'">
+                <!-- Key updates the component when assigned QA changes in order to display
+                correct data in QA overview -->
+                <qa-overview :key="qaUpdate"/>
+            </v-tab-item>
+            <v-tab-item :value="'modellers'">
+                <modellers-overview />
             </v-tab-item>
         </v-tabs>
         
@@ -20,7 +34,9 @@
 
 <script>
 import OrderOverview from './OrderOverview.vue';
-import userlistview from './UserListView'
+import userlistview from './UserListView';
+import QaOverview from './QaOverview';
+import ModellersOverview from './ModellersOverview.vue';
 // import orderlistview from './OrderListView'
 
 export default {
@@ -29,7 +45,9 @@ export default {
     },
     components: {
         userlistview,
-        OrderOverview
+        OrderOverview,
+        QaOverview,
+        ModellersOverview
         // orderlistview,
     },
     computed: {
@@ -45,6 +63,11 @@ export default {
             get () {
                 return this.$route.query.section
             }
+        }
+    },
+    data () {
+        return {
+            qaUpdate: 0 //used as key to update qa-overview component
         }
     }
 

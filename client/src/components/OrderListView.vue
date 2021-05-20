@@ -99,6 +99,7 @@
                         </tr>
                     </tbody>
                 </template>
+                <!-- Old code for the table: -->
                 <!-- <template v-slot:item.complete="{item}">
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on }">

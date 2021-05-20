@@ -330,7 +330,7 @@
         var vm = this
         return backend.deleteProduct(vm.product.productid).then(() => {
           // How is this going to work with the new display of models' list
-          // next to model details? Should we remove the following code?
+          // next to model details? Should the following code be removed?
           vm.$router.go(-1)
         })
       },
@@ -389,8 +389,6 @@
       setTimeout(() => {
         vm.hideMv = false
       }, 500)
-      // eslint-disable-next-line no-console
-      console.log(this.product)
     }
   }
 </script>
