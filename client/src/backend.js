@@ -245,7 +245,7 @@ export default {
         return Colors[status]
     },
     
-    /* backendState: get backend message from forntend message;
+    /* backendState: get backend message from frontend message;
     used in Order and Model lists to apply correct color in 'status' column */
     backendState(status, usertype) {
         var message;

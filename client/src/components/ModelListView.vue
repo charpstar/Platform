@@ -29,16 +29,33 @@
             </div>
         </v-dialog>
     <!-- <div class="modelsList"> -->
-        <div class="flexrow" id="topRow">
-            <div class="flexrow arrowBack">
-                <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Modeller'">
-                    <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
-                </v-btn>
-            </div>    
-            <h2>Products</h2>
-            <!-- <h2>Models</h2> -->
+        <div class="page-info">
+            <div class="flexrow" id="topRow">
+                <div class="flexrow arrowBack">
+                    <v-btn icon class="hidden-xs-only" v-if="account.usertype != 'Modeller'">
+                        <v-icon @click="$router.go(-1)">mdi-arrow-left</v-icon>
+                    </v-btn>
+                </div>    
+                <h2>Products</h2>
+                <!-- <h2>Models</h2> -->
+            </div>
+            <!-- If the products array is not empty -->
+            <div v-if="Object.values(models).length > 0" class="progress">
+                <!-- Display a progress bar with what percentage of products are done, 
+                    i.e. status "Complete", or done from the QA side, i.e. are now under 
+                    client review -->
+                <v-progress-linear 
+                    :value="Math.round((productsDone/Object.values(models).length) * 100)" 
+                    color="#1FB1A9" 
+                    class="progress-bar">
+                </v-progress-linear>  
+                <p 
+                    style="text-align: center">
+                    {{Math.round((productsDone/Object.values(models).length) * 100)}} %
+                </p>
+            </div>            
         </div>
-        
+
         <div id="itemsView">
             <div class="flexrow" id="filtering">
                 <v-text-field
@@ -70,6 +87,7 @@
                     </v-list>
                 </v-menu>
             </div>
+ 
             <!-- Admin can assign modeller by selecting models via the checkboxes -->
             <div class="assignModeller" v-if="account.usertype =='Admin'">
                 <!-- Button opens the modal to assign modelers -->
@@ -167,6 +185,7 @@
                         </tr>
                     </tbody>
                 </template>
+                <!-- Old code for the table: -->
                 <!-- <template v-slot:item.thumb="{item}">
                     <img
                         :src="backend.getThumbURL(item.modelid)"
@@ -333,11 +352,19 @@ export default {
                 { return 'tabletList' }
             else { return 'mobileList' }
             },
+
+        productsDone() { 
+        //get the number of products "Complete" or under "CLient Review" to later find the percentage
+        //and use it to display the progress bar above the table
+            var productsDone = Object.values(this.models).filter(m => m.state == "Done" || m.state == "ClientProductReceived")
+            return productsDone.length
+        }
             
         
         // The following computed property is a type of custom filtering to allow multiple filters
         // to be used when searching in the table. In that case, we need to have ":items=filteredItems"
         // in the v-data-table props. However, the method has some issues that is why it is not currently used.
+        
         //    filteredItems() { 
         //     if (!this.search) {
         //         return this.items
@@ -479,9 +506,7 @@ th {
     td:first-of-type {
         //Set min-width for the first column to view "sort" dropdown properly
         min-width: 105px;
-    }
-  
-    
+    }  
 }
 
 .highlightedRow {
@@ -509,6 +534,22 @@ div.emptyState {
     span {
         margin-right: 0.5em;
     }
+}
+
+.progress {
+    width: 40%;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    .progress-bar{
+        width: 80%;
+        margin-right: 0.5em;
+    }
+}
+
+.page-info {
+    display: flex;
+    flex-direction: column;
 }
 
 // #table {

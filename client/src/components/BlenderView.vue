@@ -77,7 +77,6 @@
                 <p id="modeller">
                     Assigned modeller: {{model.modelowner ? model.modelowner : 'None'}}
                 </p>
-                <!-- If we want to display model status -->
                 <p id="status">
                     Status: {{backend.messageFromStatus(model.state, account.usertype)}}
                     <!-- <v-icon>{{backend.iconFromStatus(model.state, account.usertype)}}</v-icon> --> 
@@ -117,7 +116,7 @@
                     </p>
                     <!-- as file is an array now (not string) it is better to use index as the key-->
                     <div class="flexrow" v-for="(file, index) in model.files" :key="index">
-                    <!-- <div class="flexrow" v-for="(file, index) in model.files" :key="file"> -->
+                    <!-- Old code: <div class="flexrow" v-for="(file, index) in model.files" :key="file"> -->
                         <!-- 'file' is an array, where file[0] is the date of uploading 
                         and file[1] the file name: -->
                         <p class="fileName">{{file[1]}}</p> 
@@ -323,7 +322,8 @@ export default {
             return backend.uploadModelFile(vm.model.modelid, vm.file).then(newFile => {
                 // vm.model.files.push(newFile.filename);
                 // vm.model.files.push(newFile);
- 
+
+                //loop though the files array and see if the same file already exists
                 var existingFile = vm.model.files.findIndex(file => file[1] == newFile.filename)
                 if (existingFile > -1) { //if there is a file with the same name, replace it with the latest version
                     vm.model.files.splice(existingFile, 1)

@@ -38,11 +38,11 @@
 				rows="3"
 				row-height="25"
             >
-			<!-- Moved Add button inside text area -->
+			<!-- Moved Send button inside text area -->
 			<template v-slot:append >
 				<v-btn @click="() => sendComment('Comment')" :loading="loading['Comment']" color="#1FB1A9" rounded dark small class="addBtn">
                     Send
-                    <v-icon right dark>mdi-plus-circle</v-icon>
+                    <v-icon right dark>mdi-send-circle</v-icon>
                 </v-btn>
 				</template>
 				</v-textarea>
@@ -347,7 +347,7 @@ export default {
 .done{
 	color: white
 }
-//added to style Add, Approve, Reject buttons
+//added to style Send, Approve, Reject buttons
 .container{
 	display: flex;
 	flex-direction:column;

@@ -116,7 +116,6 @@ export default {
                         }
                     }],
                     yAxes: [{
-                        
                         scaleLabel: {
                             display: true,
                             fontSize: 16, //default is 12, kind of small
@@ -226,7 +225,7 @@ export default {
         //     return sum
         // },
 
-    /* The following code will not be used as long as we are using vue-chartjs library */
+    /* The following code is not applicable as long as we are using vue-chartjs library */
 
         // chartBars() {
         //     var ret = {}
@@ -287,7 +286,7 @@ export default {
 <style lang="scss" scoped>
     .chart {
         position: relative;
-        width: 40vw; //only "vw" works in order to have responsive graph, not "%"
+        width: 40vw; 
     }
 
     .mobileChart {
